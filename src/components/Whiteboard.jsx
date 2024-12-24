@@ -7,10 +7,16 @@ import calculateTouchMidpoint from "../utils/calculateTouchMidpoint";
 import Toolbar from "./Toolbar";
 import UndoRedo from "./UndoRedo";
 import Slider from "./Slider";
+import Tools from "./Tools";
+import { Pen } from "lucide-react";
+import Users from "./Users";
 
 function Pc() {
   // useState
-  const [tool, setTool] = useState("pen");
+  const [tool, setTool] = useState({
+    name: "source-over",
+    component: <Pen className="h-5 w-5 text-gray-900" />,
+  });
   const [color, setColor] = useState("#000000");
   const [strokeWidth, setStrokeWidth] = useState(10);
   const [lines, setLines] = useState([]);
@@ -20,6 +26,8 @@ function Pc() {
     x: 0,
     y: 0,
   });
+  const [isSliderVisible, setSliderVisible] = useState(false); // State to track visibility of the slider
+  const [isToolsVisible, setToolsVisible] = useState(false); // State to track visibility of the tools
   // useRef
   const isDrawing = useRef(false);
   const stageRef = useRef(null);
@@ -27,7 +35,6 @@ function Pc() {
   const panStart = useRef({ x: 0, y: 0 });
   const lastTouchDistance = useRef(null); // For pinch zoom
   const touchPanStart = useRef(null); // For panning
-  const [isSliderVisible, setSliderVisible] = useState(false); // State to track visibility of the slider
 
   // custom hooks
   const { width, height } = useWindowDimensions();
@@ -35,6 +42,9 @@ function Pc() {
 
   const toggleSlider = () => {
     setSliderVisible(!isSliderVisible); // Toggle slider visibility
+  };
+  const toggleTools = () => {
+    setToolsVisible(!isToolsVisible); // Toggle slider visibility
   };
 
   // Set initial stage position
@@ -71,7 +81,7 @@ function Pc() {
       setLines([
         ...lines,
         {
-          tool,
+          tool: tool.name,
           color,
           strokeWidth,
           points: [transformedPos.x, transformedPos.y],
@@ -187,7 +197,7 @@ function Pc() {
       setLines([
         ...lines,
         {
-          tool,
+          tool: tool.name,
           color,
           strokeWidth,
           points: [transformedPos.x, transformedPos.y],
@@ -276,7 +286,7 @@ function Pc() {
 
   return (
     <>
-      <div className="w-fit border-red-500 border float-end relative">
+      <div className="w-fit  border float-end relative">
         <Stage
           className="cursor-cell"
           ref={stageRef}
@@ -333,14 +343,28 @@ function Pc() {
           onReposition={onReposition}
           setLines={setLines}
           toggleSlider={toggleSlider}
+          toggleTools={toggleTools}
         />
         {isSliderVisible && (
-          <Slider toggleSlider={toggleSlider} setStrokeWidth={setStrokeWidth} />
+          <Slider
+            strokeWidth={strokeWidth}
+            toggleSlider={toggleSlider}
+            setStrokeWidth={setStrokeWidth}
+          />
         )}
-        <UndoRedo onUndo={onUndo} onRedo={onRedo} />
+        <UndoRedo
+          linesArr={lines}
+          redoArr={redo}
+          onUndo={onUndo}
+          onRedo={onRedo}
+        />
+        {isToolsVisible && (
+          <Tools tool={tool} setTool={setTool} toggleTools={toggleTools} />
+        )}
+        <Users/>
       </div>
     </>
   );
 }
-
+// ? breakpoint 768px => md
 export default Pc;

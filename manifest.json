@@ -1,6 +1,7 @@
 {
-  "short_name": "Vite app",
-  "name": "Vite app",
+  "short_name": "Pixl Play",
+  "name": "Pixl Play",
+  
   "icons": [
     {
       "src": "/vite.svg",
@@ -18,7 +19,7 @@
       "sizes": "512x512"
     }
   ],
-  "start_url": ".",
+  "start_url": "/",
   "display": "standalone",
   "theme_color": "#000000",
   "background_color": "#ffffff"
