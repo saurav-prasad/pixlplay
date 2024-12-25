@@ -45,7 +45,7 @@ function Toolbar({
 
   return (
     <>
-      <div className="flex flex-row space-x-4 relative items-center justify-center border-t py-2 overflow-auto flex-wrap">
+      <div className="flex flex-row space-x-4 relative items-center justify-center border-t py-2 overflow-auto flex-wrap overflow-x-auto hideScrollbar">
         {/* color picker */}
         <div
           title="Color picker"
@@ -134,7 +134,7 @@ function Toolbar({
           title="Share Canvas"
           onMouseEnter={() => handleMouseEnter("share")}
           onMouseLeave={handleMouseLeave}
-          className={`relative cursor-pointer p-2 rounded-full w-fit h-fit border hover:bg-gray-200`}
+          className={`relative cursor-pointer p-2 rounded-full w-fit h-fit border hover:bg-gray-200 hidden md:block`}
         >
           <Share2 className="h-6 w-6 text-gray-900" />
           <Popup isPopupVisible={visiblePopup === "share"} text={"Share"} />
@@ -156,7 +156,7 @@ export function Popup({ isPopupVisible, text, bottomValue, rightValue }) {
       } 
      ${
        rightValue ? rightValue : "-right-5"
-     } px-1 text-nowrap bg-[#dc5a5a] font-medium rounded-md text-white text-xs text-center z-10`}
+     } px-1 text-nowrap bg-[#dc5a5a] font-medium rounded-md text-white text-xs text-center z-10 select-none`}
     >
       {text}
     </p>

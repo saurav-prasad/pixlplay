@@ -5,7 +5,9 @@
 .hideScrollbar::-webkit-scrollbar {
     display: none;
 }
- 
+ /* body{
+  overflow-y: hidden;
+ } */
 /* Base styles for the range input */
 input[type="range"]::-webkit-slider-thumb {
   appearance: none;

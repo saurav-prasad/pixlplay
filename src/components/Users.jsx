@@ -12,8 +12,9 @@ function Users({ url }) {
   };
 
   return (
-    <div className="flex flex-row gap-3 absolute right-2 top-3 flex-wrap max-w-64 sm:max-w-fit">
-      {Array.from({ length: 10 }).map((_, i) => (
+    <div className="flex flex-row gap-3 absolute right-2 top-3 flex-wrap sm:max-w-fit">
+      {Array.from({ length: 10 }).map((
+        _, i) => (
         <div
           onMouseEnter={() => handleMouseEnter(i)}
           onMouseLeave={handleMouseLeave}

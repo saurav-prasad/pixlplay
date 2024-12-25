@@ -4,15 +4,15 @@ import useDeviceType from "./useDeviceType";
 const useWindowDimensions = () => {
   const isMobile = useDeviceType()
   const [dimensions, setDimensions] = useState({
-    width: window.innerWidth - 242,
-    height: window.innerHeight - 61,
+    width: window.innerWidth > 768 ? window.innerWidth - 242 : window.innerWidth,
+    height: window.innerWidth > 768 ? window.innerHeight-61  : window.innerHeight - 103,
   });
 
   useEffect(() => {
     const handleResize = () => {
       setDimensions({
-        width: window.innerWidth - 242,
-        height: window.innerHeight - 61,
+        width: window.innerWidth > 768 ? window.innerWidth - 242 : window.innerWidth,
+        height: window.innerWidth > 768 ? window.innerHeight-61 : window.innerHeight - 103,
       });
     };
 

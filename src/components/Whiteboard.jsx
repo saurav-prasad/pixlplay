@@ -331,20 +331,22 @@ function Pc() {
           </Layer>
         </Stage>
         {/* Toobar */}
-        <Toolbar
-          color={color}
-          setColor={setColor}
-          strokeWidth={strokeWidth}
-          setStrokeWidth={setStrokeWidth}
-          tool={tool}
-          setTool={setTool}
-          onUndo={onUndo}
-          onRedo={onRedo}
-          onReposition={onReposition}
-          setLines={setLines}
-          toggleSlider={toggleSlider}
-          toggleTools={toggleTools}
-        />
+        <div className="shadow-[2px_5px_13px_0px_rgb(181,181,181)]">
+          <Toolbar
+            color={color}
+            setColor={setColor}
+            strokeWidth={strokeWidth}
+            setStrokeWidth={setStrokeWidth}
+            tool={tool}
+            setTool={setTool}
+            onUndo={onUndo}
+            onRedo={onRedo}
+            onReposition={onReposition}
+            setLines={setLines}
+            toggleSlider={toggleSlider}
+            toggleTools={toggleTools}
+          />
+        </div>
         {isSliderVisible && (
           <Slider
             strokeWidth={strokeWidth}
@@ -361,7 +363,7 @@ function Pc() {
         {isToolsVisible && (
           <Tools tool={tool} setTool={setTool} toggleTools={toggleTools} />
         )}
-        <Users/>
+        <Users />
       </div>
     </>
   );
