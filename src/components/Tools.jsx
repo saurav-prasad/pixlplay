@@ -7,10 +7,10 @@ import {
   SquareStack,
 } from "lucide-react";
 import React from "react";
-import { Slide, Zoom } from "react-awesome-reveal";
+import { Zoom } from "react-awesome-reveal";
 
-function Tools({ toggleTools, setTool, tool }) {
-  const filterList = [
+function Tools({ isToolsVisible, toggleTools, setTool, tool }) {
+  const toolList = [
     {
       name: "Pen",
       icon: <Pen className="h-5 w-5 text-gray-900" />,
@@ -44,39 +44,43 @@ function Tools({ toggleTools, setTool, tool }) {
   ];
   return (
     <>
-      <Zoom duration={200}> 
-        <div className="absolute rounded-lg bottom-16 w-max left-[40%] border-2 px-1 py-2 transition-all bg-[#f3f4f6f7]">
-          <button onClick={toggleTools} className="float-right mb-1">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="22"
-              height="22"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="lucide lucide-x"
-            >
-              <path d="M18 6 6 18" />
-              <path d="m6 6 12 12" />
-            </svg>
-          </button>
-          <div className="gap-2 max-h-96 overflow-auto w-full flex flex-col">
-            {filterList.map((e, index) => (
-              <List
-                key={index}
-                name={e.name}
-                icon={e.icon}
-                toolName={e.toolName}
-                tool={tool}
-                setTool={setTool}
-              />
-            ))}
-          </div>
+      {/* <Zoom duration={200}> */}
+      <div
+        className={`${
+          isToolsVisible ? "translate-y-0" : "hidden"
+        } absolute rounded-lg bottom-16 w-max left-[40%] border-2 px-1 py-2 transition-all duration-1000 bg-[#f3f4f6f7]`}
+      >
+        <button onClick={toggleTools} className="float-right mb-1">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="22"
+            height="22"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="lucide lucide-x"
+          >
+            <path d="M18 6 6 18" />
+            <path d="m6 6 12 12" />
+          </svg>
+        </button>
+        <div className="gap-2 max-h-96 overflow-auto w-full flex flex-col">
+          {toolList.map((e, index) => (
+            <List
+              key={index}
+              name={e.name}
+              icon={e.icon}
+              toolName={e.toolName}
+              tool={tool}
+              setTool={setTool}
+            />
+          ))}
         </div>
-      </Zoom>
+      </div>
+      {/* </Zoom> */}
     </>
   );
 }

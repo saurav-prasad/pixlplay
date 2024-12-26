@@ -349,6 +349,7 @@ function Pc() {
         </div>
         {isSliderVisible && (
           <Slider
+          isSliderVisible={isSliderVisible}
             strokeWidth={strokeWidth}
             toggleSlider={toggleSlider}
             setStrokeWidth={setStrokeWidth}
@@ -361,7 +362,12 @@ function Pc() {
           onRedo={onRedo}
         />
         {isToolsVisible && (
-          <Tools tool={tool} setTool={setTool} toggleTools={toggleTools} />
+          <Tools
+            isToolsVisible={isToolsVisible}
+            tool={tool}
+            setTool={setTool}
+            toggleTools={toggleTools}
+          />
         )}
         <Users />
       </div>
