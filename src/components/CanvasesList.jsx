@@ -5,8 +5,8 @@ function CanvasesList() {
   return (
     <>
       {/* All Canvases */}
-      <div className="flex-1 space-y-2 px-1 mt-16 pb-2 scroll-smooth">
-        {Array.from({ length: 20 }).map((_, index) => (
+      <div className={`flex-1 space-y-2 px-1 pt-16 pb-2 scroll-smooth max-w-3xl mx-auto `}>
+        {Array.from({ length: 10 }).map((_, index) => (
           <div
             key={index}
             className="cursor-pointer flex transform items-center rounded-md px-3 py-4  transition-colors duration-300 hover:bg-gray-200 bg-gray-50 hover:text-gray-900 justify-between space-x-2 text-gray-800"

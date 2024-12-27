@@ -8,6 +8,10 @@ export default {
     extend: {
       fontFamily: {
         whisper: "Whisper, serif",
+        rubik: "Rubik Vinyl, serif",
+        mea: "Mea Culpa, serif",
+        lavishly: "Lavishly Yours, serif"
+
       }
     },
   },

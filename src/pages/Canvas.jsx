@@ -32,7 +32,7 @@ function Canvas() {
       </div>
 
       {/* Whiteboard */}
-      <div className="flex-1 bg-gray-100">
+      <div className="flex-1 ">
         <Whiteboard />
       </div>
     </div>

@@ -45,7 +45,7 @@ function Toolbar({
 
   return (
     <>
-      <div className="flex flex-row space-x-4 relative items-center justify-center border-t py-2 overflow-auto flex-wrap overflow-x-auto hideScrollbar">
+      <div className="bg-white flex flex-row space-x-4 relative items-center justify-center border-t py-2 overflow-auto flex-wrap overflow-x-auto hideScrollbar">
         {/* color picker */}
         <div
           title="Color picker"
