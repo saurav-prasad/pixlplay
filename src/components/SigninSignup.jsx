@@ -3,6 +3,8 @@ import React, { useEffect, useRef, useState } from "react";
 import useDeviceType from "../hooks/useDeviceType";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { Zoom } from "react-awesome-reveal";
+import CatWaving from "../assets/images/cat-waving.jpg";
+import CatSeeing from "../assets/images/cat-seeing.jpg";
 
 function SigninSignup() {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
@@ -62,8 +64,8 @@ function SigninSignup() {
           alt="cat"
           src={`${
             isCatWaving
-              ? "/src/assets/images/cat-waving.jpg"
-              : "/src/assets/images/cat-seeing.jpg"
+              ? CatWaving
+              : CatSeeing
           }`}
           className={`absolute ${
             isMobile && "hidden"
