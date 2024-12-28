@@ -6,7 +6,6 @@ import HomeHeader from "../components/HomeHeader";
 function Auth() {
   return (
     <div>
-      <HomeHeader />
       <SigninSignup />
     </div>
   );

@@ -1,6 +1,13 @@
-import { BadgePlus, LogOut, UserRound } from "lucide-react";
+import {
+  BadgePlus,
+  GalleryHorizontalEnd,
+  House,
+  LogOut,
+  UserRound,
+} from "lucide-react";
 import React from "react";
 import {
+  Link,
   useLocation,
   useNavigate,
   useParams,
@@ -15,7 +22,7 @@ function HomeHeader() {
       <div className="transition cursor-pointer hover:bg-[#d995952b] hover:shadow-lg p-2 rounded-lg select-none flex items-center">
         {}
         <h1
-          className="text-center font-whisper font-bold text-[2.1rem] text-indigo-700
+          className="text-center font-whisper font-extrabold text-[2.1rem] text-indigo-700
             "
         >
           Pixl Play
@@ -23,18 +30,31 @@ function HomeHeader() {
       </div>
 
       <div className="flex sm:gap-5 gap-2 flex-1 justify-end items-start">
-        <div className="transition cursor-pointer hover:bg-[#d995952b] hover:shadow-lg p-2 rounded-lg select-none flex items-center">
-          <BadgePlus className="mr-2 h-5 w-5" aria-hidden="true" />
-          <span className="truncate">New Canvas</span>
-        </div>
-        <div className="transition cursor-pointer hover:bg-[#d995952b] hover:shadow-lg p-2 rounded-lg select-none flex items-center">
+        <Link
+          to="/"
+          className="transition cursor-pointer hover:bg-[#d995952b] hover:shadow-lg p-2 rounded-lg select-none flex items-center"
+        >
+          <House className="mr-2 h-5 w-5" aria-hidden="true" />
+          <span className="truncate">Home</span>
+        </Link>
+        <Link
+          to="/canvases"
+          className="transition cursor-pointer hover:bg-[#d995952b] hover:shadow-lg p-2 rounded-lg select-none flex items-center"
+        >
+          <GalleryHorizontalEnd className="mr-2 h-5 w-5" aria-hidden="true" />
+          <span className="truncate">Canvases</span>
+        </Link>
+        <Link to="/profile" className="transition cursor-pointer hover:bg-[#d995952b] hover:shadow-lg p-2 rounded-lg select-none flex items-center">
           <UserRound className="mr-2 h-5 w-5" aria-hidden="true" />
           <span className="truncate">Profile</span>
-        </div>
-        <div className="transition cursor-pointer hover:bg-[#d995952b] hover:shadow-lg p-2 rounded-lg select-none flex items-center">
+        </Link>
+        <Link
+          to="/signin"
+          className="transition cursor-pointer hover:bg-[#d995952b] hover:shadow-lg p-2 rounded-lg select-none flex items-center"
+        >
           <LogOut className="h-5 mr-2 w-5" aria-hidden="true" />
           <span className="truncate">Sign-out</span>
-        </div>
+        </Link>
       </div>
     </div>
   );

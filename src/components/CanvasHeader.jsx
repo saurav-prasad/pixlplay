@@ -15,7 +15,7 @@ function CanvasHeader() {
 
   const handleEditStart = () => {
     setOnEdit(true);
-    setEditValue(`Canvas ${1}`);
+    setEditValue("Canvas1");
   };
 
   const handleEditEnd = () => {
@@ -24,11 +24,13 @@ function CanvasHeader() {
 
   // Focus the input when editing starts
   useEffect(() => {
-    if (onEdit && inputRef.current) {
+    if (onEdit) {
       inputRef.current.focus();
     }
   }, [onEdit]);
-
+  const handleOnChange = (e) => {
+    setEditValue(e.target.value);
+  };
   return (
     <div className="relative">
       <div className="flex justify-between items-center px-2 py-1 bg-white shadow-md w-full overflow-hidden">
@@ -44,38 +46,48 @@ function CanvasHeader() {
               ref={inputRef}
               type="text"
               value={editValue}
-              onChange={(e) => setEditValue(e.target.value)}
+              onChange={handleOnChange}
               className="w-full text-xl font-bold outline-none"
             />
           ) : (
             <span className="text-xl flex-1 font-bold truncate">Canvas1</span>
           )}
         </div>
+        {/* icons */}
         <div className="flex space-x-4">
+          {/* edit - save */}
           <div
-            onClick={onEdit ? handleEditEnd : handleEditStart}
-            title={onEdit ? "Save Changes" : "Edit name"}
             className="cursor-pointer hover:bg-gray-200 p-2 rounded-md transition-all"
+            title={onEdit ? "Save Changes" : "Edit name"}
           >
             {onEdit ? (
-              <CircleCheckBig className="" aria-hidden="true" />
+              <CircleCheckBig onClick={handleEditEnd} aria-hidden="true" />
             ) : (
-              <Pencil className="" />
+              <Pencil onClick={handleEditStart} aria-hidden="true" />
             )}
           </div>
+          {/* cancel - delete */}
           <div
-            onClick={onEdit ? handleEditEnd() : null}
-            title={onEdit ? "Cancel" : "Delete Canvas"}
+            // onClick={onEdit ? handleEditEnd() : null}
             className="cursor-pointer hover:bg-gray-200 p-2 rounded-md transition-all"
+            title={onEdit ? "Cancel" : "Delete"}
           >
-            {onEdit ? <X /> : <Trash2 aria-hidden="true" />}
+            {onEdit ? (
+              <X onClick={handleEditEnd} aria-hidden="true" />
+            ) : (
+              <Trash2
+                aria-hidden="true"
+                className="transition-all hover:scale-125 duration-200"
+              />
+            )}
           </div>
+          {/* share */}
           <div className="cursor-pointer hover:bg-gray-200 p-2 rounded-md transition-all">
             <Share2 className="" />
           </div>
         </div>
       </div>
-
+      {/* sidebar */}
       <div
         className={`absolute top-0 left-0 w-full transition-transform ${
           isToggle ? "translate-x-0:" : "-translate-x-full w-screen"

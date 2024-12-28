@@ -15,7 +15,7 @@ import { useNavigate } from "react-router-dom";
 function Sidebar({ toggle }) {
   const [onEdit, setOnEdit] = useState(null);
   const [editValue, setEditValue] = useState();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const inputRef = useRef([]);
   const handleEditStart = (id, value) => {
     setOnEdit(id);
@@ -40,7 +40,7 @@ function Sidebar({ toggle }) {
         <div className="flex flex-col h-full justify-between text-gray-800 bg-white">
           {/* New Canvas */}
           <div className="px-6 pt-5 pb-4 flex md:block justify-between items-center">
-            <div className="-mx-3" onClick={()=>navigate('/')}>
+            <div className="-mx-3" onClick={() => navigate("/")}>
               <span className="select-none cursor-pointer flex transform items-center rounded-lg px-3 py-2 transition-colors duration-300 hover:bg-gray-100 hover:text-gray-900">
                 <House className="h-6 w-6" aria-hidden="true" />
                 <span className="mx-4 text-md font-medium">Home</span>
@@ -127,11 +127,17 @@ function Sidebar({ toggle }) {
           {/* Profile and Sign-out */}
           <div className="px-6 py-5">
             <div className="space-y-4">
-              <span className="-mx-3 mb-4 select-none cursor-pointer flex transform items-center rounded-lg px-3 py-2  transition-colors duration-300 hover:bg-gray-100 hover:text-gray-900">
+              <span
+                onClick={() => navigate("/profile")}
+                className="-mx-3 mb-4 select-none cursor-pointer flex transform items-center rounded-lg px-3 py-2  transition-colors duration-300 hover:bg-gray-100 hover:text-gray-900"
+              >
                 <UserRound className="h-6 w-6" aria-hidden="true" />
                 <span className="mx-4 text-md font-medium">Profile</span>
               </span>
-              <span className="-mx-3 mb-4 select-none cursor-pointer flex transform items-center rounded-lg px-3 py-2  transition-colors duration-300 hover:bg-gray-100 hover:text-gray-900">
+              <span
+                onClick={() => navigate("/signin")}
+                className="-mx-3 mb-4 select-none cursor-pointer flex transform items-center rounded-lg px-3 py-2  transition-colors duration-300 hover:bg-gray-100 hover:text-gray-900"
+              >
                 <LogOut className="h-6 w-6" aria-hidden="true" />
                 <span className="mx-4 text-md font-medium">Sign-out</span>
               </span>
