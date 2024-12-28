@@ -5,6 +5,7 @@ import Home from "./pages/Home";
 import Auth from "./pages/Auth";
 import { createBrowserRouter, Router, RouterProvider } from "react-router-dom";
 import CanvasesList from "./components/CanvasesList";
+import Error from "./pages/Error";
 
 function App() {
   const router = createBrowserRouter([
@@ -16,6 +17,9 @@ function App() {
         </>
       ),
       children: [
+        {
+          path: "/",
+        },
         {
           path: "/canvases",
           element: (
@@ -55,6 +59,14 @@ function App() {
       element: (
         <>
           <Canvas />
+        </>
+      ),
+    },
+    {
+      path: "*",
+      element: (
+        <>
+          <Error />
         </>
       ),
     },

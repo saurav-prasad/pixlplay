@@ -40,14 +40,14 @@ function Sidebar({ toggle }) {
         <div className="flex flex-col h-full justify-between text-gray-800 bg-white">
           {/* New Canvas */}
           <div className="px-6 pt-5 pb-4 flex md:block justify-between items-center">
-            <div className="-mx-3" onClick={() => navigate("/")}>
+            <div className="-mx-3 w-[80%] md:w-auto" onClick={() => navigate("/")}>
               <span className="select-none cursor-pointer flex transform items-center rounded-lg px-3 py-2 transition-colors duration-300 hover:bg-gray-100 hover:text-gray-900">
                 <House className="h-6 w-6" aria-hidden="true" />
                 <span className="mx-4 text-md font-medium">Home</span>
               </span>
             </div>
             <div
-              className="md:hidden block cursor-pointer hover:bg-gray-200 p-2 rounded-md transition-all"
+              className="md:hidden cursor-pointer hover:bg-gray-200 p-2 rounded-md transition-all"
               onClick={toggle}
             >
               <Minimize2 />
