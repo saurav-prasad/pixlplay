@@ -19,6 +19,7 @@ function App() {
       children: [
         {
           path: "/",
+          element:<Home/>
         },
         {
           path: "/canvases",
