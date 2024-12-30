@@ -28,7 +28,6 @@ function HomeHeader() {
   };
 
   return (
-    // ? working on slider menu
     <div className="flex justify-between items-center sm:px-9 px-2 py-2 bg-transparent backdrop-blur-lg w-full transition-all text-gray-900 text-lg sm:font-semibold font-medium shadow-[#e3b0b3] shadow-md mb-3 fixed top-0 z-10">
       <Link to={"/"} className="transition cursor-pointer hover:bg-[#d995952b] hover:shadow-lg p-2 rounded-lg select-none flex items-center">
         <h1
@@ -104,7 +103,7 @@ function SliderMenu({ toggleMenuOpen }) {
             <div className="flex items-center gap-3 w-full ">
               <Link
                 to="/"
-                className="flex-1 transition cursor-pointer hover:bg-[#d995952b] hover:shadow-lg p-2 rounded-lg select-none flex items-center"
+                className="pl-3 flex-1 transition cursor-pointer hover:bg-[#d995952b] hover:shadow-lg p-2 rounded-lg select-none flex items-center"
               >
                 <House className="mr-2 h-5 w-5" aria-hidden="true" />
                 <span className="truncate">Home</span>
@@ -119,7 +118,7 @@ function SliderMenu({ toggleMenuOpen }) {
             {/* Canvases */}
             <Link
               to="/canvases"
-              className="w-full flex transition cursor-pointer hover:bg-[#d995952b] hover:shadow-lg p-2 rounded-lg select-none items-center"
+              className="pl-3 w-full flex transition cursor-pointer hover:bg-[#d995952b] hover:shadow-lg p-2 rounded-lg select-none items-center"
             >
               <GalleryHorizontalEnd
                 className="mr-2 h-5 w-5"
@@ -130,7 +129,7 @@ function SliderMenu({ toggleMenuOpen }) {
             {/* Profile */}
             <Link
               to="/profile"
-              className="w-full flex transition cursor-pointer hover:bg-[#d995952b] hover:shadow-lg p-2 rounded-lg select-none items-center"
+              className="pl-3 w-full flex transition cursor-pointer hover:bg-[#d995952b] hover:shadow-lg p-2 rounded-lg select-none items-center"
             >
               <UserRound className="mr-2 h-5 w-5" aria-hidden="true" />
               <span className="truncate">Profile</span>
@@ -138,7 +137,7 @@ function SliderMenu({ toggleMenuOpen }) {
             {/* Signin */}
             <Link
               to="/signin"
-              className="w-full flex transition cursor-pointer hover:bg-[#d995952b] hover:shadow-lg p-2 rounded-lg select-none items-center"
+              className="pl-3 w-full flex transition cursor-pointer hover:bg-[#d995952b] hover:shadow-lg p-2 rounded-lg select-none items-center"
             >
               <LogOut className="h-5 mr-2 w-5" aria-hidden="true" />
               <span className="truncate">Sign-out</span>

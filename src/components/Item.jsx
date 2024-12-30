@@ -13,11 +13,7 @@ function Item({ name }) {
   const handleEditStart = (id, value) => {
     setOnEdit(true);
   };
-  const handlePencilClick = (index) => {
-    isMobile
-      ? handleEditStart(index)
-      : setTimeout(() => handleEditStart(index), 100);
-  };
+
   const handleEditEnd = () => {
     setOnEdit(null);
   };
@@ -33,50 +29,72 @@ function Item({ name }) {
 
   return (
     <>
-      <div className="select-none cursor-pointer flex transform items-center rounded-lg px-3 py-3 transition-colors duration-300 text-gray-900 bg-[#9e99bf85] hover:text-gray-950 justify-between space-x-2 text-lg shadow-[#3c3d591f] shadow-lg border-[#ffffff45] hover:bg-[#6872a6af] backdrop-blur-[100px] border-2">
-        {onEdit ? (
-          <input
-            ref={inputRef}
-            type="text"
-            value={editValue}
-            onChange={handleOnChange}
-            className="w-full text-md font-medium pr-1 outline-none bg-transparent focus:border-b"
-          />
-        ) : (
-          <Link to={"/canvas"} className="text-md font-medium w-full truncate">
-            {name}
-          </Link>
-        )}
-        <div className="flex space-x-5">
-          <div title={onEdit ? "Save Changes" : "Edit name"}>
+      <div className="select-none cursor-pointer flex transform items-center rounded-lg transition-colors duration-300 text-gray-900 bg-[#9e99bf85] hover:text-gray-950 justify-between space-x-2 text-lg shadow-[#3c3d591f] shadow-lg border-[#ffffff45] hover:bg-[#6872a6af] backdrop-blur-[100px] border-2">
+        <Link
+          to={!onEdit && "/canvas"}
+          className="h-[3rem] flex-1 flex justify-start items-center px-3"
+        >
+          {onEdit ? (
+            <input
+              ref={inputRef}
+              type="text"
+              value={editValue}
+              onChange={handleOnChange}
+              className={`w-full text-md font-medium pr-1 outline-none bg-transparent focus:border-b`}
+            />
+          ) : (
+            <span
+              to={"/canvas"}
+              className="text-md font-medium w-full truncate"
+            >
+              {name}
+            </span>
+          )}
+        </Link>
+        <div className="flex h-[2.8rem] justify-start items-center px-3">
+          <div
+            className={`h-full w-9 flex justify-center items-center mx-2 group`}
+            title={onEdit ? "Save Changes" : "Edit name"}
+          >
             {onEdit ? (
               <CircleCheckBig
                 onClick={handleEditEnd}
-                className="transform hover:rotate-90 hover:scale-125 duration-700"
+                className={`w-7 h-7 ${
+                  !isMobile &&
+                  "transition-all group-hover:scale-[0.85] duration-200"
+                }`}
                 aria-hidden="true"
               />
             ) : (
               <Pencil
-                onClick={handlePencilClick}
-                className="transform hover:rotate-90 hover:scale-125 duration-300"
+                onClick={handleEditStart}
+                className={`w-7 h-7 ${
+                  !isMobile &&
+                  "transition-all group-hover:rotate-90 group-hover:scale-[1.15] duration-200"
+                }`}
                 aria-hidden="true"
               />
             )}
           </div>
-          <div title={onEdit ? "Cancel" : "Delete"}>
+          <div
+            className="h-full w-9 flex justify-center items-center mx-2 group"
+            title={onEdit ? "Cancel" : "Delete"}
+          >
             {onEdit ? (
               <X
-                onClick={() =>
-                  setTimeout(() => {
-                    handleEditEnd();
-                  }, 100)
-                }
-                className="transform hover:scale-150 duration-300"
+                onClick={handleEditEnd}
+                className={`w-7 h-7 ${
+                  !isMobile &&
+                  "transition-all duration-200 group-hover:scale-125"
+                }`}
                 aria-hidden="true"
               />
             ) : (
               <Trash2
-                className="transform hover:scale-150 duration-300"
+                className={`w-7 h-7 ${
+                  !isMobile &&
+                  "transition-all duration-200 group-hover:scale-110"
+                }`}
                 aria-hidden="true"
               />
             )}

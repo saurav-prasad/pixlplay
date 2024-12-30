@@ -59,27 +59,37 @@ function SigninSignup() {
   return (
     <>
       <div className="relative flex min-h-screen items-center justify-center px-4 sm:px-2 ">
-        <img
-          onClick={() => setIsCatVisible(false)}
-          alt="cat"
-          src={`${
-            isCatWaving
-              ? CatWaving
-              : CatSeeing
-          }`}
-          className={`absolute ${
-            isMobile && "hidden"
-          } w-80 object-contain -top-5 transition-all duration-500 ${
-            isCatVisible ? "translate-y-0" : "translate-y-full blur-[60px]"
-          }`}
-        />
+        {!isMobile && (
+          <img
+            onClick={() => setIsCatVisible(false)}
+            alt="cat"
+            src={`${isCatWaving ? CatWaving : CatSeeing}`}
+            className={`absolute w-80 object-contain -top-[2.1rem] transition-all duration-500 ${
+              isCatVisible ? "translate-y-0" : "translate-y-full blur-[60px]"
+            }`}
+          />
+        )}
+        {/* {true && (
+          <img
+            onClick={() => setIsCatVisible(false)}
+            alt="cat"
+            src={`${isCatWaving ? CatWaving : CatSeeing}`}
+            className={`absolute ${
+              isMobile ? "w-60 z-10" : "w-80"
+            } object-contain ${
+              isMobile ? "top-[-0.8rem]" : "-top-5"
+            } transition-all duration-500 ${
+              isCatVisible ? "translate-y-0" : "translate-y-full blur-[60px]"
+            }`}
+          />
+        )} */}
         <Zoom
           duration={180}
           className="w-full max-w-[28rem] bg-transparent backdrop-blur-[10px]"
         >
           <div
             onClick={() => setIsCatVisible(true)}
-            className="flex h-fit flex-1 flex-col justify-center px-6 py-12 lg:px-8 max-w-[28rem] mx-auto bg-transparent backdrop-blur-[10px] border-2 rounded-2xl shadow-lg border-[#ffffff45]"
+            className="flex h-fit flex-1 flex-col justify-center px-5 md:px-6 py-12 lg:px-8 max-w-[28rem] mx-auto bg-transparent backdrop-blur-[10px] border-2 rounded-2xl shadow-lg border-[#ffffff45]"
           >
             <div className="sm:mx-auto sm:w-full sm:max-w-sm">
               <h1
@@ -88,14 +98,14 @@ function SigninSignup() {
               >
                 Pixl Play
               </h1>
-              <h2 className="mt-10 text-center text-2xl/9 font-extrabold tracking-tight text-gray-800">
+              <h2 className="mt-6 text-center text-2xl/9 font-extrabold tracking-tight text-gray-800">
                 {location.pathname === "/signup"
-                  ? "Signup to your account"
-                  : "Signin to your account"}
+                  ? "Sign up to your account"
+                  : "Sign in to your account"}
               </h2>
             </div>
 
-            <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+            <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-sm">
               <form action="#" method="POST" className="space-y-6">
                 {/* Email */}
                 <div className="relative z-0 w-full mb-5 group">
@@ -155,6 +165,13 @@ function SigninSignup() {
                     className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-sm hover:bg-indigo-700/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 transition-all duration-300"
                   >
                     {location.pathname === "/signup" ? "Sign up" : "Sign in"}
+                  </button>
+
+                  <button
+                    type="submit"
+                    className="mt-4 flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-sm hover:bg-indigo-700/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 transition-all duration-300"
+                  >
+                    Sign in as Test User
                   </button>
                 </div>
               </form>
