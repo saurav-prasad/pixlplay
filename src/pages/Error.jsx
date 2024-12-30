@@ -18,7 +18,7 @@ function Error() {
           <button
             onClick={() => navigate("/")}
             type="button"
-            className="inline-flex items-center rounded-md border border-[#6872A6] px-3 py-2 text-sm font-semibold text-black shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black bg-[#9E99BF]"
+            className="inline-flex items-center rounded-md border-2 border-[#6872A6] px-3 py-2 text-sm font-semibold text-black shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black bg-[#9e99bf96] shadow-[#6e74a9] hover:bg-[#9e99bf] transition-all duration-300"
           >
             <ArrowLeft size={16} className="mr-2" />
             Go back

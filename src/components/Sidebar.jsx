@@ -61,12 +61,6 @@ function Sidebar({ toggle }) {
                 <span className="mx-4 text-md font-medium">New Canvas</span>
               </span>
             </div>
-            {/* <div
-              className="md:hidden block cursor-pointer hover:bg-gray-200 p-2 rounded-md transition-all"
-              onClick={toggle}
-            >
-              <Minimize2 />
-            </div> */}
           </div>
 
           {/* All Canvases */}

@@ -4,8 +4,9 @@ import "./App.css";
 import Home from "./pages/Home";
 import Auth from "./pages/Auth";
 import { createBrowserRouter, Router, RouterProvider } from "react-router-dom";
-import CanvasesList from "./components/CanvasesList";
 import Error from "./pages/Error";
+import CanvasesList from "./components/CanvasesList";
+import AllCanvases from "./pages/AllCanvases";
 
 function App() {
   const router = createBrowserRouter([
@@ -18,14 +19,10 @@ function App() {
       ),
       children: [
         {
-          path: "/",
-          element:<Home/>
-        },
-        {
           path: "/canvases",
           element: (
             <>
-              <CanvasesList />
+              <AllCanvases/>
             </>
           ),
         },

@@ -1,17 +1,23 @@
 import { CircleCheckBig, Pencil, Trash2, X } from "lucide-react";
-import React, { useEffect, useRef, useState } from "react";
+import React, { memo, useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import useDeviceType from "../hooks/useDeviceType";
 
 function Item({ name }) {
   const [onEdit, setOnEdit] = useState(false);
   const [editValue, setEditValue] = useState(name);
   const navigate = useNavigate();
   const inputRef = useRef(null);
+  const isMobile = useDeviceType();
 
   const handleEditStart = (id, value) => {
     setOnEdit(true);
   };
-
+  const handlePencilClick = (index) => {
+    isMobile
+      ? handleEditStart(index)
+      : setTimeout(() => handleEditStart(index), 100);
+  };
   const handleEditEnd = () => {
     setOnEdit(null);
   };
@@ -51,11 +57,7 @@ function Item({ name }) {
               />
             ) : (
               <Pencil
-                onClick={() =>
-                  setTimeout(() => {
-                    handleEditStart();
-                  }, 100)
-                }
+                onClick={handlePencilClick}
                 className="transform hover:rotate-90 hover:scale-125 duration-300"
                 aria-hidden="true"
               />
@@ -85,4 +87,4 @@ function Item({ name }) {
   );
 }
 
-export default Item;
+export default memo(Item);
