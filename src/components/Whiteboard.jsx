@@ -11,7 +11,7 @@ import Tools from "./Tools";
 import { Pen } from "lucide-react";
 import Users from "./Users";
 
-function Pc() {
+function Pc({toggleBackground}) {
   // useState
   const [tool, setTool] = useState({
     name: "source-over",
@@ -333,6 +333,7 @@ function Pc() {
         {/* Toobar */}
         <div className="shadow-[2px_5px_13px_0px_rgb(181,181,181)]">
           <Toolbar
+            toggleBackground={toggleBackground}
             color={color}
             setColor={setColor}
             strokeWidth={strokeWidth}
@@ -349,7 +350,7 @@ function Pc() {
         </div>
         {isSliderVisible && (
           <Slider
-          isSliderVisible={isSliderVisible}
+            isSliderVisible={isSliderVisible}
             strokeWidth={strokeWidth}
             toggleSlider={toggleSlider}
             setStrokeWidth={setStrokeWidth}

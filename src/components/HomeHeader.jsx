@@ -26,10 +26,36 @@ function HomeHeader() {
   const toggleMenuOpen = () => {
     setIsMenuOpen(!isMenuOpen);
   };
-
+  const menuConstants = [
+    {
+      endPoint: "/",
+      icon: <House className="mr-2 h-5 w-5" aria-hidden="true" />,
+      name: "Home",
+    },
+    {
+      endPoint: "/canvases",
+      icon: (
+        <GalleryHorizontalEnd className="mr-2 h-5 w-5" aria-hidden="true" />
+      ),
+      name: "Canvases",
+    },
+    {
+      endPoint: "/profile",
+      icon: <UserRound className="mr-2 h-5 w-5" aria-hidden="true" />,
+      name: "Profile",
+    },
+    {
+      endPoint: "/signin",
+      icon: <LogOut className="h-5 mr-2 w-5" aria-hidden="true" />,
+      name: "Sign out",
+    },
+  ];
   return (
     <div className="flex justify-between items-center sm:px-9 px-2 py-2 bg-transparent backdrop-blur-lg w-full transition-all text-gray-900 text-lg sm:font-semibold font-medium shadow-[#e3b0b3] shadow-md mb-3 fixed top-0 z-10">
-      <Link to={"/"} className="transition cursor-pointer hover:bg-[#d995952b] hover:shadow-lg p-2 rounded-lg select-none flex items-center">
+      <Link
+        to={"/"}
+        className="transition cursor-pointer hover:bg-[#d995952b] hover:shadow-lg p-2 rounded-lg select-none flex items-center"
+      >
         <h1
           className="text-center font-whisper font-extrabold text-[2.1rem] text-indigo-700
             "
@@ -39,38 +65,17 @@ function HomeHeader() {
       </Link>
       {/* Home */}
       <div className="flex sm:gap-5 gap-2 flex-1 justify-end items-start">
-        <Link
-          to="/"
-          className="md:flex hidden transition cursor-pointer hover:bg-[#d995952b] hover:shadow-lg p-2 rounded-lg select-none items-center"
-        >
-          <House className="mr-2 h-5 w-5" aria-hidden="true" />
-          <span className="truncate">Home</span>
-        </Link>
-        {/* Canvases */}
-        <Link
-          to="/canvases"
-          className="md:flex hidden transition cursor-pointer hover:bg-[#d995952b] hover:shadow-lg p-2 rounded-lg select-none items-center"
-        >
-          <GalleryHorizontalEnd className="mr-2 h-5 w-5" aria-hidden="true" />
-          <span className="truncate">Canvases</span>
-        </Link>
-        {/* Profile */}
-        <Link
-          to="/profile"
-          className="md:flex hidden transition cursor-pointer hover:bg-[#d995952b] hover:shadow-lg p-2 rounded-lg select-none items-center"
-        >
-          <UserRound className="mr-2 h-5 w-5" aria-hidden="true" />
-          <span className="truncate">Profile</span>
-        </Link>
-        {/* Signin */}
-        <Link
-          to="/signin"
-          className="md:flex hidden transition cursor-pointer hover:bg-[#d995952b] hover:shadow-lg p-2 rounded-lg select-none items-center"
-        >
-          <LogOut className="h-5 mr-2 w-5" aria-hidden="true" />
-          <span className="truncate">Sign-out</span>
-        </Link>
-        {/* Menu */}
+        {menuConstants.map((item) => (
+          <Link
+            to={item.endPoint}
+            className="md:flex hidden transition cursor-pointer hover:bg-[#d995952b] hover:shadow-lg p-2 rounded-lg select-none items-center"
+          >
+            {item.icon}
+            <span className="truncate">{item.name}</span>
+          </Link>
+        ))}
+
+        {/* Popup Menu */}
         <div
           onClick={toggleMenuOpen}
           className="md:hidden flex transition cursor-pointer hover:bg-[#d995952b] hover:shadow-lg p-2 rounded-lg select-none items-center"
@@ -87,13 +92,15 @@ export default HomeHeader;
 
 function SliderMenu({ toggleMenuOpen }) {
   const handleContainerClick = (e) => {
-    toggleMenuOpen()
-    
+    toggleMenuOpen();
   };
   return (
     <>
       {/* bg-[#9E99BF] */}
-      <div onClick={handleContainerClick} className="absolute flex justify-between bg-[#00000079] right-0 top-0 z-10 w-screen h-screen pt-12">
+      <div
+        onClick={handleContainerClick}
+        className="absolute flex justify-between bg-[#00000079] right-0 top-0 z-10 w-screen h-screen pt-12"
+      >
         <Zoom
           duration={150}
           className="flex justify-between items-center px-3 py-5 bg-[#ffffff] rounded-lg text-gray-900 text-lg sm:font-semibold font-medium shadow-md z-10 w-[85%] mx-auto h-fit"

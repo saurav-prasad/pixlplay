@@ -56,8 +56,8 @@ function Sidebar({ toggle }) {
           {/* New Canvas */}
           <div className="px-6 pb-5 flex md:block justify-between items-center">
             <div className="-mx-3">
-              <span className="select-none cursor-pointer flex transform items-center rounded-lg px-3 py-2 transition-colors duration-300 hover:bg-gray-100 hover:text-gray-900">
-                <BadgePlus className="h-6 w-6" aria-hidden="true" />
+              <span className="select-none cursor-pointer flex transform items-center rounded-lg px-3 py-2 transition-colors duration-300 hover:bg-gray-100 hover:text-gray-900 group">
+                <BadgePlus className="h-6 w-6 transform group-hover:rotate-[360deg] group-hover:scale-125 duration-1000" aria-hidden="true" />
                 <span className="mx-4 text-md font-medium">New Canvas</span>
               </span>
             </div>

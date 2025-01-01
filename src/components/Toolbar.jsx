@@ -7,6 +7,7 @@ import {
   ListRestart,
   Pen,
   Eraser,
+  SwitchCamera,
 } from "lucide-react";
 import isDarkColor from "../utils/isDarkColor";
 
@@ -23,6 +24,7 @@ function Toolbar({
   strokeWidth,
   toggleSlider,
   toggleTools,
+  toggleBackground,
 }) {
   const colorRef = useRef(null);
   const isDark = isDarkColor(color);
@@ -127,6 +129,20 @@ function Toolbar({
         >
           <OctagonX className="h-6 w-6 text-gray-900" />
           <Popup isPopupVisible={visiblePopup === "clear"} text={"Clear"} />
+        </div>
+        {/* Switch Background */}
+        <div
+          title="Change Background"
+          onClick={toggleBackground}
+          onMouseEnter={() => handleMouseEnter("background")}
+          onMouseLeave={handleMouseLeave}
+          className={`relative cursor-pointer p-2 rounded-full w-fit h-fit border hover:bg-gray-200`}
+        >
+          <SwitchCamera className="h-6 w-6 text-gray-900" />
+          <Popup
+            isPopupVisible={visiblePopup === "background"}
+            text={"Backdrop"}
+          />
         </div>
 
         {/* Share */}

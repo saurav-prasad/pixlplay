@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Whiteboard from "../components/Whiteboard";
 import Sidebar from "../components/Sidebar";
 import useDeviceType from "../hooks/useDeviceType";
@@ -6,9 +6,29 @@ import useWindowDimensions from "../hooks/useWindowDimensions";
 import CanvasHeader from "../components/CanvasHeader";
 
 function Canvas() {
+   const backgroundConstants = ["#ff000000", "#e5e7eb", "#ffffff", "#222222","#cfecf7"];
+  const [background, setBackground] = useState({
+    color: "#ff000000",
+    index: 0,
+  });
   const isMobile = useDeviceType();
   const { width, height } = useWindowDimensions();
 
+  const toggleBackground = () => {
+    if (background.index < backgroundConstants.length - 1) {
+      setBackground((prev) => {
+        return {
+          color: backgroundConstants[prev.index + 1],
+          index: prev.index + 1,
+        };
+      });
+    } else {
+      setBackground({
+        color: "#ff000000",
+        index: 0,
+      });
+    }
+  };
   useEffect(() => {
     document.body.style.overflowY = "hidden";
     window.scrollTo({
@@ -32,8 +52,8 @@ function Canvas() {
       </div>
 
       {/* Whiteboard */}
-      <div className="flex-1 ">
-        <Whiteboard />
+      <div style={{backgroundColor:background.color}} className={`flex-1`}>
+        <Whiteboard toggleBackground={toggleBackground} />
       </div>
     </div>
   );

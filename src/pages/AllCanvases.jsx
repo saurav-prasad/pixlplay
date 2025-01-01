@@ -1,4 +1,5 @@
 import React, { lazy, Suspense } from "react";
+import  Loader  from "../components/Loader";
 
 const CanvasesList = lazy(() => import("../components/CanvasesList"));
 function AllCanvases() {
@@ -7,13 +8,7 @@ function AllCanvases() {
       <h1 className="text-center text-4xl font-bold text-[#3d3850] mb-6">
         All Canvases
       </h1>
-      <Suspense
-        fallback={
-          <h1 className="w-full text-center text-2xl font-medium text-gray-800">
-            Loading...
-          </h1>
-        }
-      >
+      <Suspense fallback={<Loader />}>
         <CanvasesList />
       </Suspense>
     </div>
