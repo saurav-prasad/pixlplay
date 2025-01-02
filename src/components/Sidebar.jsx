@@ -11,37 +11,43 @@ import {
   House,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import keyGenerator from '../utils/keyGenerator'
 
 function Sidebar({ toggle }) {
-  const [onEdit, setOnEdit] = useState(null);
-  const [editValue, setEditValue] = useState();
+  const [editIndex, setEditIndex] = useState(null);
+  const [editValue, setEditValue] = useState("");
   const navigate = useNavigate();
   const inputRef = useRef([]);
+
   const handleEditStart = (id, value) => {
-    setOnEdit(id);
+    setEditIndex(id);
     setEditValue(`Canvas ${value + 1}`);
   };
 
   const handleEditEnd = () => {
-    setOnEdit(null);
+    setEditIndex(null);
+  };
+
+  const handleOnChange = (e) => {
+    setEditValue(e.target.value);
   };
 
   // Focus the input when editing starts
   useEffect(() => {
-    if (onEdit && inputRef.current) {
-      console.log(inputRef.current[onEdit]);
-      inputRef.current[onEdit].focus();
+    if (editIndex !== null && inputRef.current[editIndex]) {
+      inputRef.current[editIndex].focus();
     }
-  }, [onEdit]);
+  }, [editIndex]);
 
   return (
     <>
-      <aside className=" shadow-xl z-10 fixed sm:h-screen h-full w-[90%] md:w-64 border-r ">
+      <aside className="shadow-xl z-10 fixed sm:h-screen h-full w-[90%] md:w-64 border-r">
         <div className="flex flex-col h-full justify-between text-gray-800 bg-white">
           {/* New Canvas */}
           <div className="px-6 pt-5 pb-4 flex md:block justify-between items-center">
-            <div className="-mx-3 w-[80%] md:w-auto" onClick={() => navigate("/")}>
+            <div
+              className="-mx-3 w-[85%] md:w-auto"
+              onClick={() => navigate("/")}
+            >
               <span className="select-none cursor-pointer flex transform items-center rounded-lg px-3 py-2 transition-colors duration-300 hover:bg-gray-100 hover:text-gray-900">
                 <House className="h-6 w-6" aria-hidden="true" />
                 <span className="mx-4 text-md font-medium">Home</span>
@@ -56,9 +62,12 @@ function Sidebar({ toggle }) {
           </div>
           {/* New Canvas */}
           <div className="px-6 pb-5 flex md:block justify-between items-center">
-            <div className="-mx-3">
+            <div className="-mx-3 w-full">
               <span className="select-none cursor-pointer flex transform items-center rounded-lg px-3 py-2 transition-colors duration-300 hover:bg-gray-100 hover:text-gray-900 group">
-                <BadgePlus className="h-6 w-6 transform group-hover:rotate-[360deg] group-hover:scale-125 duration-1000" aria-hidden="true" />
+                <BadgePlus
+                  className="h-6 w-6 transform group-hover:rotate-[360deg] group-hover:scale-125 duration-1000"
+                  aria-hidden="true"
+                />
                 <span className="mx-4 text-md font-medium">New Canvas</span>
               </span>
             </div>
@@ -68,15 +77,15 @@ function Sidebar({ toggle }) {
           <div className="flex-1 overflow-y-auto px-6 hideScrollbar space-y-2">
             {Array.from({ length: 30 }).map((_, index) => (
               <div
-                key={keyGenerator()}
-                className="select-none cursor-pointer flex transform items-center rounded-lg px-3 py-2  transition-colors duration-300 hover:bg-gray-200 bg-gray-50 hover:text-gray-900 justify-between space-x-2"
+                key={index} // Use a stable key
+                className="select-none cursor-pointer flex transform items-center rounded-lg px-3 py-2 transition-colors duration-300 hover:bg-gray-200 bg-gray-50 hover:text-gray-900 justify-between space-x-2"
               >
-                {onEdit === index ? (
+                {editIndex === index ? (
                   <input
                     ref={(el) => (inputRef.current[index] = el)}
                     type="text"
                     value={editValue}
-                    onChange={(e) => setEditValue(e.target.value)}
+                    onChange={handleOnChange}
                     className="w-full text-md font-medium pr-1 outline-none"
                   />
                 ) : (
@@ -85,7 +94,7 @@ function Sidebar({ toggle }) {
                   </p>
                 )}
                 <div className="flex space-x-4">
-                  {onEdit === index ? (
+                  {editIndex === index ? (
                     <CircleCheckBig
                       onClick={handleEditEnd}
                       className="h-5 w-5 transform hover:rotate-90 hover:scale-125 duration-700"
@@ -93,16 +102,12 @@ function Sidebar({ toggle }) {
                     />
                   ) : (
                     <Pencil
-                      onClick={() =>
-                        setTimeout(() => {
-                          handleEditStart(index, index);
-                        }, 100)
-                      }
+                      onClick={() => handleEditStart(index, index)}
                       className="h-5 w-5 transform hover:rotate-90 hover:scale-125 duration-300"
                       aria-hidden="true"
                     />
                   )}
-                  {onEdit === index ? (
+                  {editIndex === index ? (
                     <X
                       onClick={handleEditEnd}
                       className="h-5 w-5 transform hover:scale-150 duration-700"
@@ -124,14 +129,14 @@ function Sidebar({ toggle }) {
             <div className="space-y-4">
               <span
                 onClick={() => navigate("/profile")}
-                className="-mx-3 mb-4 select-none cursor-pointer flex transform items-center rounded-lg px-3 py-2  transition-colors duration-300 hover:bg-gray-100 hover:text-gray-900"
+                className="-mx-3 mb-4 select-none cursor-pointer flex transform items-center rounded-lg px-3 py-2 transition-colors duration-300 hover:bg-gray-100 hover:text-gray-900"
               >
                 <UserRound className="h-6 w-6" aria-hidden="true" />
                 <span className="mx-4 text-md font-medium">Profile</span>
               </span>
               <span
                 onClick={() => navigate("/signin")}
-                className="-mx-3 mb-4 select-none cursor-pointer flex transform items-center rounded-lg px-3 py-2  transition-colors duration-300 hover:bg-gray-100 hover:text-gray-900"
+                className="-mx-3 mb-4 select-none cursor-pointer flex transform items-center rounded-lg px-3 py-2 transition-colors duration-300 hover:bg-gray-100 hover:text-gray-900"
               >
                 <LogOut className="h-6 w-6" aria-hidden="true" />
                 <span className="mx-4 text-md font-medium">Sign-out</span>

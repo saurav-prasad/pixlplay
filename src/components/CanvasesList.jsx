@@ -12,7 +12,7 @@ function CanvasesList() {
         />
         <p className="text-md font-medium w-full truncate">New Canvas</p>
       </div>
-      {Array.from({ length: 20 }).map((_, index) => (
+      {Array.from({ length: 10 }).map((_, index) => (
         <Item key={index} name={`Canvas${index}`} />
       ))}
     </>

@@ -2,8 +2,8 @@ import React from "react";
 
 function ProfileInfo() {
   return (
-    <form className='max-w-xl mx-auto pt-8 px-3 bg-red-700'>
-        <div className="flex flex-col space-y-8">
+    <form className="max-w-xl mx-auto pt-8 px-3 bg-red-400">
+      <div className="flex flex-col space-y-8">
         <img
           className="h-24 w-24 rounded-full border p-1 border-y-purple-600 border-x-violet-500 object-cover"
           src={
@@ -35,6 +35,56 @@ function ProfileInfo() {
             />
           </div>
         </div>
+      </div>
+      {/* Name */}
+      <div>
+        <label
+          htmlFor="name"
+          className="block text-base font-medium leading-6 text-gray-900 mb-3"
+        >
+          Name<span className="text-red-600">*</span>
+        </label>
+        <input
+          id="name"
+          name="name"
+          type="text"
+          required
+          placeholder="Enter your name"
+          className="block w-full px-2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+        />
+      </div>
+      {/* email */}
+      <div>
+        <label
+          htmlFor="email"
+          className="block text-base font-medium leading-6 text-gray-900 mb-3"
+        >
+          Email<span className="text-red-600 ">*</span>
+        </label>
+        <input
+          id="email"
+          name="email"
+          type="email"
+          required
+          className="block w-full rounded-md border-0 px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+          placeholder="Enter your email"
+        />
+      </div>
+      {/* phone */}
+      <div>
+        <label
+          htmlFor="phone"
+          className="block text-base font-medium leading-6 text-gray-900 mb-3"
+        >
+          Phone
+        </label>
+        <input
+          id="phone"
+          name="phone"
+          type="number"
+          placeholder="Enter your phone number"
+          className="block w-full rounded-md border-0 px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+        />
       </div>
     </form>
   );
