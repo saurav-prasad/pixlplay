@@ -11,7 +11,7 @@ import Tools from "./Tools";
 import { Pen } from "lucide-react";
 import Users from "./Users";
 
-function Pc({toggleBackground}) {
+function Whiteboard({ toggleBackground }) {
   // useState
   const [tool, setTool] = useState({
     name: "source-over",
@@ -286,7 +286,7 @@ function Pc({toggleBackground}) {
 
   return (
     <>
-      <div className="w-fit  border float-end relative">
+      <div className="w-fit border float-end relative">
         <Stage
           className="cursor-cell"
           ref={stageRef}
@@ -310,9 +310,9 @@ function Pc({toggleBackground}) {
           <Layer>
             {lines.length === 0 && (
               <Text
-                fontSize={isMobile ? 30 : 50}
+                fontSize={isMobile ? 33 : 50}
                 text="Just start drawing"
-                x={isMobile ? -100 : -200}
+                x={isMobile ? -120 : -200}
                 y={0}
               />
             )}
@@ -376,4 +376,4 @@ function Pc({toggleBackground}) {
   );
 }
 // ? breakpoint 768px => md
-export default Pc;
+export default Whiteboard;

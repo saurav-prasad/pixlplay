@@ -11,6 +11,7 @@ import {
   House,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import keyGenerator from '../utils/keyGenerator'
 
 function Sidebar({ toggle }) {
   const [onEdit, setOnEdit] = useState(null);
@@ -67,7 +68,7 @@ function Sidebar({ toggle }) {
           <div className="flex-1 overflow-y-auto px-6 hideScrollbar space-y-2">
             {Array.from({ length: 30 }).map((_, index) => (
               <div
-                key={index}
+                key={keyGenerator()}
                 className="select-none cursor-pointer flex transform items-center rounded-lg px-3 py-2  transition-colors duration-300 hover:bg-gray-200 bg-gray-50 hover:text-gray-900 justify-between space-x-2"
               >
                 {onEdit === index ? (

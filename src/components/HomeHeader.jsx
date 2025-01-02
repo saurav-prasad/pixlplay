@@ -17,6 +17,7 @@ import {
   useParams,
   useRoutes,
 } from "react-router-dom";
+import keyGenerator from "../utils/keyGenerator";
 
 function HomeHeader() {
   const location = useLocation();
@@ -65,8 +66,9 @@ function HomeHeader() {
       </Link>
       {/* Home */}
       <div className="flex sm:gap-5 gap-2 flex-1 justify-end items-start">
-        {menuConstants.map((item) => (
+        {menuConstants.map((item, index) => (
           <Link
+            key={keyGenerator()}
             to={item.endPoint}
             className="md:flex hidden transition cursor-pointer hover:bg-[#d995952b] hover:shadow-lg p-2 rounded-lg select-none items-center"
           >

@@ -3,7 +3,7 @@ import Loader from "../components/Loader";
 const ProfileInfo = lazy(() => import("../components/ProfileInfo"));
 function Profile() {
   return (
-    <div>
+    <div className="pt-24 max-w-xl mx-auto">
       <Suspense fallback={<Loader />}>
         <ProfileInfo />
       </Suspense>

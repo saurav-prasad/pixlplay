@@ -18,7 +18,7 @@ function Users({ url }) {
         <div
           onMouseEnter={() => handleMouseEnter(i)}
           onMouseLeave={handleMouseLeave}
-          className="relative"
+          className="relative select-none"
           key={i}
         >
           <img

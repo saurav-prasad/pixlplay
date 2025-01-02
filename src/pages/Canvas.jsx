@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Whiteboard from "../components/Whiteboard";
 import Sidebar from "../components/Sidebar";
 import useDeviceType from "../hooks/useDeviceType";
@@ -6,27 +6,26 @@ import useWindowDimensions from "../hooks/useWindowDimensions";
 import CanvasHeader from "../components/CanvasHeader";
 
 function Canvas() {
-   const backgroundConstants = ["#ff000000", "#e5e7eb", "#ffffff", "#222222","#cfecf7"];
-  const [background, setBackground] = useState({
-    color: "#ff000000",
-    index: 0,
-  });
+  const backgroundConstants = [
+    "#ff000000",
+    "#e5e7eb",
+    "#ffffff",
+    "#222222",
+    "#cfecf7",
+  ];
+  const [bgIndex, setBgIndex] = useState(0);
+  const backgroundRef = useRef(null);
   const isMobile = useDeviceType();
   const { width, height } = useWindowDimensions();
 
   const toggleBackground = () => {
-    if (background.index < backgroundConstants.length - 1) {
-      setBackground((prev) => {
-        return {
-          color: backgroundConstants[prev.index + 1],
-          index: prev.index + 1,
-        };
-      });
+    if (bgIndex < backgroundConstants.length - 1) {
+      backgroundRef.current.style.backgroundColor =
+        backgroundConstants[bgIndex + 1];
+      setBgIndex((prev) => prev + 1);
     } else {
-      setBackground({
-        color: "#ff000000",
-        index: 0,
-      });
+      backgroundRef.current.style.backgroundColor = backgroundConstants[0];
+      setBgIndex(0);
     }
   };
   useEffect(() => {
@@ -41,7 +40,7 @@ function Canvas() {
   }, []);
 
   return (
-    <div className={`md:flex h-screen`}>
+    <div ref={backgroundRef} className={`md:flex h-screen transition-all`}>
       {/* Canvas Header */}
       <div className="block md:hidden">
         <CanvasHeader />
@@ -52,7 +51,7 @@ function Canvas() {
       </div>
 
       {/* Whiteboard */}
-      <div style={{backgroundColor:background.color}} className={`flex-1`}>
+      <div className={`flex-1`}>
         <Whiteboard toggleBackground={toggleBackground} />
       </div>
     </div>

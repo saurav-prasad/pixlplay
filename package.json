@@ -17,7 +17,8 @@
     "react-awesome-reveal": "^4.3.1",
     "react-dom": "^19.0.0",
     "react-konva": "^19.0.1",
-    "react-router-dom": "^7.1.1"
+    "react-router-dom": "^7.1.1",
+    "uuid": "^11.0.3"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",
