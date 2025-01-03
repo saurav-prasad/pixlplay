@@ -11,13 +11,16 @@
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
+    "@reduxjs/toolkit": "^2.5.0",
     "konva": "^9.3.16",
     "lucide-react": "^0.469.0",
     "react": "^19.0.0",
     "react-awesome-reveal": "^4.3.1",
     "react-dom": "^19.0.0",
     "react-konva": "^19.0.1",
+    "react-redux": "^9.2.0",
     "react-router-dom": "^7.1.1",
+    "redux": "^5.0.1",
     "uuid": "^11.0.3"
   },
   "devDependencies": {
