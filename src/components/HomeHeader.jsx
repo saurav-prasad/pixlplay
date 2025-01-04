@@ -2,6 +2,7 @@ import {
   BadgePlus,
   GalleryHorizontalEnd,
   House,
+  LogIn,
   LogOut,
   Logs,
   Minimize2,
@@ -10,23 +11,32 @@ import {
 } from "lucide-react";
 import React, { useState } from "react";
 import { Zoom } from "react-awesome-reveal";
-import {
-  Link,
-  useLocation,
-  useNavigate,
-  useParams,
-  useRoutes,
-} from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import keyGenerator from "../utils/keyGenerator";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../app/features/auth";
 
 function HomeHeader() {
   const location = useLocation();
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { user } = useSelector((state) => state.authReducer);
+  const dispatch = useDispatch();
 
   const toggleMenuOpen = () => {
     setIsMenuOpen(!isMenuOpen);
   };
+
+  const handleAuthClick = () => {
+    if (user) {
+      dispatch(logout());
+      localStorage.removeItem("token");
+      navigate("/signin");
+    } else {
+      navigate("/signin");
+    }
+  };
+
   const menuConstants = [
     {
       endPoint: "/",
@@ -39,16 +49,6 @@ function HomeHeader() {
         <GalleryHorizontalEnd className="mr-2 h-5 w-5" aria-hidden="true" />
       ),
       name: "Canvases",
-    },
-    {
-      endPoint: "/profile",
-      icon: <UserRound className="mr-2 h-5 w-5" aria-hidden="true" />,
-      name: "Profile",
-    },
-    {
-      endPoint: "/signin",
-      icon: <LogOut className="h-5 mr-2 w-5" aria-hidden="true" />,
-      name: "Sign out",
     },
   ];
   return (
@@ -76,6 +76,37 @@ function HomeHeader() {
             <span className="truncate">{item.name}</span>
           </Link>
         ))}
+        {user && (
+          <>
+            {/* profile */}
+            <Link
+              key={keyGenerator()}
+              to={"/profile"}
+              className="md:flex hidden transition cursor-pointer hover:bg-[#d995952b] hover:shadow-lg p-2 rounded-lg select-none items-center"
+            >
+              {/* <UserRound aria-hidden="true" /> */}
+              <img
+                className="mr-2 h-6 object-contain w-6 rounded-full ring-1 ring-white"
+                alt={user?.username}
+                src={user?.profilePhoto}
+              />
+              <span className="truncate">{user?.username}</span>
+            </Link>
+          </>
+        )}
+
+        {/* Sign in / Sign out */}
+        <span
+          onClick={handleAuthClick}
+          className="md:flex hidden transition cursor-pointer hover:bg-[#d995952b] hover:shadow-lg p-2 rounded-lg select-none items-center"
+        >
+          {user ? (
+            <LogOut className="h-5 mr-2 w-5" aria-hidden="true" />
+          ) : (
+            <LogIn className="h-5 mr-2 w-5" aria-hidden="true" />
+          )}{" "}
+          <span className="truncate">{user ? "Sign-out" : "Sign-in"}</span>
+        </span>
 
         {/* Popup Menu */}
         <div
@@ -85,17 +116,24 @@ function HomeHeader() {
           <Logs className="h-7 mr-2 w-7" aria-hidden="true" />
         </div>
       </div>
-      {isMenuOpen && <SliderMenu toggleMenuOpen={toggleMenuOpen} />}
+      {isMenuOpen && (
+        <PopupMenu
+          user={user}
+          toggleMenuOpen={toggleMenuOpen}
+          handleAuthClick={handleAuthClick}
+        />
+      )}
     </div>
   );
 }
 
 export default HomeHeader;
 
-function SliderMenu({ toggleMenuOpen }) {
+function PopupMenu({ toggleMenuOpen, user, handleAuthClick }) {
   const handleContainerClick = (e) => {
     toggleMenuOpen();
   };
+
   return (
     <>
       {/* bg-[#9E99BF] */}
@@ -135,22 +173,35 @@ function SliderMenu({ toggleMenuOpen }) {
               />
               <span className="truncate">Canvases</span>
             </Link>
-            {/* Profile */}
-            <Link
-              to="/profile"
-              className="pl-3 w-full flex transition cursor-pointer hover:bg-[#d995952b] hover:shadow-lg p-2 rounded-lg select-none items-center"
-            >
-              <UserRound className="mr-2 h-5 w-5" aria-hidden="true" />
-              <span className="truncate">Profile</span>
-            </Link>
+            {user && (
+              <>
+                {/* Profile */}
+                <Link
+                  to="/profile"
+                  className="pl-3 w-full flex transition cursor-pointer hover:bg-[#d995952b] hover:shadow-lg p-2 rounded-lg select-none items-center"
+                >
+                  {/* <UserRound className="mr-2 h-5 w-5" aria-hidden="true" /> */}
+                  <img
+                    className="mr-2 h-6 object-contain w-6 rounded-full ring-1 ring-gray-700"
+                    alt={user?.username}
+                    src={user?.profilePhoto}
+                  />
+                  <span className="truncate">{user?.username}</span>
+                </Link>
+              </>
+            )}
             {/* Signin */}
-            <Link
-              to="/signin"
+            <span
+              onClick={handleAuthClick}
               className="pl-3 w-full flex transition cursor-pointer hover:bg-[#d995952b] hover:shadow-lg p-2 rounded-lg select-none items-center"
             >
-              <LogOut className="h-5 mr-2 w-5" aria-hidden="true" />
-              <span className="truncate">Sign-out</span>
-            </Link>
+              {user ? (
+                <LogOut className="h-5 mr-2 w-5" aria-hidden="true" />
+              ) : (
+                <LogIn className="h-5 mr-2 w-5" aria-hidden="true" />
+              )}{" "}
+              <span className="truncate">{user ? "Sign-out" : "Sign-in"}</span>
+            </span>
           </div>
         </Zoom>
       </div>

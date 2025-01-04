@@ -1,8 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Roboto+Slab&family=Whisper&display=swap");
-@import url('https://fonts.googleapis.com/css2?family=Rubik+Vinyl&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Mea+Culpa&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Lavishly+Yours&display=swap');
-
+@import url("https://fonts.googleapis.com/css2?family=Rubik+Vinyl&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Mea+Culpa&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Lavishly+Yours&display=swap");
 
 .App {
   background-image: url("./assets/bg-images/mountains-1412683_1920.png");
@@ -16,6 +15,9 @@
   display: none;
 }
 
+input:-internal-autofill-selected {
+  background-color: transparent !important;
+}
 /* body{
   overflow-y: hidden;
  } */
@@ -84,4 +86,39 @@ input[type="range"]:focus {
 input[type="range"]:hover {
   background: #d1d5db;
   /* Tailwind Gray 300 */
+}
+
+/* Loader style */
+.loader {
+  width: 24px;
+  height: 24px;
+  position: relative;
+  animation: rotate 1.5s ease-in infinite alternate;
+}
+.loader::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  color: #ff3d00;
+  background: currentColor;
+  width: 24px;
+  height: 12px;
+  border-radius: 0 0 50px 50px;
+}
+.loader::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 10%;
+  background: #fff;
+  width: 4px;
+  height: 24px;
+  animation: rotate 1.2s linear infinite alternate-reverse;
+}
+
+@keyframes rotate {
+  100% {
+    transform: rotate(360deg);
+  }
 }

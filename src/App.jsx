@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Canvas from "./pages/Canvas";
 import "./App.css";
 import Home from "./pages/Home";
@@ -7,8 +7,27 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Error from "./pages/Error";
 import AllCanvases from "./pages/AllCanvases";
 import Profile from "./pages/Profile";
+import { useDispatch } from "react-redux";
+import { auth } from "./axios/axios";
+import { login } from "./app/features/auth";
 
 function App() {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    async function fetchData() {
+      // if auth token is present in localstorage
+      const token = localStorage.getItem("token");
+      if (token) {
+        const result = await auth.get("/fetchuser", {
+          headers: { "auth-token": token },
+        });
+        dispatch(login(result.data.data));
+      }
+    }
+    return () => fetchData();
+  }, []);
+
   const router = createBrowserRouter([
     {
       path: "/",
