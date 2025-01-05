@@ -1,12 +1,13 @@
 import { configureStore } from '@reduxjs/toolkit'
 import authReducer from './features/auth'
-import canvasReducer from './features/canvases'
+import canvasesReducer from './features/canvases'
 import allCanvasesReducer from './features/allCanvases'
+
 const store = configureStore({
     reducer: {
         authReducer,
-        canvasReducer,
-        allCanvasesReducer
+        canvasesReducer,
+        allCanvasesReducer,
     }
 })
 export default store

@@ -26,8 +26,8 @@ function App() {
           headers: { "auth-token": token },
         });
         dispatch(login(result.data.data));
-        const canvasData = await getAllCanvases()
-        dispatch(setAllCanvases(canvasData))
+        const canvasData = await getAllCanvases();
+        dispatch(setAllCanvases(canvasData));
       }
     }
     return () => fetchData();

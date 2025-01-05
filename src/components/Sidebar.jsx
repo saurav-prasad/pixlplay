@@ -10,7 +10,7 @@ import {
   X,
   House,
 } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import createNewCanvas from "../utils/createNewCanvas";
 import {
@@ -24,8 +24,11 @@ import getAllCanvases from "../utils/getAllCanvases";
 import sortArray from "../utils/sortArray";
 import { logout } from "../app/features/auth";
 import removeAuthToken from "../utils/removeAuthToken";
-import deleteCanvas from "../utils/deleteCanvas";
+import deleteCanvasFunc from "../utils/deleteCanvas";
 import useDeviceType from "../hooks/useDeviceType";
+import PopupModal from "./PopupModal";
+import throttling from "../utils/throttling";
+import { deleteCanvas } from "../app/features/canvases";
 
 function Sidebar({ toggleSidebar }) {
   const [editIndex, setEditIndex] = useState(null);
@@ -37,16 +40,30 @@ function Sidebar({ toggleSidebar }) {
   const { user } = useSelector((state) => state.authReducer);
   const dispatch = useDispatch();
   const [canvases, setCanvases] = useState([]);
+  const [isPopupModal, setIsPopupModal] = useState();
+  const [deleteCanvasId, setDeleteCanvasId] = useState();
+  const canvasId = useParams()?.id;
+
+  // toggle popup modal
+  const togglePopupModal = () => {
+    setIsPopupModal(!isPopupModal);
+  };
 
   // function to create a new canvas
-  const handleNewCanvasClick = async () => {
-    try {
-      const result = await createNewCanvas(user.id);
-      dispatch(addInAllCanvases(result));
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  const handleNewCanvasClick = useRef(null);
+
+  useEffect(() => {
+    handleNewCanvasClick.current = throttling(async () => {
+      try {
+        if (user) {
+          const result = await createNewCanvas(user?.id);
+          dispatch(addInAllCanvases(result));
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }, 1500);
+  }, [user]);
 
   // function to start the name editing
   const handleEditStart = (value, id) => {
@@ -62,15 +79,24 @@ function Sidebar({ toggleSidebar }) {
 
   // function to delete the canvas
   const handleDeleteCanvas = async (id) => {
-    try {
-      const deletedCanvas = await deleteCanvas(id);
-      // console.log(deletedCanvas);
-      dispatch(deleteInAllCanvases(id));
-    } catch (error) {
-      console.error(error);
-    }
+    setDeleteCanvasId(id);
+    togglePopupModal();
   };
 
+  const getResult = async (result) => {
+    if (result) {
+      try {
+        const deletedCanvas = await deleteCanvasFunc(deleteCanvasId);
+        // console.log(deletedCanvas);
+        dispatch(deleteInAllCanvases(deleteCanvasId));
+        dispatch(deleteCanvas(deleteCanvasId));
+      } catch (error) {
+        console.error(error);
+      }
+    } else {
+      console.log("Deletion canceled");
+    }
+  };
   // function to save edited name
   const handleEditSave = async (id) => {
     try {
@@ -157,7 +183,10 @@ function Sidebar({ toggleSidebar }) {
           </div>
           {/* New Canvas */}
           <div className="px-6 pb-5 flex md:block justify-between items-center">
-            <div onClick={handleNewCanvasClick} className="-mx-3 w-full">
+            <div
+              onClick={handleNewCanvasClick.current}
+              className="-mx-3 w-full md:w-auto"
+            >
               <span className="select-none cursor-pointer flex transform items-center rounded-lg px-3 py-2 transition-colors duration-300 hover:bg-gray-100 hover:text-gray-900 group">
                 <BadgePlus
                   className="h-6 w-6 transform group-hover:rotate-[360deg] group-hover:scale-125 duration-1000"
@@ -175,7 +204,10 @@ function Sidebar({ toggleSidebar }) {
                 <div
                   title={item.name}
                   key={item._id} // Use a stable key
-                  className="select-none cursor-pointer flex transform items-center rounded-lg transition-colors duration-300 hover:bg-gray-200 bg-gray-50 hover:text-gray-900 justify-between space-x-2"
+                  className={`select-none cursor-pointer flex transform items-center rounded-lg transition-colors duration-300 hover:bg-gray-200 
+                    ${
+                      item._id === canvasId && "bg-gray-400/75"
+                    } bg-gray-50 hover:text-gray-900 justify-between space-x-2`}
                 >
                   <div
                     onClick={() => handleNavigateCanvas(item._id)}
@@ -248,6 +280,9 @@ function Sidebar({ toggleSidebar }) {
           </div>
         </div>
       </aside>
+      {isPopupModal && (
+        <PopupModal getResult={getResult} togglePopupModal={togglePopupModal} />
+      )}
     </>
   );
 }

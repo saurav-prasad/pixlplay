@@ -2,13 +2,15 @@ import { CircleCheckBig, Pencil, Trash2, X } from "lucide-react";
 import React, { memo, useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import useDeviceType from "../hooks/useDeviceType";
-import deleteCanvas from "../utils/deleteCanvas";
+import deleteCanvasFunc from "../utils/deleteCanvas";
 import {
   deleteInAllCanvases,
   updateNameInAllCanvases,
 } from "../app/features/allCanvases";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import editCanvasName from "../utils/editCanvasName";
+import PopupModal from "./PopupModal";
+import { deleteCanvas } from "../app/features/canvases";
 
 function Item({ name, id }) {
   const [onEdit, setOnEdit] = useState(false);
@@ -17,6 +19,7 @@ function Item({ name, id }) {
   const inputRef = useRef(null);
   const isMobile = useDeviceType();
   const dispatch = useDispatch();
+  const [isPopupModal, setIsPopupModal] = useState();
 
   // function to start the name editing
   const handleEditStart = () => {
@@ -43,12 +46,26 @@ function Item({ name, id }) {
 
   // function to delete the canvas
   const handleDeleteCanvas = async () => {
-    try {
-      const deletedCanvas = await deleteCanvas(id);
-      // console.log(deletedCanvas);
-      dispatch(deleteInAllCanvases(id));
-    } catch (error) {
-      console.error(error);
+    togglePopupModal();
+  };
+
+  // toggle popup modal
+  const togglePopupModal = () => {
+    setIsPopupModal(!isPopupModal);
+  };
+
+  const getResult = async (result) => {
+    if (result) {
+      try {
+        const deletedCanvas = await deleteCanvasFunc(id);
+        console.log(deletedCanvas);
+        dispatch(deleteInAllCanvases(id));
+        dispatch(deleteCanvas(id));
+      } catch (error) {
+        console.error(error);
+      }
+    } else {
+      console.log("Deletion canceled");
     }
   };
 
@@ -56,7 +73,7 @@ function Item({ name, id }) {
   const handleOnChange = (e) => {
     setEditValue(e.target.value);
   };
-  
+
   // Focus the input when editing starts
   useEffect(() => {
     // console.log({ id, name });
@@ -140,6 +157,9 @@ function Item({ name, id }) {
           </div>
         </div>
       </div>
+      {isPopupModal && (
+        <PopupModal getResult={getResult} togglePopupModal={togglePopupModal} />
+      )}
     </>
   );
 }

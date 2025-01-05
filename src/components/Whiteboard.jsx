@@ -8,8 +8,15 @@ import Toolbar from "./Toolbar";
 import UndoRedo from "./UndoRedo";
 import Slider from "./Slider";
 import Tools from "./Tools";
-import { Pen } from "lucide-react";
+import { Lock, Pen } from "lucide-react";
 import Users from "./Users";
+import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
+import getCanvas from "../utils/getCanvas";
+import { addCanvas, updateCanvas } from "../app/features/canvases";
+import throttling from "../utils/throttling";
+import { canvasRoute } from "../axios/axios";
+import getAuthToken from "../utils/getAuthToken";
 
 function Whiteboard({ toggleBackground }) {
   // useState
@@ -28,6 +35,7 @@ function Whiteboard({ toggleBackground }) {
   });
   const [isSliderVisible, setSliderVisible] = useState(false); // State to track visibility of the slider
   const [isToolsVisible, setToolsVisible] = useState(false); // State to track visibility of the tools
+  const [isCanvasNotFound, setIsCanvasNotFound] = useState(false);
   // useRef
   const isDrawing = useRef(false);
   const stageRef = useRef(null);
@@ -39,6 +47,39 @@ function Whiteboard({ toggleBackground }) {
   // custom hooks
   const { width, height } = useWindowDimensions();
   const isMobile = useDeviceType();
+
+  // use selector
+  const canvasesReducer = useSelector((state) => state.canvasesReducer);
+  const { user } = useSelector((state) => state.authReducer);
+  // dispatch
+  const dispatch = useDispatch();
+  // use params
+  const canvasId = useParams().id;
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        console.log(canvasesReducer);
+        if (canvasesReducer[canvasId]) {
+          setLines(canvasesReducer[canvasId]);
+        } else {
+          const response = await getCanvas(canvasId);
+          if (response.canvas) {
+            dispatch(addCanvas(response));
+          } else {
+            dispatch(addCanvas({ ...response, canvas: [] }));
+          }
+        }
+        setIsCanvasNotFound(false);
+      } catch (error) {
+        if (error?.response?.status === 405) {
+          setIsCanvasNotFound(true);
+        }
+        console.error(error);
+      }
+    }
+    fetchData();
+  }, [canvasId, canvasesReducer]);
 
   const toggleSlider = () => {
     setSliderVisible(!isSliderVisible); // Toggle slider visibility
@@ -120,14 +161,44 @@ function Whiteboard({ toggleBackground }) {
     }
   };
 
-  const handleMouseUp = () => {
+  const handleMouseUp = async () => {
+    // End panning or drawing based on the current state
     if (isPanning.current) {
       isPanning.current = false; // End panning
     } else if (isDrawing.current) {
       isDrawing.current = false; // End drawing
     }
+
+    // Log current lines (for debugging or other logic)
     console.log(lines);
+
+    // Call the throttled canvas update function
+    if (handleMouseUp2.current) {
+      await handleMouseUp2.current();
+    }
   };
+
+  const handleMouseUp2 = useRef(null);
+
+  useEffect(() => {
+    handleMouseUp2.current = throttling(async () => {
+      try {
+        console.log(lines);
+        if (user && lines.length > 0) {
+          const result = await canvasRoute.post(
+            `/updatecanvas/${canvasId}`,
+            {
+              canvas: lines,
+            },
+            { headers: { "auth-token": getAuthToken() } }
+          );
+          dispatch(updateCanvas({ id: canvasId, canvas: lines }));
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }, 1500);
+  }, [lines, user]);
 
   // Handle mouse wheel for zooming
   const handleWheel = (e) => {
@@ -308,7 +379,7 @@ function Whiteboard({ toggleBackground }) {
           onTouchEnd={handleTouchEnd}
         >
           <Layer>
-            {lines.length === 0 && (
+            {lines.length === 0 && !isCanvasNotFound && (
               <Text
                 fontSize={isMobile ? 33 : 50}
                 text="Just start drawing"
@@ -371,6 +442,14 @@ function Whiteboard({ toggleBackground }) {
           />
         )}
         <Users />
+        {isCanvasNotFound && (
+          <div className="absolute top-0 md:left-4 bg-[#3636367c] w-[-webkit-fill-available] h-full flex justify-center items-center z-[9]">
+            <h1 className="text-3xl text-white font-bold flex justify-center items-center gap-2">
+              <Lock className="w-8 h-8 text-red-600" />
+              Select a Canvas first!
+            </h1>
+          </div>
+        )}
       </div>
     </>
   );

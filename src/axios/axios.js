@@ -1,7 +1,7 @@
 import axios from "axios";
 
 // url
-const urll = "http://192.168.29.83:5000";
+const ur = "http://192.168.29.83:5000";
 const url = "https://pixlplay-backend.vercel.app"
 
 // axios instances

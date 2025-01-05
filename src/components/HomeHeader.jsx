@@ -113,7 +113,7 @@ function HomeHeader() {
         {/* Popup Menu */}
         <div
           onClick={toggleMenuOpen}
-          className="md:hidden flex transition cursor-pointer hover:bg-[#d995952b] hover:shadow-lg p-2 rounded-lg select-none items-center"
+          className="md:hidden flex justify-center items-center transition cursor-pointer hover:bg-[#d995952b] hover:shadow-lg p-2 rounded-lg select-none"
         >
           <Logs className="h-7 mr-2 w-7" aria-hidden="true" />
         </div>

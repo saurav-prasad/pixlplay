@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useState } from "react";
+import React, { memo, useEffect, useRef, useState } from "react";
 import Item from "./Item";
 import { BadgePlusIcon } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
@@ -8,6 +8,7 @@ import sortArray from "../utils/sortArray";
 import { faker } from "@faker-js/faker";
 import createNewCanvas from "../utils/createNewCanvas";
 import getAllCanvases from "../utils/getAllCanvases";
+import throttling from "../utils/throttling";
 
 function CanvasesList() {
   const [canvases, setCanvases] = useState([]);
@@ -16,14 +17,21 @@ function CanvasesList() {
   const { user } = useSelector((state) => state.authReducer);
 
   // function to create a new canvas
-  const handleNewCanvasClick = async () => {
-    try {
-      const result = await createNewCanvas(user.id);
-      dispatch(addInAllCanvases(result));
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  // function to create a new canvas
+  const handleNewCanvasClick = useRef(null);
+
+  useEffect(() => {
+    handleNewCanvasClick.current = throttling(async () => {
+      try {
+        if (user) {
+          const result = await createNewCanvas(user?.id);
+          dispatch(addInAllCanvases(result));
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }, 1500);
+  }, [user]);
 
   useEffect(() => {
     async function fetchData() {
@@ -32,7 +40,7 @@ function CanvasesList() {
           const sortedArr = sortArray(allCanvases);
           setCanvases(sortedArr);
         } else {
-          const response = await getAllCanvases()
+          const response = await getAllCanvases();
           dispatch(setAllCanvases(response));
           setCanvases(response);
         }
@@ -46,7 +54,7 @@ function CanvasesList() {
   return (
     <>
       <div
-        onClick={handleNewCanvasClick}
+        onClick={handleNewCanvasClick.current}
         className="select-none cursor-pointer flex transform items-center rounded-lg px-3 py-3 transition-colors duration-300 text-gray-900 bg-[#9e99bf85] hover:text-gray-950 justify-start space-x-2 text-lg shadow-[#3c3d591f] shadow-lg border-[#ffffff45] hover:bg-[#6872a6af] backdrop-blur-[100px] border-2 group"
       >
         <BadgePlusIcon
