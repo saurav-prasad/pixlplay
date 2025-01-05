@@ -1,26 +1,82 @@
-import { CircleCheckBig, Logs, Pencil, Share2, Trash2, X } from "lucide-react";
+import {
+  CircleCheckBig,
+  Info,
+  Logs,
+  Pencil,
+  Share2,
+  Trash2,
+  X,
+} from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import Sidebar from "./Sidebar";
 import { Slide } from "react-awesome-reveal";
+import { useParams } from "react-router-dom";
+import deleteCanvas from "../utils/deleteCanvas";
+import {
+  deleteInAllCanvases,
+  updateNameInAllCanvases,
+} from "../app/features/allCanvases";
+import editCanvasName from "../utils/editCanvasName";
+import { useDispatch, useSelector } from "react-redux";
 
 function CanvasHeader() {
   const [isToggle, setToggle] = useState(false);
   const [onEdit, setOnEdit] = useState(false);
-  const [editValue, setEditValue] = useState();
+  const [editValue, setEditValue] = useState("");
+  const { allCanvases } = useSelector((state) => state.allCanvasesReducer);
+  const [canvasInfo, setCanvasInfo] = useState({});
   const inputRef = useRef(null);
+  const canvasId = useParams()?.id;
+  const dispatch = useDispatch();
 
   const toggle = () => {
     setToggle(!isToggle);
   };
 
+  // function to start the name editing
   const handleEditStart = () => {
     setOnEdit(true);
-    setEditValue("Canvas1");
+    setEditValue(canvasInfo.name);
   };
 
-  const handleEditEnd = () => {
+  // function to cancel name editing
+  const handleEditCancel = () => {
     setOnEdit(false);
+    setEditValue("");
   };
+
+  // function to save edited name
+  const handleEditSave = async () => {
+    try {
+      const updatedName = await editCanvasName(canvasId, editValue);
+      dispatch(updateNameInAllCanvases({ id: canvasId, name: editValue }));
+      setOnEdit(false);
+      setEditValue("");
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  // function to delete the canvas
+  const handleDeleteCanvas = async () => {
+    try {
+      const deletedCanvas = await deleteCanvas(canvasId);
+      // console.log(deletedCanvas);
+      dispatch(deleteInAllCanvases(canvasId));
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  // function to handle value of input tag
+  const handleOnChange = (e) => {
+    setEditValue(e.target.value);
+  };
+
+  useEffect(() => {
+    const data = allCanvases?.filter((item) => item._id === canvasId)[0];
+    setCanvasInfo(data);
+  }, [canvasId, allCanvases]);
 
   // Focus the input when editing starts
   useEffect(() => {
@@ -28,9 +84,7 @@ function CanvasHeader() {
       inputRef.current.focus();
     }
   }, [onEdit]);
-  const handleOnChange = (e) => {
-    setEditValue(e.target.value);
-  };
+
   return (
     <div className="relative">
       <div className="flex justify-between items-center px-2 py-1 bg-white shadow-md w-full overflow-hidden">
@@ -50,7 +104,9 @@ function CanvasHeader() {
               className="w-full text-xl font-bold outline-none"
             />
           ) : (
-            <span className="text-xl flex-1 font-bold truncate">Canvas1</span>
+            <span className="text-xl flex-1 font-bold truncate">
+              {canvasInfo?.name}
+            </span>
           )}
         </div>
         {/* icons */}
@@ -61,7 +117,7 @@ function CanvasHeader() {
             title={onEdit ? "Save Changes" : "Edit name"}
           >
             {onEdit ? (
-              <CircleCheckBig onClick={handleEditEnd} aria-hidden="true" />
+              <CircleCheckBig onClick={handleEditSave} aria-hidden="true" />
             ) : (
               <Pencil onClick={handleEditStart} aria-hidden="true" />
             )}
@@ -73,9 +129,10 @@ function CanvasHeader() {
             title={onEdit ? "Cancel" : "Delete"}
           >
             {onEdit ? (
-              <X onClick={handleEditEnd} aria-hidden="true" />
+              <X onClick={handleEditCancel} aria-hidden="true" />
             ) : (
               <Trash2
+                onClick={handleDeleteCanvas}
                 aria-hidden="true"
                 className="transition-all hover:scale-125 duration-200"
               />
@@ -93,7 +150,7 @@ function CanvasHeader() {
           isToggle ? "translate-x-0:" : "-translate-x-full w-screen"
         } duration-200 ease-in-out`}
       >
-        <Sidebar toggle={toggle} />
+        <Sidebar toggleSidebar={toggle} />
       </div>
       {isToggle && (
         <div

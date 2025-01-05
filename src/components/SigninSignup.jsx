@@ -6,7 +6,7 @@ import { Zoom } from "react-awesome-reveal";
 import CatWaving from "../assets/images/cat-waving.jpg";
 import CatSeeing from "../assets/images/cat-seeing.jpg";
 import { useDispatch } from "react-redux";
-import { auth } from "../axios/axios";
+import { authRoute } from "../axios/axios";
 import { login } from "../app/features/auth";
 
 function SigninSignup() {
@@ -49,7 +49,7 @@ function SigninSignup() {
     setIsLoading(true);
     try {
       if (isSignup) {
-        const result = await auth.post("/createuser", {
+        const result = await authRoute.post("/createuser", {
           name: formData?.name,
           username: formData.username,
           email: formData.email,
@@ -61,7 +61,7 @@ function SigninSignup() {
         dispatch(login(rest));
         localStorage.setItem("token", result.data.data.token);
       } else {
-        const result = await auth.post("/loginuser", {
+        const result = await authRoute.post("/loginuser", {
           email: formData.email,
           password: formData.password,
         });

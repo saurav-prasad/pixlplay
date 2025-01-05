@@ -15,6 +15,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import keyGenerator from "../utils/keyGenerator";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../app/features/auth";
+import removeAuthToken from "../utils/removeAuthToken";
 
 function HomeHeader() {
   const location = useLocation();
@@ -30,7 +31,7 @@ function HomeHeader() {
   const handleAuthClick = () => {
     if (user) {
       dispatch(logout());
-      localStorage.removeItem("token");
+      removeAuthToken();
       navigate("/signin");
     } else {
       navigate("/signin");
@@ -51,6 +52,7 @@ function HomeHeader() {
       name: "Canvases",
     },
   ];
+
   return (
     <div className="flex justify-between items-center sm:px-9 px-2 py-2 bg-transparent backdrop-blur-lg w-full transition-all text-gray-900 text-lg sm:font-semibold font-medium shadow-[#e3b0b3] shadow-md mb-3 fixed top-0 z-10">
       <Link

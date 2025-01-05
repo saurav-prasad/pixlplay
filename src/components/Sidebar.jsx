@@ -10,26 +10,121 @@ import {
   X,
   House,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import createNewCanvas from "../utils/createNewCanvas";
+import {
+  addInAllCanvases,
+  deleteInAllCanvases,
+  setAllCanvases,
+  updateNameInAllCanvases,
+} from "../app/features/allCanvases";
+import editCanvasName from "../utils/editCanvasName";
+import getAllCanvases from "../utils/getAllCanvases";
+import sortArray from "../utils/sortArray";
+import { logout } from "../app/features/auth";
+import removeAuthToken from "../utils/removeAuthToken";
+import deleteCanvas from "../utils/deleteCanvas";
+import useDeviceType from "../hooks/useDeviceType";
 
-function Sidebar({ toggle }) {
+function Sidebar({ toggleSidebar }) {
   const [editIndex, setEditIndex] = useState(null);
   const [editValue, setEditValue] = useState("");
   const navigate = useNavigate();
   const inputRef = useRef([]);
+  const isMobile = useDeviceType();
+  const { allCanvases } = useSelector((state) => state.allCanvasesReducer);
+  const { user } = useSelector((state) => state.authReducer);
+  const dispatch = useDispatch();
+  const [canvases, setCanvases] = useState([]);
 
-  const handleEditStart = (id, value) => {
+  // function to create a new canvas
+  const handleNewCanvasClick = async () => {
+    try {
+      const result = await createNewCanvas(user.id);
+      dispatch(addInAllCanvases(result));
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  // function to start the name editing
+  const handleEditStart = (value, id) => {
     setEditIndex(id);
-    setEditValue(`Canvas ${value + 1}`);
+    setEditValue(value);
   };
 
-  const handleEditEnd = () => {
+  // function to cancel name editing
+  const handleEditCancel = () => {
     setEditIndex(null);
+    setEditValue("");
   };
 
+  // function to delete the canvas
+  const handleDeleteCanvas = async (id) => {
+    try {
+      const deletedCanvas = await deleteCanvas(id);
+      // console.log(deletedCanvas);
+      dispatch(deleteInAllCanvases(id));
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  // function to save edited name
+  const handleEditSave = async (id) => {
+    try {
+      const updatedName = await editCanvasName(id, editValue);
+      dispatch(updateNameInAllCanvases({ id, name: editValue }));
+      setEditIndex(null);
+      setEditValue("");
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  // function to handle value of input tag
   const handleOnChange = (e) => {
     setEditValue(e.target.value);
   };
+
+  // logout the user
+  const handleLogout = () => {
+    if (user) {
+      dispatch(logout());
+      removeAuthToken();
+      navigate("/");
+    } else {
+      navigate("/signin");
+    }
+  };
+
+  const handleNavigateCanvas = (id) => {
+    if (isMobile || window.innerWidth <= 768) {
+      navigate(!editIndex && `/canvas/${id}`);
+      toggleSidebar();
+    } else {
+      navigate(!editIndex && `/canvas/${id}`);
+    }
+  };
+  // fetch canvases
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        if (allCanvases) {
+          const sortedArr = sortArray(allCanvases);
+          setCanvases(sortedArr);
+        } else {
+          const response = await getAllCanvases();
+          dispatch(setAllCanvases(response));
+          setCanvases(response);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    fetchData();
+  }, [allCanvases]);
 
   // Focus the input when editing starts
   useEffect(() => {
@@ -55,14 +150,14 @@ function Sidebar({ toggle }) {
             </div>
             <div
               className="md:hidden cursor-pointer hover:bg-gray-200 p-2 rounded-md transition-all"
-              onClick={toggle}
+              onClick={toggleSidebar}
             >
               <Minimize2 />
             </div>
           </div>
           {/* New Canvas */}
           <div className="px-6 pb-5 flex md:block justify-between items-center">
-            <div className="-mx-3 w-full">
+            <div onClick={handleNewCanvasClick} className="-mx-3 w-full">
               <span className="select-none cursor-pointer flex transform items-center rounded-lg px-3 py-2 transition-colors duration-300 hover:bg-gray-100 hover:text-gray-900 group">
                 <BadgePlus
                   className="h-6 w-6 transform group-hover:rotate-[360deg] group-hover:scale-125 duration-1000"
@@ -75,53 +170,61 @@ function Sidebar({ toggle }) {
 
           {/* All Canvases */}
           <div className="flex-1 overflow-y-auto px-6 hideScrollbar space-y-2">
-            {Array.from({ length: 30 }).map((_, index) => (
-              <div
-                key={index} // Use a stable key
-                className="select-none cursor-pointer flex transform items-center rounded-lg px-3 py-2 transition-colors duration-300 hover:bg-gray-200 bg-gray-50 hover:text-gray-900 justify-between space-x-2"
-              >
-                {editIndex === index ? (
-                  <input
-                    ref={(el) => (inputRef.current[index] = el)}
-                    type="text"
-                    value={editValue}
-                    onChange={handleOnChange}
-                    className="w-full text-md font-medium pr-1 outline-none"
-                  />
-                ) : (
-                  <p className="text-md font-medium w-full truncate">
-                    Canvas {index + 1}
-                  </p>
-                )}
-                <div className="flex space-x-4">
-                  {editIndex === index ? (
-                    <CircleCheckBig
-                      onClick={handleEditEnd}
-                      className="h-5 w-5 transform hover:rotate-90 hover:scale-125 duration-700"
-                      aria-hidden="true"
-                    />
-                  ) : (
-                    <Pencil
-                      onClick={() => handleEditStart(index, index)}
-                      className="h-5 w-5 transform hover:rotate-90 hover:scale-125 duration-300"
-                      aria-hidden="true"
-                    />
-                  )}
-                  {editIndex === index ? (
-                    <X
-                      onClick={handleEditEnd}
-                      className="h-5 w-5 transform hover:scale-150 duration-700"
-                      aria-hidden="true"
-                    />
-                  ) : (
-                    <Trash2
-                      className="h-5 w-5 transform hover:scale-150 duration-700"
-                      aria-hidden="true"
-                    />
-                  )}
+            {allCanvases &&
+              canvases.map((item, index) => (
+                <div
+                  title={item.name}
+                  key={item._id} // Use a stable key
+                  className="select-none cursor-pointer flex transform items-center rounded-lg transition-colors duration-300 hover:bg-gray-200 bg-gray-50 hover:text-gray-900 justify-between space-x-2"
+                >
+                  <div
+                    onClick={() => handleNavigateCanvas(item._id)}
+                    className="truncate h-[2.5rem] py-2 flex-1 flex justify-start items-center px-3 "
+                  >
+                    {editIndex === index ? (
+                      <input
+                        ref={(el) => (inputRef.current[index] = el)}
+                        type="text"
+                        value={editValue}
+                        onChange={handleOnChange}
+                        className="w-full text-md font-medium pr-1 outline-none"
+                      />
+                    ) : (
+                      <p className="text-md font-medium w-full truncate">
+                        {item.name}
+                      </p>
+                    )}
+                  </div>
+                  <div className="flex space-x-4 py-2 px-3">
+                    {editIndex === index ? (
+                      <CircleCheckBig
+                        onClick={() => handleEditSave(item._id)}
+                        className="h-6 w-6 transform hover:rotate-90 hover:scale-125 duration-700"
+                        aria-hidden="true"
+                      />
+                    ) : (
+                      <Pencil
+                        onClick={() => handleEditStart(item.name, index)}
+                        className="h-6 w-6 transform hover:rotate-90 hover:scale-125 duration-300"
+                        aria-hidden="true"
+                      />
+                    )}
+                    {editIndex === index ? (
+                      <X
+                        onClick={handleEditCancel}
+                        className="h-6 w-6 transform hover:scale-150 duration-700"
+                        aria-hidden="true"
+                      />
+                    ) : (
+                      <Trash2
+                        onClick={() => handleDeleteCanvas(item._id)}
+                        className="h-6 w-6 transform hover:scale-150 duration-700"
+                        aria-hidden="true"
+                      />
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
           </div>
 
           {/* Profile and Sign-out */}
@@ -135,7 +238,7 @@ function Sidebar({ toggle }) {
                 <span className="mx-4 text-md font-medium">Profile</span>
               </span>
               <span
-                onClick={() => navigate("/signin")}
+                onClick={handleLogout}
                 className="-mx-3 mb-4 select-none cursor-pointer flex transform items-center rounded-lg px-3 py-2 transition-colors duration-300 hover:bg-gray-100 hover:text-gray-900"
               >
                 <LogOut className="h-6 w-6" aria-hidden="true" />

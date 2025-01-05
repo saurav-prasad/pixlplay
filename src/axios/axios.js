@@ -1,16 +1,17 @@
 import axios from "axios";
 
 // url
-const url = "http://192.168.29.83:5000";
+const urll = "http://192.168.29.83:5000";
+const url = "https://pixlplay-backend.vercel.app"
 
 // axios instances
 
 // auth route
-export const auth = axios.create({
+export const authRoute = axios.create({
     baseURL: `${url}/auth`,
 })
 
 // canvas route
-export const canvas = axios.create({
+export const canvasRoute = axios.create({
     baseURL: `${url}/canvas`,
 })

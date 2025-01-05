@@ -46,9 +46,11 @@ function Canvas() {
         <CanvasHeader />
       </div>
       {/* Sidebar */}
-      <div className="w-60 hidden md:block shadow-md shadow-red-400">
-        <Sidebar />
-      </div>
+      {!isMobile && (
+        <div className="w-60 hidden md:block shadow-md shadow-red-400">
+          <Sidebar />
+        </div>
+      )}
 
       {/* Whiteboard */}
       <div className={`flex-1`}>

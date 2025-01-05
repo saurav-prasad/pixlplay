@@ -8,8 +8,11 @@ import Error from "./pages/Error";
 import AllCanvases from "./pages/AllCanvases";
 import Profile from "./pages/Profile";
 import { useDispatch } from "react-redux";
-import { auth } from "./axios/axios";
+import { authRoute } from "./axios/axios";
 import { login } from "./app/features/auth";
+import getAuthToken from "./utils/getAuthToken";
+import getAllCanvases from "./utils/getAllCanvases";
+import { setAllCanvases } from "./app/features/allCanvases";
 
 function App() {
   const dispatch = useDispatch();
@@ -17,12 +20,14 @@ function App() {
   useEffect(() => {
     async function fetchData() {
       // if auth token is present in localstorage
-      const token = localStorage.getItem("token");
+      const token = getAuthToken();
       if (token) {
-        const result = await auth.get("/fetchuser", {
+        const result = await authRoute.get("/fetchuser", {
           headers: { "auth-token": token },
         });
         dispatch(login(result.data.data));
+        const canvasData = await getAllCanvases()
+        dispatch(setAllCanvases(canvasData))
       }
     }
     return () => fetchData();
@@ -72,7 +77,7 @@ function App() {
       ],
     },
     {
-      path: "/canvas",
+      path: "/canvas/:id",
       element: (
         <>
           <Canvas />
@@ -88,6 +93,7 @@ function App() {
       ),
     },
   ]);
+
   return (
     <div className="App relative min-h-screen">
       <RouterProvider router={router} />
