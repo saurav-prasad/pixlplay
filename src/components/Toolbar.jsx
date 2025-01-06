@@ -10,7 +10,9 @@ import {
   SwitchCamera,
 } from "lucide-react";
 import isDarkColor from "../utils/isDarkColor";
-
+import { useDispatch } from "react-redux";
+import updateCanvasFunc from "../utils/updateCanvas";
+import { updateCanvas } from "../app/features/canvases";
 function Toolbar({
   color,
   setColor,
@@ -25,10 +27,12 @@ function Toolbar({
   toggleSlider,
   toggleTools,
   toggleBackground,
+  canvasId,
 }) {
   const colorRef = useRef(null);
   const isDark = isDarkColor(color);
   const [visiblePopup, setVisiblePopup] = useState(null); // State to track visibility of the popup
+  const dispatch = useDispatch();
 
   const handleMouseEnter = (id) => {
     setVisiblePopup(id);
@@ -43,6 +47,16 @@ function Toolbar({
       name: "destination-out",
       component: <Eraser className="h-6 w-6" />,
     });
+  };
+
+  const handleClearCanvas = async () => {
+    try {
+      const result = await updateCanvasFunc(canvasId, []);
+      dispatch(updateCanvas({ id: canvasId, canvas: [] }));
+      setLines([]);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -122,7 +136,7 @@ function Toolbar({
         {/* Clear */}
         <div
           title="Clear Canvas"
-          onClick={() => setLines([])}
+          onClick={handleClearCanvas}
           onMouseEnter={() => handleMouseEnter("clear")}
           onMouseLeave={handleMouseLeave}
           className={`relative cursor-pointer p-2 rounded-full w-fit h-fit border hover:bg-gray-200`}

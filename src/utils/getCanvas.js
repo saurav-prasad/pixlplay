@@ -8,7 +8,7 @@ const getCanvas = async (id) => {
                 "auth-token": getAuthToken()
             }
         })
-        console.log(result)
+        // console.log(result)
         return result.data.data
     } catch (error) {
         throw error

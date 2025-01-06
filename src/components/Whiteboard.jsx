@@ -15,8 +15,7 @@ import { useParams } from "react-router-dom";
 import getCanvas from "../utils/getCanvas";
 import { addCanvas, updateCanvas } from "../app/features/canvases";
 import throttling from "../utils/throttling";
-import { canvasRoute } from "../axios/axios";
-import getAuthToken from "../utils/getAuthToken";
+import updateCanvasFunc from "../utils/updateCanvas";
 
 function Whiteboard({ toggleBackground }) {
   // useState
@@ -36,6 +35,7 @@ function Whiteboard({ toggleBackground }) {
   const [isSliderVisible, setSliderVisible] = useState(false); // State to track visibility of the slider
   const [isToolsVisible, setToolsVisible] = useState(false); // State to track visibility of the tools
   const [isCanvasNotFound, setIsCanvasNotFound] = useState(false);
+  const [isCanvasUpdate, setIsCanvasUpdate] = useState(false);
   // useRef
   const isDrawing = useRef(false);
   const stageRef = useRef(null);
@@ -43,7 +43,8 @@ function Whiteboard({ toggleBackground }) {
   const panStart = useRef({ x: 0, y: 0 });
   const lastTouchDistance = useRef(null); // For pinch zoom
   const touchPanStart = useRef(null); // For panning
-
+  const timeoutRef = useRef(null); // Ref to store the setTimeout ID
+  
   // custom hooks
   const { width, height } = useWindowDimensions();
   const isMobile = useDeviceType();
@@ -59,7 +60,7 @@ function Whiteboard({ toggleBackground }) {
   useEffect(() => {
     async function fetchData() {
       try {
-        console.log(canvasesReducer);
+        // console.log(canvasesReducer);
         if (canvasesReducer[canvasId]) {
           setLines(canvasesReducer[canvasId]);
         } else {
@@ -160,6 +161,7 @@ function Whiteboard({ toggleBackground }) {
       setLines(lines.concat());
     }
   };
+ 
 
   const handleMouseUp = async () => {
     // End panning or drawing based on the current state
@@ -168,37 +170,9 @@ function Whiteboard({ toggleBackground }) {
     } else if (isDrawing.current) {
       isDrawing.current = false; // End drawing
     }
-
-    // Log current lines (for debugging or other logic)
-    console.log(lines);
-
-    // Call the throttled canvas update function
-    if (handleMouseUp2.current) {
-      await handleMouseUp2.current();
-    }
+    dispatch(updateCanvas({ id: canvasId, canvas: lines }));
+    setIsCanvasUpdate(true);
   };
-
-  const handleMouseUp2 = useRef(null);
-
-  useEffect(() => {
-    handleMouseUp2.current = throttling(async () => {
-      try {
-        console.log(lines);
-        if (user && lines.length > 0) {
-          const result = await canvasRoute.post(
-            `/updatecanvas/${canvasId}`,
-            {
-              canvas: lines,
-            },
-            { headers: { "auth-token": getAuthToken() } }
-          );
-          dispatch(updateCanvas({ id: canvasId, canvas: lines }));
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    }, 1500);
-  }, [lines, user]);
 
   // Handle mouse wheel for zooming
   const handleWheel = (e) => {
@@ -353,7 +327,40 @@ function Whiteboard({ toggleBackground }) {
     isDrawing.current = false;
     lastTouchDistance.current = null;
     touchPanStart.current = null;
+    dispatch(updateCanvas({ id: canvasId, canvas: lines }));
+    setIsCanvasUpdate(true);
   };
+
+  // saving the lines to db whenever the lines changes
+  useEffect(() => {
+    if (isCanvasUpdate) {
+      // Clear the existing timeout if any
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+
+      // Set a new timeout and store its ID in the ref
+      timeoutRef.current = setTimeout(async () => {
+        try {
+          if (user) {
+            const result = await updateCanvasFunc(canvasId, lines);
+          }
+        } catch (error) {
+          console.error("Error updating canvas:", error);
+        } finally {
+          setIsCanvasUpdate(false); // Reset the state after the update
+          timeoutRef.current = null; // Clear the ref
+        }
+      }, 1000);
+    }
+
+    // Cleanup the timeout when the component unmounts
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, [isCanvasUpdate, user, canvasId, lines]);
 
   return (
     <>
@@ -404,6 +411,7 @@ function Whiteboard({ toggleBackground }) {
         {/* Toobar */}
         <div className="shadow-[2px_5px_13px_0px_rgb(181,181,181)]">
           <Toolbar
+            canvasId={canvasId}
             toggleBackground={toggleBackground}
             color={color}
             setColor={setColor}

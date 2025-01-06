@@ -206,7 +206,7 @@ function Sidebar({ toggleSidebar }) {
                   key={item._id} // Use a stable key
                   className={`select-none cursor-pointer flex transform items-center rounded-lg transition-colors duration-300 hover:bg-gray-200 
                     ${
-                      item._id === canvasId && "bg-gray-400/75"
+                      item._id === canvasId && "bg-[#9ca3af96]"
                     } bg-gray-50 hover:text-gray-900 justify-between space-x-2`}
                 >
                   <div
