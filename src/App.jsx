@@ -19,78 +19,54 @@ function App() {
 
   useEffect(() => {
     async function fetchData() {
-      // if auth token is present in localstorage
-      const token = getAuthToken();
-      if (token) {
-        const result = await authRoute.get("/fetchuser", {
-          headers: { "auth-token": token },
-        });
-        dispatch(login(result.data.data));
-        const canvasData = await getAllCanvases();
-        dispatch(setAllCanvases(canvasData));
+      try {
+        // if auth token is present in localstorage
+        const token = getAuthToken();
+        if (token) {
+          const result = await authRoute.get("/fetchuser", {
+            headers: { "auth-token": token },
+          });
+          dispatch(login(result.data.data));
+          const canvasData = await getAllCanvases();
+          dispatch(setAllCanvases(canvasData));
+        }
+      } catch (error) {
+        console.error(error);
       }
     }
-    return () => fetchData();
+    fetchData();
   }, []);
 
   const router = createBrowserRouter([
     {
       path: "/",
-      element: (
-        <>
-          <Home />
-        </>
-      ),
+      element: <Home />,
       children: [
         {
           path: "/canvases",
-          element: (
-            <>
-              <AllCanvases />
-            </>
-          ),
+          element: <AllCanvases />,
         },
         {
           path: "/profile",
-          element: (
-            <>
-              <Profile />
-            </>
-          ),
+          element: <Profile />,
         },
         {
           path: "/signin",
-          element: (
-            <>
-              <Auth />
-            </>
-          ),
+          element: <Auth />,
         },
         {
           path: "/signup",
-          element: (
-            <>
-              <Auth />
-            </>
-          ),
+          element: <Auth />,
         },
       ],
     },
     {
       path: "/canvas/:id",
-      element: (
-        <>
-          <Canvas />
-        </>
-      ),
+      element: <Canvas />,
     },
     {
       path: "*",
-      element: (
-        <>
-          <Error />
-        </>
-      ),
+      element: <Error />,
     },
   ]);
 
