@@ -32,6 +32,7 @@ import throttling from "../utils/throttling";
 import { deleteCanvas } from "../app/features/canvases";
 import ItemSkeleton from "./ItemSkeleton";
 import genEmptyArr from "../utils/genEmptyArr";
+import { setAlert } from "../app/features/alert";
 
 function Sidebar({ toggleSidebar }) {
   const [editIndex, setEditIndex] = useState(null);
@@ -99,8 +100,12 @@ function Sidebar({ toggleSidebar }) {
         // console.log(deletedCanvas);
         dispatch(deleteInAllCanvases(deleteCanvasId));
         dispatch(deleteCanvas(deleteCanvasId));
+        dispatch(setAlert({ text: "Canvas deleted Successfully" }));
       } catch (error) {
         console.error(error);
+        dispatch(
+          setAlert({ type: "danger", text: error?.response?.data?.message })
+        );
       } finally {
         setIsLoading(null);
       }
@@ -116,8 +121,12 @@ function Sidebar({ toggleSidebar }) {
       dispatch(updateNameInAllCanvases({ id, name: editValue }));
       setEditIndex(null);
       setEditValue(editValue);
+      dispatch(setAlert({ text: "Canvas name Updated Successfully" }));
     } catch (error) {
       console.error(error);
+      dispatch(
+        setAlert({ type: "danger", text: error?.response?.data?.message })
+      );
     } finally {
       setIsLoading(null);
     }

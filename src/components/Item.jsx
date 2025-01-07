@@ -11,6 +11,7 @@ import { useDispatch, useSelector } from "react-redux";
 import editCanvasName from "../utils/editCanvasName";
 import PopupModal from "./PopupModal";
 import { deleteCanvas } from "../app/features/canvases";
+import { setAlert } from "../app/features/alert";
 
 function Item({ name, id }) {
   const [onEdit, setOnEdit] = useState(false);
@@ -41,8 +42,12 @@ function Item({ name, id }) {
       dispatch(updateNameInAllCanvases({ id, name: editValue }));
       setOnEdit(null);
       setEditValue(editValue);
+      dispatch(setAlert({ text: "Canvas name Updated Successfully" }));
     } catch (error) {
       console.error(error);
+      dispatch(
+        setAlert({ type: "danger", text: error?.response?.data?.message })
+      );
     } finally {
       setIsLoading(false);
     }
@@ -63,11 +68,14 @@ function Item({ name, id }) {
       setIsLoading(true);
       try {
         const deletedCanvas = await deleteCanvasFunc(id);
-        console.log(deletedCanvas);
         dispatch(deleteInAllCanvases(id));
         dispatch(deleteCanvas(id));
+        dispatch(setAlert({ text: "Canvas deleted Successfully" }));
       } catch (error) {
         console.error(error);
+        dispatch(
+          setAlert({ type: "danger", text: error?.response?.data?.message })
+        );
       } finally {
         setIsLoading(false);
       }

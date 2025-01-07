@@ -2,16 +2,15 @@ import React, { memo, useEffect, useRef, useState } from "react";
 import Item from "./Item";
 import { BadgePlusIcon } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-import { canvasRoute } from "../axios/axios";
 import { addInAllCanvases, setAllCanvases } from "../app/features/allCanvases";
 import sortArray from "../utils/sortArray";
-import { faker } from "@faker-js/faker";
 import createNewCanvas from "../utils/createNewCanvas";
 import getAllCanvases from "../utils/getAllCanvases";
 import throttling from "../utils/throttling";
 import ItemSkeleton from "./ItemSkeleton";
-import keyGenerator from "../utils/keyGenerator";
 import genEmptyArr from "../utils/genEmptyArr";
+import Alert from "./Alert";
+import { setAlert } from "../app/features/alert";
 
 function CanvasesList() {
   const [canvases, setCanvases] = useState([]);
@@ -23,14 +22,20 @@ function CanvasesList() {
   // function to create a new canvas
   const handleNewCanvasClick = useRef(null);
 
+  const onNewCanvasClick = (e) => {
+    setIsLoading(genEmptyArr(1));
+    if (!user) {
+      dispatch(setAlert({ type: "danger", text: "Please Login first..." }));
+    } else {
+      handleNewCanvasClick.current();
+    }
+  };
+
   useEffect(() => {
     handleNewCanvasClick.current = throttling(async () => {
-      setIsLoading(genEmptyArr(1));
       try {
-        if (user) {
-          const result = await createNewCanvas(user?.id);
-          dispatch(addInAllCanvases(result));
-        }
+        const result = await createNewCanvas(user?.id);
+        dispatch(addInAllCanvases(result));
       } catch (error) {
         console.error(error);
       } finally {
@@ -64,7 +69,7 @@ function CanvasesList() {
   return (
     <>
       <div
-        onClick={handleNewCanvasClick.current}
+        onClick={onNewCanvasClick}
         className="select-none cursor-pointer flex transform items-center rounded-lg px-3 py-3 transition-colors duration-300 text-gray-900 bg-[#9e99bf85] hover:text-gray-950 justify-start space-x-2 text-lg shadow-[#3c3d591f] shadow-lg border-[#ffffff45] hover:bg-[#6872a6af] backdrop-blur-[100px] border-2 group"
       >
         <BadgePlusIcon
@@ -73,7 +78,7 @@ function CanvasesList() {
         />
         <p className="text-md font-medium w-full truncate">New Canvas</p>
       </div>
-      {isLoading.length > 0 && (
+      {isLoading.length > 0 && user && (
         <>
           {isLoading.map((_, index) => (
             <div className="flex rounded-lg transition-colors bg-[#9e99bf85] space-x-2 text-lg shadow-[#3c3d591f] shadow-lg border-[#ffffff45] backdrop-blur-[100px] border-2">

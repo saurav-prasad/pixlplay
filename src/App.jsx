@@ -13,6 +13,7 @@ import { login } from "./app/features/auth";
 import getAuthToken from "./utils/getAuthToken";
 import getAllCanvases from "./utils/getAllCanvases";
 import { setAllCanvases } from "./app/features/allCanvases";
+import Alert from "./components/Alert";
 
 function App() {
   const dispatch = useDispatch();
@@ -73,6 +74,7 @@ function App() {
   return (
     <div className="App relative min-h-screen">
       <RouterProvider router={router} />
+      <Alert/>
     </div>
   );
 }
