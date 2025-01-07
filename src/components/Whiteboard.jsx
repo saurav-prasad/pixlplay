@@ -36,6 +36,8 @@ function Whiteboard({ toggleBackground }) {
   const [isToolsVisible, setToolsVisible] = useState(false); // State to track visibility of the tools
   const [isCanvasNotFound, setIsCanvasNotFound] = useState(false);
   const [isCanvasUpdate, setIsCanvasUpdate] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [previousPosition, setPreviousPosition] = useState({});
   // useRef
   const isDrawing = useRef(false);
   const stageRef = useRef(null);
@@ -44,7 +46,7 @@ function Whiteboard({ toggleBackground }) {
   const lastTouchDistance = useRef(null); // For pinch zoom
   const touchPanStart = useRef(null); // For panning
   const timeoutRef = useRef(null); // Ref to store the setTimeout ID
-  
+
   // custom hooks
   const { width, height } = useWindowDimensions();
   const isMobile = useDeviceType();
@@ -55,12 +57,15 @@ function Whiteboard({ toggleBackground }) {
   // dispatch
   const dispatch = useDispatch();
   // use params
-  const canvasId = useParams().id;
+  const params = useParams();
+  const canvasId = params.id;
 
+  // get canvas
   useEffect(() => {
     async function fetchData() {
+      // if (user) {
+      setIsLoading(true);
       try {
-        // console.log(canvasesReducer);
         if (canvasesReducer[canvasId]) {
           setLines(canvasesReducer[canvasId]);
         } else {
@@ -77,10 +82,30 @@ function Whiteboard({ toggleBackground }) {
           setIsCanvasNotFound(true);
         }
         console.error(error);
+      } finally {
+        if (previousPosition[canvasId]) {
+          setStagePosition(previousPosition[canvasId][0]);
+          setScale(previousPosition[canvasId][1]);
+        } else {
+          setStagePosition({
+            x: width / 2,
+            y: height / 2,
+          });
+          setScale(1);
+        }
+        setIsLoading(false);
       }
+      // }
     }
     fetchData();
-  }, [canvasId, canvasesReducer]);
+  }, [params, canvasesReducer]);
+
+  useEffect(() => {
+    setPreviousPosition((prev) => ({
+      ...prev,
+      [canvasId]: [stagePosition, scale],
+    }));
+  }, [stagePosition, scale]);
 
   const toggleSlider = () => {
     setSliderVisible(!isSliderVisible); // Toggle slider visibility
@@ -161,7 +186,6 @@ function Whiteboard({ toggleBackground }) {
       setLines(lines.concat());
     }
   };
- 
 
   const handleMouseUp = async () => {
     // End panning or drawing based on the current state
@@ -333,7 +357,7 @@ function Whiteboard({ toggleBackground }) {
 
   // saving the lines to db whenever the lines changes
   useEffect(() => {
-    if (isCanvasUpdate) {
+    if (isCanvasUpdate && user) {
       // Clear the existing timeout if any
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
@@ -351,7 +375,7 @@ function Whiteboard({ toggleBackground }) {
           setIsCanvasUpdate(false); // Reset the state after the update
           timeoutRef.current = null; // Clear the ref
         }
-      }, 1000);
+      }, 500);
     }
 
     // Cleanup the timeout when the component unmounts
@@ -386,7 +410,7 @@ function Whiteboard({ toggleBackground }) {
           onTouchEnd={handleTouchEnd}
         >
           <Layer>
-            {lines.length === 0 && !isCanvasNotFound && (
+            {!isLoading && lines.length === 0 && !isCanvasNotFound && (
               <Text
                 fontSize={isMobile ? 33 : 50}
                 text="Just start drawing"
@@ -450,6 +474,14 @@ function Whiteboard({ toggleBackground }) {
           />
         )}
         <Users />
+        {/* Loader */}
+        {isLoading && (
+          <div className="absolute top-0 md:left-4 bg-[#3636367c] w-[-webkit-fill-available] h-full flex justify-center items-center z-[9]">
+            {/* <h1 className="text-3xl text-white font-bold flex justify-center items-center gap-2"> */}
+            <span className="loader4"></span>
+            {/* </h1> */}
+          </div>
+        )}
         {isCanvasNotFound && (
           <div className="absolute top-0 md:left-4 bg-[#3636367c] w-[-webkit-fill-available] h-full flex justify-center items-center z-[9]">
             <h1 className="text-3xl text-white font-bold flex justify-center items-center gap-2">

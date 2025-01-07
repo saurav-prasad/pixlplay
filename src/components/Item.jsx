@@ -20,6 +20,7 @@ function Item({ name, id }) {
   const isMobile = useDeviceType();
   const dispatch = useDispatch();
   const [isPopupModal, setIsPopupModal] = useState();
+  const [isLoading, setIsLoading] = useState(false);
 
   // function to start the name editing
   const handleEditStart = () => {
@@ -34,13 +35,16 @@ function Item({ name, id }) {
 
   // function to save edited name
   const handleEditSave = async () => {
+    setIsLoading(true);
     try {
       const updatedName = await editCanvasName(id, editValue);
       dispatch(updateNameInAllCanvases({ id, name: editValue }));
       setOnEdit(null);
-      setEditValue("");
+      setEditValue(editValue);
     } catch (error) {
       console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -56,6 +60,7 @@ function Item({ name, id }) {
 
   const getResult = async (result) => {
     if (result) {
+      setIsLoading(true);
       try {
         const deletedCanvas = await deleteCanvasFunc(id);
         console.log(deletedCanvas);
@@ -63,6 +68,8 @@ function Item({ name, id }) {
         dispatch(deleteCanvas(id));
       } catch (error) {
         console.error(error);
+      } finally {
+        setIsLoading(false);
       }
     } else {
       console.log("Deletion canceled");
@@ -107,54 +114,60 @@ function Item({ name, id }) {
           )}
         </Link>
         <div className="flex h-[2.8rem] justify-start items-center px-3">
-          <div
-            className={`h-full w-9 flex justify-center items-center mx-2 group`}
-            title={onEdit ? "Save Changes" : "Edit name"}
-          >
-            {onEdit ? (
-              <CircleCheckBig
-                onClick={handleEditSave}
-                className={`w-7 h-7 ${
-                  !isMobile &&
-                  "transition-all group-hover:scale-[0.85] duration-200"
-                }`}
-                aria-hidden="true"
-              />
-            ) : (
-              <Pencil
-                onClick={handleEditStart}
-                className={`w-7 h-7 ${
-                  !isMobile &&
-                  "transition-all group-hover:rotate-90 group-hover:scale-[1.15] duration-200"
-                }`}
-                aria-hidden="true"
-              />
-            )}
-          </div>
-          <div
-            className="h-full w-9 flex justify-center items-center mx-2 group"
-            title={onEdit ? "Cancel" : "Delete"}
-          >
-            {onEdit ? (
-              <X
-                onClick={handleEditCancel}
-                className={`w-7 h-7 ${
-                  !isMobile &&
-                  "transition-all duration-200 group-hover:scale-125"
-                }`}
-                aria-hidden="true"
-              />
-            ) : (
-              <Trash2
-                onClick={handleDeleteCanvas}
-                className={`w-7 h-7 ${
-                  !isMobile &&
-                  "transition-all duration-200 group-hover:scale-110"
-                }`}
-                aria-hidden="true"
-              />
-            )}
-          </div>
+          {isLoading ? (
+            <span className="loader5"></span>
+          ) : (
+            <>
+              <div
+                className={`h-full w-9 flex justify-center items-center mx-2 group`}
+                title={onEdit ? "Save Changes" : "Edit name"}
+              >
+                {onEdit ? (
+                  <CircleCheckBig
+                    onClick={handleEditSave}
+                    className={`w-7 h-7 ${
+                      !isMobile &&
+                      "transition-all group-hover:scale-[0.85] duration-200"
+                    }`}
+                    aria-hidden="true"
+                  />
+                ) : (
+                  <Pencil
+                    onClick={handleEditStart}
+                    className={`w-7 h-7 ${
+                      !isMobile &&
+                      "transition-all group-hover:rotate-90 group-hover:scale-[1.15] duration-200"
+                    }`}
+                    aria-hidden="true"
+                  />
+                )}
+              </div>
+              <div
+                className="h-full w-9 flex justify-center items-center mx-2 group"
+                title={onEdit ? "Cancel" : "Delete"}
+              >
+                {onEdit ? (
+                  <X
+                    onClick={handleEditCancel}
+                    className={`w-7 h-7 ${
+                      !isMobile &&
+                      "transition-all duration-200 group-hover:scale-125"
+                    }`}
+                    aria-hidden="true"
+                  />
+                ) : (
+                  <Trash2
+                    onClick={handleDeleteCanvas}
+                    className={`w-7 h-7 ${
+                      !isMobile &&
+                      "transition-all duration-200 group-hover:scale-110"
+                    }`}
+                    aria-hidden="true"
+                  />
+                )}
+              </div>
+            </>
+          )}
         </div>
       </div>
       {isPopupModal && (

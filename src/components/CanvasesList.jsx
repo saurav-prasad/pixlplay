@@ -9,19 +9,23 @@ import { faker } from "@faker-js/faker";
 import createNewCanvas from "../utils/createNewCanvas";
 import getAllCanvases from "../utils/getAllCanvases";
 import throttling from "../utils/throttling";
+import ItemSkeleton from "./ItemSkeleton";
+import keyGenerator from "../utils/keyGenerator";
+import genEmptyArr from "../utils/genEmptyArr";
 
 function CanvasesList() {
   const [canvases, setCanvases] = useState([]);
   const dispatch = useDispatch();
   const { allCanvases } = useSelector((state) => state.allCanvasesReducer);
   const { user } = useSelector((state) => state.authReducer);
+  const [isLoading, setIsLoading] = useState(genEmptyArr(5));
 
-  // function to create a new canvas
   // function to create a new canvas
   const handleNewCanvasClick = useRef(null);
 
   useEffect(() => {
     handleNewCanvasClick.current = throttling(async () => {
+      setIsLoading(genEmptyArr(1));
       try {
         if (user) {
           const result = await createNewCanvas(user?.id);
@@ -29,23 +33,29 @@ function CanvasesList() {
         }
       } catch (error) {
         console.error(error);
+      } finally {
+        setIsLoading([]);
       }
     }, 1500);
   }, [user]);
 
   useEffect(() => {
     async function fetchData() {
-      try {
-        if (allCanvases) {
-          const sortedArr = sortArray(allCanvases);
-          setCanvases(sortedArr);
-        } else {
-          const response = await getAllCanvases();
-          dispatch(setAllCanvases(response));
-          setCanvases(response);
+      if (user) {
+        try {
+          if (allCanvases) {
+            const sortedArr = sortArray(allCanvases);
+            setCanvases(sortedArr);
+          } else {
+            const response = await getAllCanvases();
+            dispatch(setAllCanvases(response));
+            setCanvases(response);
+          }
+        } catch (error) {
+          console.error(error);
+        } finally {
+          setIsLoading([]);
         }
-      } catch (error) {
-        console.error(error);
       }
     }
     fetchData();
@@ -63,7 +73,17 @@ function CanvasesList() {
         />
         <p className="text-md font-medium w-full truncate">New Canvas</p>
       </div>
-      {allCanvases &&
+      {isLoading.length > 0 && (
+        <>
+          {isLoading.map((_, index) => (
+            <div className="flex rounded-lg transition-colors bg-[#9e99bf85] space-x-2 text-lg shadow-[#3c3d591f] shadow-lg border-[#ffffff45] backdrop-blur-[100px] border-2">
+              <ItemSkeleton />
+            </div>
+          ))}
+        </>
+      )}{" "}
+      {isLoading.length < 3 &&
+        allCanvases &&
         canvases.map((item, index) => (
           <Item key={item._id} name={item?.name} id={item._id} />
         ))}

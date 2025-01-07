@@ -5,8 +5,6 @@ import {
   LogIn,
   LogOut,
   Logs,
-  Minimize2,
-  UserRound,
   X,
 } from "lucide-react";
 import React, { useState } from "react";

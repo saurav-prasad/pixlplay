@@ -1,9 +1,13 @@
-import React, { useEffect, useRef, useState } from "react";
-import Whiteboard from "../components/Whiteboard";
-import Sidebar from "../components/Sidebar";
+import React, { lazy, Suspense, useEffect, useRef, useState } from "react";
+import "../components/Whiteboard";
 import useDeviceType from "../hooks/useDeviceType";
 import useWindowDimensions from "../hooks/useWindowDimensions";
 import CanvasHeader from "../components/CanvasHeader";
+import Loader from "../components/Loader";
+
+// lazy loaders
+const Whiteboard = lazy(() => import("../components/Whiteboard"));
+const Sidebar = lazy(() => import("../components/Sidebar"));
 
 function Canvas() {
   const backgroundConstants = [
@@ -28,6 +32,7 @@ function Canvas() {
       setBgIndex(0);
     }
   };
+
   useEffect(() => {
     document.body.style.overflowY = "hidden";
     window.scrollTo({
@@ -48,13 +53,17 @@ function Canvas() {
       {/* Sidebar */}
       {!isMobile && (
         <div className="w-60 hidden md:block shadow-md shadow-red-400">
-          <Sidebar />
+          <Suspense fallback={<Loader />}>
+            <Sidebar />
+          </Suspense>
         </div>
       )}
 
       {/* Whiteboard */}
       <div className={`flex-1`}>
-        <Whiteboard toggleBackground={toggleBackground} />
+        <Suspense fallback={<Loader />}>
+          <Whiteboard toggleBackground={toggleBackground} />
+        </Suspense>
       </div>
     </div>
   );

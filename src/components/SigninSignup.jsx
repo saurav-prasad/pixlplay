@@ -5,7 +5,7 @@ import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { Zoom } from "react-awesome-reveal";
 import CatWaving from "../assets/images/cat-waving.jpg";
 import CatSeeing from "../assets/images/cat-seeing.jpg";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { authRoute } from "../axios/axios";
 import { login } from "../app/features/auth";
 
@@ -28,6 +28,7 @@ function SigninSignup() {
   const location = useLocation();
   const isSignup = location.pathname === "/signup";
   const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.authReducer);
 
   const handlePasswordVisible = () => {
     setIsPasswordVisible(!isPasswordVisible);
@@ -130,6 +131,10 @@ function SigninSignup() {
       document.body.style.overflowY = "auto";
     };
   }, []);
+
+  useEffect(() => {
+    if (user) navigate("/");
+  }, [user]);
 
   return (
     <>

@@ -9,6 +9,7 @@ import {
   CircleCheckBig,
   X,
   House,
+  LogIn,
 } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -29,6 +30,8 @@ import useDeviceType from "../hooks/useDeviceType";
 import PopupModal from "./PopupModal";
 import throttling from "../utils/throttling";
 import { deleteCanvas } from "../app/features/canvases";
+import ItemSkeleton from "./ItemSkeleton";
+import genEmptyArr from "../utils/genEmptyArr";
 
 function Sidebar({ toggleSidebar }) {
   const [editIndex, setEditIndex] = useState(null);
@@ -43,6 +46,8 @@ function Sidebar({ toggleSidebar }) {
   const [isPopupModal, setIsPopupModal] = useState();
   const [deleteCanvasId, setDeleteCanvasId] = useState();
   const canvasId = useParams()?.id;
+  const [isLoading, setIsLoading] = useState();
+  const [isLoadingSkeleton, setIsLoadingSkeleton] = useState(genEmptyArr(5));
 
   // toggle popup modal
   const togglePopupModal = () => {
@@ -54,6 +59,7 @@ function Sidebar({ toggleSidebar }) {
 
   useEffect(() => {
     handleNewCanvasClick.current = throttling(async () => {
+      setIsLoadingSkeleton(genEmptyArr(1));
       try {
         if (user) {
           const result = await createNewCanvas(user?.id);
@@ -61,6 +67,8 @@ function Sidebar({ toggleSidebar }) {
         }
       } catch (error) {
         console.error(error);
+      } finally {
+        setIsLoadingSkeleton([]);
       }
     }, 1500);
   }, [user]);
@@ -85,6 +93,7 @@ function Sidebar({ toggleSidebar }) {
 
   const getResult = async (result) => {
     if (result) {
+      setIsLoading(deleteCanvasId);
       try {
         const deletedCanvas = await deleteCanvasFunc(deleteCanvasId);
         // console.log(deletedCanvas);
@@ -92,6 +101,8 @@ function Sidebar({ toggleSidebar }) {
         dispatch(deleteCanvas(deleteCanvasId));
       } catch (error) {
         console.error(error);
+      } finally {
+        setIsLoading(null);
       }
     } else {
       console.log("Deletion canceled");
@@ -99,13 +110,16 @@ function Sidebar({ toggleSidebar }) {
   };
   // function to save edited name
   const handleEditSave = async (id) => {
+    setIsLoading(id);
     try {
       const updatedName = await editCanvasName(id, editValue);
       dispatch(updateNameInAllCanvases({ id, name: editValue }));
       setEditIndex(null);
-      setEditValue("");
+      setEditValue(editValue);
     } catch (error) {
       console.error(error);
+    } finally {
+      setIsLoading(null);
     }
   };
 
@@ -147,6 +161,8 @@ function Sidebar({ toggleSidebar }) {
         }
       } catch (error) {
         console.error(error);
+      } finally {
+        setIsLoadingSkeleton([]);
       }
     }
     fetchData();
@@ -196,17 +212,21 @@ function Sidebar({ toggleSidebar }) {
               </span>
             </div>
           </div>
-
           {/* All Canvases */}
           <div className="flex-1 overflow-y-auto px-6 hideScrollbar space-y-2">
-            {allCanvases &&
+            {isLoadingSkeleton.length > 0 &&
+              isLoadingSkeleton.map((_, index) => (
+                <Skeleton key={index} />
+              ))}{" "}
+            {isLoadingSkeleton.length < 3 &&
+              allCanvases &&
               canvases.map((item, index) => (
                 <div
                   title={item.name}
                   key={item._id} // Use a stable key
                   className={`select-none cursor-pointer flex transform items-center rounded-lg transition-colors duration-300 hover:bg-gray-200 
                     ${
-                      item._id === canvasId && "bg-[#9ca3af96]"
+                      item._id === canvasId && "!bg-[#9ca3af96]"
                     } bg-gray-50 hover:text-gray-900 justify-between space-x-2`}
                 >
                   <div
@@ -227,32 +247,39 @@ function Sidebar({ toggleSidebar }) {
                       </p>
                     )}
                   </div>
+                  {/* edit / delete */}
                   <div className="flex space-x-4 py-2 px-3">
-                    {editIndex === index ? (
-                      <CircleCheckBig
-                        onClick={() => handleEditSave(item._id)}
-                        className="h-6 w-6 transform hover:rotate-90 hover:scale-125 duration-700"
-                        aria-hidden="true"
-                      />
+                    {isLoading === item._id ? (
+                      <span className="loader5"></span>
                     ) : (
-                      <Pencil
-                        onClick={() => handleEditStart(item.name, index)}
-                        className="h-6 w-6 transform hover:rotate-90 hover:scale-125 duration-300"
-                        aria-hidden="true"
-                      />
-                    )}
-                    {editIndex === index ? (
-                      <X
-                        onClick={handleEditCancel}
-                        className="h-6 w-6 transform hover:scale-150 duration-700"
-                        aria-hidden="true"
-                      />
-                    ) : (
-                      <Trash2
-                        onClick={() => handleDeleteCanvas(item._id)}
-                        className="h-6 w-6 transform hover:scale-150 duration-700"
-                        aria-hidden="true"
-                      />
+                      <>
+                        {editIndex === index ? (
+                          <CircleCheckBig
+                            onClick={() => handleEditSave(item._id)}
+                            className="h-6 w-6 transform hover:rotate-90 hover:scale-125 duration-700"
+                            aria-hidden="true"
+                          />
+                        ) : (
+                          <Pencil
+                            onClick={() => handleEditStart(item.name, index)}
+                            className="h-6 w-6 transform hover:rotate-90 hover:scale-125 duration-300"
+                            aria-hidden="true"
+                          />
+                        )}
+                        {editIndex === index ? (
+                          <X
+                            onClick={handleEditCancel}
+                            className="h-6 w-6 transform hover:scale-150 duration-700"
+                            aria-hidden="true"
+                          />
+                        ) : (
+                          <Trash2
+                            onClick={() => handleDeleteCanvas(item._id)}
+                            className="h-6 w-6 transform hover:scale-150 duration-700"
+                            aria-hidden="true"
+                          />
+                        )}
+                      </>
                     )}
                   </div>
                 </div>
@@ -262,18 +289,29 @@ function Sidebar({ toggleSidebar }) {
           {/* Profile and Sign-out */}
           <div className="px-6 py-5">
             <div className="space-y-4">
-              <span
-                onClick={() => navigate("/profile")}
-                className="-mx-3 mb-4 select-none cursor-pointer flex transform items-center rounded-lg px-3 py-2 transition-colors duration-300 hover:bg-gray-100 hover:text-gray-900"
-              >
-                <UserRound className="h-6 w-6" aria-hidden="true" />
-                <span className="mx-4 text-md font-medium">Profile</span>
-              </span>
+              {user && (
+                <span
+                  onClick={() => navigate("/profile")}
+                  className="-mx-3 mb-4 select-none cursor-pointer flex transform items-center rounded-lg px-3 py-2 transition-colors duration-300 hover:bg-gray-100 hover:text-gray-900"
+                >
+                  {/* <UserRound className="h-6 w-6" aria-hidden="true" /> */}
+                  <img
+                    className="h-7 object-contain w-7 rounded-full ring-1 ring-gray-800"
+                    alt={user?.username}
+                    src={user?.profilePhoto}
+                  />
+                  <span className="mx-4 text-md font-medium">Profile</span>
+                </span>
+              )}
               <span
                 onClick={handleLogout}
                 className="-mx-3 mb-4 select-none cursor-pointer flex transform items-center rounded-lg px-3 py-2 transition-colors duration-300 hover:bg-gray-100 hover:text-gray-900"
               >
-                <LogOut className="h-6 w-6" aria-hidden="true" />
+                {user ? (
+                  <LogOut className="h-6 w-6" aria-hidden="true" />
+                ) : (
+                  <LogIn className="h-6 w-6" aria-hidden="true" />
+                )}
                 <span className="mx-4 text-md font-medium">Sign-out</span>
               </span>
             </div>
@@ -288,3 +326,25 @@ function Sidebar({ toggleSidebar }) {
 }
 
 export default Sidebar;
+
+function Skeleton() {
+  return (
+    <>
+      <div
+        role="status"
+        className="w-full space-y-4 divide-y divide-gray-200 rounded shadow animate-pulse dark:divide-gray-700 px-3 py-3 dark:border-gray-700"
+      >
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="h-2.5 bg-gray-300 rounded-full dark:bg-gray-600 w-16 mb-2.5"></div>
+            <div className="w-20 h-2 bg-gray-200 rounded-full dark:bg-gray-700"></div>
+          </div>
+          <div>
+            <div className="h-2.5 bg-gray-300 rounded-full dark:bg-gray-600 w-9 mb-2.5"></div>
+            <div className="w-12 h-2 bg-gray-200 rounded-full dark:bg-gray-700"></div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}

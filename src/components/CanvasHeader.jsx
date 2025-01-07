@@ -32,6 +32,7 @@ function CanvasHeader() {
   const canvasId = useParams()?.id;
   const dispatch = useDispatch();
   const [isCanvasNotFound, setIsCanvasNotFound] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const toggle = () => {
     setToggle(!isToggle);
@@ -53,13 +54,16 @@ function CanvasHeader() {
 
   // function to save edited name
   const handleEditSave = async () => {
+    setIsLoading(true);
     try {
       const updatedName = await editCanvasName(canvasId, editValue);
       dispatch(updateNameInAllCanvases({ id: canvasId, name: editValue }));
       setOnEdit(false);
-      setEditValue("");
+      setEditValue(editValue);
     } catch (error) {
       console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -75,6 +79,7 @@ function CanvasHeader() {
 
   const getResult = async (result) => {
     if (result) {
+      setIsLoading(true);
       try {
         const deletedCanvas = await deleteCanvasFunc(canvasId);
         // console.log(deletedCanvas);
@@ -82,6 +87,8 @@ function CanvasHeader() {
         dispatch(deleteCanvas(canvasId));
       } catch (error) {
         console.error(error);
+      } finally {
+        setIsLoading(false);
       }
     } else {
       console.log("Deletion canceled");
@@ -94,6 +101,7 @@ function CanvasHeader() {
   };
 
   useEffect(() => {
+    setIsCanvasNotFound(false)
     const data = allCanvases?.filter((item) => item._id === canvasId)[0];
     setCanvasInfo(data);
   }, [canvasId, allCanvases]);
@@ -138,34 +146,43 @@ function CanvasHeader() {
             )}
           </div>
           {/* icons */}
-          <div className="flex space-x-4">
-            {/* edit - save */}
-            <div
-              className="cursor-pointer hover:bg-gray-200 p-2 rounded-md transition-all"
-              title={onEdit ? "Save Changes" : "Edit name"}
-            >
-              {onEdit ? (
-                <CircleCheckBig onClick={handleEditSave} aria-hidden="true" />
-              ) : (
-                <Pencil onClick={handleEditStart} aria-hidden="true" />
-              )}
-            </div>
-            {/* cancel - delete */}
-            <div
-              // onClick={onEdit ? handleEditEnd() : null}
-              className="cursor-pointer hover:bg-gray-200 p-2 rounded-md transition-all"
-              title={onEdit ? "Cancel" : "Delete"}
-            >
-              {onEdit ? (
-                <X onClick={handleEditCancel} aria-hidden="true" />
-              ) : (
-                <Trash2
-                  onClick={handleDeleteCanvas}
-                  aria-hidden="true"
-                  className="transition-all hover:scale-125 duration-200"
-                />
-              )}
-            </div>
+          <div className="flex space-x-4 items-center">
+            {isLoading ? (
+              <span className="loader5"></span>
+            ) : (
+              <>
+                {/* edit - save */}
+                <div
+                  className="cursor-pointer hover:bg-gray-200 p-2 rounded-md transition-all"
+                  title={onEdit ? "Save Changes" : "Edit name"}
+                >
+                  {onEdit ? (
+                    <CircleCheckBig
+                      onClick={handleEditSave}
+                      aria-hidden="true"
+                    />
+                  ) : (
+                    <Pencil onClick={handleEditStart} aria-hidden="true" />
+                  )}
+                </div>
+                {/* cancel - delete */}
+                <div
+                  // onClick={onEdit ? handleEditEnd() : null}
+                  className="cursor-pointer hover:bg-gray-200 p-2 rounded-md transition-all"
+                  title={onEdit ? "Cancel" : "Delete"}
+                >
+                  {onEdit ? (
+                    <X onClick={handleEditCancel} aria-hidden="true" />
+                  ) : (
+                    <Trash2
+                      onClick={handleDeleteCanvas}
+                      aria-hidden="true"
+                      className="transition-all hover:scale-125 duration-200"
+                    />
+                  )}
+                </div>
+              </>
+            )}
             {/* share */}
             <div className="cursor-pointer hover:bg-gray-200 p-2 rounded-md transition-all">
               <Share2 className="" />
