@@ -25,7 +25,7 @@ function Alert() {
       >
         <div
           id="toast-default"
-          className="alertContainer flex items-center w-full max-w-xs px-4 py-2 text-white  rounded-lg shadow"
+          className="alertContainer flex items-center w-fit max-w-md md:max-w-xl px-4 py-2 text-white  rounded-lg shadow"
           role="alert"
         >
           <div className="inline-flex items-center justify-center flex-shrink-0 w-7 h-7 bg-[#589efd] rounded-lg">

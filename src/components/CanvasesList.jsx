@@ -25,7 +25,7 @@ function CanvasesList() {
   const onNewCanvasClick = (e) => {
     setIsLoading(genEmptyArr(1));
     if (!user) {
-      dispatch(setAlert({ type: "danger", text: "Please Login first..." }));
+      dispatch(setAlert({ type: "danger", text: "Please Sign in first..." }));
     } else {
       handleNewCanvasClick.current();
     }
