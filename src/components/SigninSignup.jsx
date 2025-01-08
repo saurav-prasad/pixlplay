@@ -188,7 +188,7 @@ function SigninSignup() {
                         id="name"
                         value={formData.name}
                         onChange={handleOnChange}
-                        className="block py-2.5 px-0 w-full font-medium text-base text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-indigo-600 peer pr-9 !bg-transparent"
+                        className="block py-2.5 px-0 w-full font-medium text-base text-gray-900 border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-indigo-600 peer pr-9 !bg-transparent"
                         placeholder=" "
                       />
                       <label

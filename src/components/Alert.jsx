@@ -11,10 +11,10 @@ function Alert() {
     if (show) {
       timeOutId = setTimeout(() => {
         dispatch(unsetAlert());
-      }, 1000);
+      }, 1800);
     }
     return () => clearTimeout(timeOutId);
-  }, [show]);
+  }, [show]); 
 
   return (
     <>

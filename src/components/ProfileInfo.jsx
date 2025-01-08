@@ -1,90 +1,196 @@
-import React from "react";
+import { Contact, Mail, Phone, User } from "lucide-react";
+import React, { useEffect, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { authRoute } from "../axios/axios";
+import getAuthToken from "../utils/getAuthToken";
+import { setAlert } from "../app/features/alert";
+import { updateProfile } from "../app/features/auth";
+import throttling from "../utils/throttling";
 
 function ProfileInfo() {
+  const { user } = useSelector((state) => state.authReducer);
+  const [profileInfo, setProfileInfo] = useState({
+    name: user?.name,
+    username: user?.username,
+    phone: user?.phone,
+    email: user?.email,
+  });
+  const [updateStatus, setUpdateStatus] = useState(false);
+  const dispatch = useDispatch();
+  const onSubmitRef = useRef(null);
+
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    setUpdateStatus(true);
+    if (!user) {
+      dispatch(setAlert({ type: "danger", text: "Please Sign in first..." }));
+    } else {
+      onSubmitRef.current();
+    }
+  };
+
+  useEffect(() => {
+    onSubmitRef.current = throttling(async () => {
+      try {
+        const result = await authRoute.post("/updateuser", profileInfo, {
+          headers: { "auth-token": getAuthToken() },
+        });
+        // console.log(result);
+        dispatch(updateProfile({ ...result?.data?.data }));
+        dispatch(setAlert({ type: "success", text: result?.data?.message }));
+      } catch (error) {
+        console.error(error);
+        dispatch(
+          setAlert({ type: "danger", text: error?.response?.data?.message })
+        );
+      } finally {
+        setUpdateStatus(false);
+      }
+    }, 2000);
+  }, []);
+
+  const onCancel = (e) => {
+    setProfileInfo({
+      name: user?.name,
+      username: user.username,
+      phone: user?.phone,
+      email: user.email,
+    });
+  };
+  const onChange = (e) => {
+    setProfileInfo({ ...profileInfo, [e.target.name]: e.target.value });
+  };
+
+  useEffect(() => {
+    document.body.style.overflowY = "hidden";
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+    return () => {
+      document.body.style.overflowY = "auto";
+    };
+  }, []);
+
   return (
-    <form className="max-w-xl mx-auto pt-8 px-3 bg-red-400">
-      <div className="flex flex-col space-y-8">
+    <form
+      onSubmit={onSubmit}
+      className="max-w-xl mx-auto py-8 px-3 bg-[#9e99bf85] backdrop-blur-[9px] rounded-lg "
+    >
+      <div className="flex flex-col justify-center items-center space-y-8">
         <img
           className="h-24 w-24 rounded-full border p-1 border-y-purple-600 border-x-violet-500 object-cover"
-          src={
-            "https://firebasestorage.googleapis.com/v0/b/sociol-f6a41.appspot.com/o/profilePhoto%2F2021-Joker-Whatsapp-Dp-Images-download-1.jpg465ce86e-249b-4439-b5a9-ae69ad8486dc?alt=media&token=7d39067d-2193-45e2-831b-6d1188c5d710"
-          }
+          src={user?.profilePhoto}
           alt="dp"
         />
       </div>
-      {/* username */}
-      <div className="">
-        <label
-          htmlFor="username"
-          className="block text-base font-medium leading-6 text-gray-900 mb-3"
-        >
-          Username<span className="text-red-600">*</span>
-        </label>
-        <div className="mt-2">
-          <div className="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600">
-            <span className="flex select-none items-center pl-3 text-gray-500 sm:text-sm">
-              pixlplay.vercel.app/
-            </span>
-            <input
-              type="text"
-              name="username"
-              id="username"
-              required
-              className="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
-              placeholder="username"
-            />
-          </div>
+      <div className="space-y-5 mt-5">
+        {/* Username */}
+        <div className="relative z-0 w-full border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus-within:border-indigo-600 group flex justify-start items-center">
+          <span
+            className={`${
+              profileInfo?.username && "!flex"
+            } group-focus-within:flex hidden select-none items-center text-gray-700 text-sm mr-1`}
+          >
+            pixlplay.vercel.app/
+          </span>
+          <input
+            type="text"
+            name="username"
+            id="name"
+            value={profileInfo?.username}
+            onChange={onChange}
+            required
+            className={`sm:w-auto w-[inherit] flex-1 block py-2.5 px-0 !bg-transparent font-medium text-base text-gray-900pr-9 outline-none peer`}
+            placeholder=" "
+          />
+          <label
+            htmlFor="name"
+            className="select-none font-medium peer-focus:font-medium absolute text-base text-gray-900 dark:text-gray-900 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-indigo-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6 flex justify-start items-center gap-1"
+          >
+            Username <span className="text-red-700 text-lg">*</span>
+          </label>
+          <User className="text-gray-600 peer-focus:text-indigo-600 duration-300 transition-all" />
+        </div>
+        {/* Name */}
+        <div className="relative z-0 w-full group">
+          <input
+            type="text"
+            name="name"
+            id="name"
+            value={profileInfo?.name}
+            onChange={onChange}
+            required
+            className="block py-2.5 px-0 w-full font-medium text-base text-gray-900 border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-indigo-600 peer pr-9 !bg-transparent"
+            placeholder=" "
+          />
+          <label
+            htmlFor="name"
+            className="select-none font-medium peer-focus:font-medium absolute text-base text-gray-900 dark:text-gray-900 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-indigo-600  peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6 flex justify-start items-center gap-1"
+          >
+            Name <span className="text-red-700 text-lg">*</span>
+          </label>
+          <Contact className="absolute text-gray-600 peer-focus:text-indigo-600 duration-300 transition-all right-0 top-3" />
+        </div>
+        {/* Email */}
+        <div className="relative z-0 w-full group">
+          <input
+            type="email"
+            name="email"
+            id="name"
+            value={profileInfo?.email}
+            onChange={onChange}
+            required
+            className="block py-2.5 px-0 w-full font-medium text-base text-gray-900 border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-indigo-600 peer pr-9 !bg-transparent"
+            placeholder=" "
+          />
+          <label
+            htmlFor="email"
+            className="select-none font-medium peer-focus:font-medium absolute text-base text-gray-900 dark:text-gray-900 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-indigo-600  peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6 flex justify-start items-center gap-1"
+          >
+            Email
+            <span className="text-red-700 text-lg">*</span>
+          </label>
+          <Mail className="absolute text-gray-600 peer-focus:text-indigo-600 duration-300 transition-all right-0 top-3" />
+        </div>
+        {/* Phone */}
+        <div className="relative z-0 w-full group">
+          <input
+            type="number"
+            name="phone"
+            id="phone"
+            value={profileInfo?.phone}
+            onChange={onChange}
+            className="block py-2.5 px-0 w-full font-medium text-base text-gray-900 border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-indigo-600 peer pr-9 !bg-transparent"
+            placeholder=" "
+          />
+          <label
+            htmlFor="phone"
+            className="select-none font-medium peer-focus:font-medium absolute text-base text-gray-900 dark:text-gray-900 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-indigo-600  peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+          >
+            Phone
+          </label>
+          <Phone className="absolute text-gray-600 peer-focus:text-indigo-600 duration-300 transition-all right-0 top-3" />
         </div>
       </div>
-      {/* Name */}
-      <div>
-        <label
-          htmlFor="name"
-          className="block text-base font-medium leading-6 text-gray-900 mb-3"
+
+      <div className="mt-5 flex items-center justify-end gap-x-6">
+        <button
+          disabled={updateStatus}
+          onClick={onCancel}
+          type="button"
+          className="select-none text-gray-900 transition-all bg-transparent border border-gray-300 hover:ring-1 hover:ring-gray-100 rounded-lg text-sm px-4 py-2 font-semibold focus:bg-[#ffffff62]"
         >
-          Name<span className="text-red-600">*</span>
-        </label>
-        <input
-          id="name"
-          name="name"
-          type="text"
-          required
-          placeholder="Enter your name"
-          className="block w-full px-2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-        />
-      </div>
-      {/* email */}
-      <div>
-        <label
-          htmlFor="email"
-          className="block text-base font-medium leading-6 text-gray-900 mb-3"
+          Cancel
+        </button>
+
+        <button
+          type="submit"
+          disabled={updateStatus}
+          className="text-gray-900 bg-gradient-to-r transition-all from-red-200 via-red-300 to-yellow-200 focus:bg-gradient-to-bl hover:ring-2 hover:ring-red-400 font-semibold rounded-lg text-sm px-5 py-2.5 text-center flex justify-center items-center w-[69px] h-[40px]"
         >
-          Email<span className="text-red-600 ">*</span>
-        </label>
-        <input
-          id="email"
-          name="email"
-          type="email"
-          required
-          className="block w-full rounded-md border-0 px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-          placeholder="Enter your email"
-        />
-      </div>
-      {/* phone */}
-      <div>
-        <label
-          htmlFor="phone"
-          className="block text-base font-medium leading-6 text-gray-900 mb-3"
-        >
-          Phone
-        </label>
-        <input
-          id="phone"
-          name="phone"
-          type="number"
-          placeholder="Enter your phone number"
-          className="block w-full rounded-md border-0 px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-        />
+          {updateStatus ? <span className="loader6" /> : "Save"}
+        </button>
       </div>
     </form>
   );
