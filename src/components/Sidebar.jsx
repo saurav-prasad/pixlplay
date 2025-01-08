@@ -33,6 +33,7 @@ import { deleteCanvas } from "../app/features/canvases";
 import ItemSkeleton from "./ItemSkeleton";
 import genEmptyArr from "../utils/genEmptyArr";
 import { setAlert } from "../app/features/alert";
+import useLogout from "../hooks/useLogout";
 
 function Sidebar({ toggleSidebar }) {
   const [editIndex, setEditIndex] = useState(null);
@@ -49,6 +50,7 @@ function Sidebar({ toggleSidebar }) {
   const canvasId = useParams()?.id;
   const [isLoading, setIsLoading] = useState();
   const [isLoadingSkeleton, setIsLoadingSkeleton] = useState(genEmptyArr(5));
+  const handleLogoutHook = useLogout();
 
   // toggle popup modal
   const togglePopupModal = () => {
@@ -140,8 +142,7 @@ function Sidebar({ toggleSidebar }) {
   // logout the user
   const handleLogout = () => {
     if (user) {
-      dispatch(logout());
-      removeAuthToken();
+      handleLogoutHook()
       navigate("/");
     } else {
       navigate("/signin");
@@ -160,7 +161,7 @@ function Sidebar({ toggleSidebar }) {
   useEffect(() => {
     async function fetchData() {
       try {
-        if (allCanvases) {
+        if (allCanvases && user) {
           const sortedArr = sortArray(allCanvases);
           setCanvases(sortedArr);
         } else {

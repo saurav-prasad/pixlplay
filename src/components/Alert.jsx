@@ -52,7 +52,7 @@ function Alert() {
               </svg>
             )}
           </div>
-          <div className="ms-3 text-sm font-bold text-gray-900">{text}</div>
+          <div className="ms-3 text-sm font-bold text-gray-900 select-none">{text}</div>
         </div>
       </div>
     </>

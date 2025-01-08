@@ -6,6 +6,7 @@ import getAuthToken from "../utils/getAuthToken";
 import { setAlert } from "../app/features/alert";
 import { updateProfile } from "../app/features/auth";
 import throttling from "../utils/throttling";
+import { useNavigate } from "react-router-dom";
 
 function ProfileInfo() {
   const { user } = useSelector((state) => state.authReducer);
@@ -18,6 +19,7 @@ function ProfileInfo() {
   const [updateStatus, setUpdateStatus] = useState(false);
   const dispatch = useDispatch();
   const onSubmitRef = useRef(null);
+  const navigate = useNavigate();
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -56,6 +58,7 @@ function ProfileInfo() {
       phone: user?.phone,
       email: user.email,
     });
+    navigate(-1)
   };
   const onChange = (e) => {
     setProfileInfo({ ...profileInfo, [e.target.name]: e.target.value });
@@ -75,11 +78,11 @@ function ProfileInfo() {
   return (
     <form
       onSubmit={onSubmit}
-      className="max-w-xl mx-auto py-8 px-3 bg-[#9e99bf85] backdrop-blur-[9px] rounded-lg "
+      className="max-w-xl mx-auto py-8 sm:px-5 px-3 bg-[#9e99bf85] backdrop-blur-[9px] rounded-lg "
     >
       <div className="flex flex-col justify-center items-center space-y-8">
         <img
-          className="h-24 w-24 rounded-full border p-1 border-y-purple-600 border-x-violet-500 object-cover"
+          className="h-24 w-24 rounded-full border p-1 bg-[#fdfdfd1c] border-y-purple-600 border-x-violet-500 object-cover"
           src={user?.profilePhoto}
           alt="dp"
         />

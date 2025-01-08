@@ -33,8 +33,11 @@ const allCanvasesSlice = createSlice({
             })
             return { allCanvases: [...newState] }
         },
+        removeAllCanvases: (state, action) => {
+            return { allCanvases: null }
+        }
     }
 })
 
-export const { setAllCanvases, addInAllCanvases, deleteInAllCanvases, updateInAllCanvases, updateNameInAllCanvases } = allCanvasesSlice.actions
+export const { setAllCanvases, addInAllCanvases, deleteInAllCanvases, updateInAllCanvases, updateNameInAllCanvases,removeAllCanvases } = allCanvasesSlice.actions
 export default allCanvasesSlice.reducer

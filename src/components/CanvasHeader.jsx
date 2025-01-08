@@ -1,5 +1,6 @@
 import {
   CircleCheckBig,
+  CloudUpload,
   Info,
   Logs,
   Pencil,
@@ -20,6 +21,7 @@ import editCanvasName from "../utils/editCanvasName";
 import { useDispatch, useSelector } from "react-redux";
 import PopupModal from "./PopupModal";
 import { deleteCanvas } from "../app/features/canvases";
+import { setAlert } from "../app/features/alert";
 
 function CanvasHeader() {
   const [isToggle, setToggle] = useState(false);
@@ -43,6 +45,8 @@ function CanvasHeader() {
     if (!isCanvasNotFound) {
       setOnEdit(true);
       setEditValue(canvasInfo.name);
+    } else {
+      dispatch(setAlert({ type: "danger", text: "Not allowed!" }));
     }
   };
 
@@ -60,8 +64,12 @@ function CanvasHeader() {
       dispatch(updateNameInAllCanvases({ id: canvasId, name: editValue }));
       setOnEdit(false);
       setEditValue(editValue);
+      dispatch(setAlert({ text: "Canvas name Updated Successfully" }));
     } catch (error) {
       console.error(error);
+      dispatch(
+        setAlert({ type: "danger", text: error?.response?.data?.message })
+      );
     } finally {
       setIsLoading(false);
     }
@@ -74,7 +82,9 @@ function CanvasHeader() {
 
   // function to delete the canvas
   const handleDeleteCanvas = async (id) => {
-    !isCanvasNotFound && togglePopupModal();
+    !isCanvasNotFound
+      ? togglePopupModal()
+      : dispatch(setAlert({ type: "danger", text: "Not allowed!" }));
   };
 
   const getResult = async (result) => {
@@ -85,8 +95,12 @@ function CanvasHeader() {
         // console.log(deletedCanvas);
         dispatch(deleteInAllCanvases(canvasId));
         dispatch(deleteCanvas(canvasId));
+        dispatch(setAlert({ text: "Canvas deleted Successfully" }));
       } catch (error) {
         console.error(error);
+        dispatch(
+          setAlert({ type: "danger", text: error?.response?.data?.message })
+        );
       } finally {
         setIsLoading(false);
       }
@@ -101,7 +115,7 @@ function CanvasHeader() {
   };
 
   useEffect(() => {
-    setIsCanvasNotFound(false)
+    setIsCanvasNotFound(false);
     const data = allCanvases?.filter((item) => item._id === canvasId)[0];
     setCanvasInfo(data);
   }, [canvasId, allCanvases]);
@@ -184,8 +198,8 @@ function CanvasHeader() {
               </>
             )}
             {/* share */}
-            <div className="cursor-pointer hover:bg-gray-200 p-2 rounded-md transition-all">
-              <Share2 className="" />
+            <div title="save changes" className="cursor-pointer hover:bg-gray-200 p-2 rounded-md transition-all">
+              <CloudUpload className="" />
             </div>
           </div>
         </div>

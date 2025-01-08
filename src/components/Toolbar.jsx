@@ -9,6 +9,7 @@ import {
   Eraser,
   SwitchCamera,
   TriangleAlert,
+  CloudUpload,
 } from "lucide-react";
 import isDarkColor from "../utils/isDarkColor";
 import { useDispatch } from "react-redux";
@@ -30,6 +31,7 @@ function Toolbar({
   toggleTools,
   toggleBackground,
   canvasId,
+  onSaveChanges,
 }) {
   const colorRef = useRef(null);
   const isDark = isDarkColor(color);
@@ -53,7 +55,7 @@ function Toolbar({
     });
   };
 
-  const handleClearCanvas = async (result=false) => {
+  const handleClearCanvas = async (result = false) => {
     if (result) {
       try {
         setLines([]);
@@ -179,6 +181,17 @@ function Toolbar({
         >
           <Share2 className="h-6 w-6 text-gray-900" />
           <Popup isPopupVisible={visiblePopup === "share"} text={"Share"} />
+        </div>
+        {/* Save */}
+        <div
+          onClick={onSaveChanges}
+          title="Save changes"
+          onMouseEnter={() => handleMouseEnter("save")}
+          onMouseLeave={handleMouseLeave}
+          className={`relative cursor-pointer p-2 rounded-full w-fit h-fit border hover:bg-gray-200 hidden md:block`}
+        >
+          <CloudUpload className="h-6 w-6 text-gray-900" />
+          <Popup isPopupVisible={visiblePopup === "save"} text={"Save"} />
         </div>
       </div>
       {isClearCanvasPopup && (

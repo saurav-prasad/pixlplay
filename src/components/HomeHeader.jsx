@@ -14,6 +14,7 @@ import keyGenerator from "../utils/keyGenerator";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../app/features/auth";
 import removeAuthToken from "../utils/removeAuthToken";
+import useLogout from "../hooks/useLogout";
 
 function HomeHeader() {
   const location = useLocation();
@@ -21,16 +22,15 @@ function HomeHeader() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { user } = useSelector((state) => state.authReducer);
   const dispatch = useDispatch();
-
+  const handleLogout = useLogout();
+  
   const toggleMenuOpen = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
   const handleAuthClick = () => {
     if (user) {
-      dispatch(logout());
-      removeAuthToken();
-      navigate("/signin");
+      handleLogout()
     } else {
       navigate("/signin");
     }

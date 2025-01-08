@@ -8,6 +8,7 @@ import CatSeeing from "../assets/images/cat-seeing.jpg";
 import { useDispatch, useSelector } from "react-redux";
 import { authRoute } from "../axios/axios";
 import { login } from "../app/features/auth";
+import { setAlert } from "../app/features/alert";
 
 function SigninSignup() {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
@@ -77,6 +78,7 @@ function SigninSignup() {
     } catch (error) {
       console.log(error);
       setError(error.response.data.message);
+      dispatch(setAlert({ type: "danger", text: error.response.data.message }));
       setTimeout(() => {
         setError();
       }, 5000);
@@ -85,7 +87,27 @@ function SigninSignup() {
   };
 
   // handle test user sign in
-  const handleOnTestClick = () => {};
+  const handleOnTestClick = async () => {
+    try {
+      const result = await authRoute.post("/loginuser", {
+        email: "test@pixlplay.com",
+        password: "test123",
+      });
+      const { token: _, ...rest } = result.data.data;
+      dispatch(login(rest));
+      localStorage.setItem("token", result.data.data.token);
+    } catch (error) {
+      console.log(error);
+      setError(error.response.data.message);
+      dispatch(
+        setAlert({ type: "danger", text: error?.response?.data?.message })
+      );
+      setTimeout(() => {
+        setError();
+      }, 5000);
+      setIsLoading(false);
+    }
+  };
 
   // switch sign in and sign up
   const toggleAuth = (e) => {

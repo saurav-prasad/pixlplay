@@ -16,6 +16,7 @@ import getCanvas from "../utils/getCanvas";
 import { addCanvas, updateCanvas } from "../app/features/canvases";
 import throttling from "../utils/throttling";
 import updateCanvasFunc from "../utils/updateCanvas";
+import { setAlert } from "../app/features/alert";
 
 function Whiteboard({ toggleBackground }) {
   // useState
@@ -46,7 +47,8 @@ function Whiteboard({ toggleBackground }) {
   const lastTouchDistance = useRef(null); // For pinch zoom
   const touchPanStart = useRef(null); // For panning
   const timeoutRef = useRef(null); // Ref to store the setTimeout ID
-
+  const saveChangesRef = useRef(null);
+  const saveChangesLinesRef = useRef(null);
   // custom hooks
   const { width, height } = useWindowDimensions();
   const isMobile = useDeviceType();
@@ -66,14 +68,16 @@ function Whiteboard({ toggleBackground }) {
       // if (user) {
       setIsLoading(true);
       try {
-        if (canvasesReducer[canvasId]) {
-          setLines(canvasesReducer[canvasId]);
-        } else {
-          const response = await getCanvas(canvasId);
-          if (response.canvas) {
-            dispatch(addCanvas(response));
+        if (user) {
+          if (canvasesReducer[canvasId] && user) {
+            setLines(canvasesReducer[canvasId]);
           } else {
-            dispatch(addCanvas({ ...response, canvas: [] }));
+            const response = await getCanvas(canvasId);
+            if (response.canvas) {
+              dispatch(addCanvas(response));
+            } else {
+              dispatch(addCanvas({ ...response, canvas: [] }));
+            }
           }
         }
         setIsCanvasNotFound(false);
@@ -98,7 +102,7 @@ function Whiteboard({ toggleBackground }) {
       // }
     }
     fetchData();
-  }, [params, canvasesReducer]);
+  }, [canvasId, canvasesReducer]);
 
   useEffect(() => {
     setPreviousPosition((prev) => ({
@@ -176,14 +180,16 @@ function Whiteboard({ toggleBackground }) {
         y: (pos.y - stagePosition.y) / scale,
       };
 
-      // Update the last line
-      let lastLine = lines[lines.length - 1];
+      // Safely update the last line
+      const updatedLines = [...lines];
+      let lastLine = updatedLines[updatedLines.length - 1];
       lastLine.points = lastLine.points.concat([
         transformedPos.x,
         transformedPos.y,
       ]);
       lines.splice(lines.length - 1, 1, lastLine);
-      setLines(lines.concat());
+
+      setLines(updatedLines); // Update the state
     }
   };
 
@@ -298,12 +304,14 @@ function Whiteboard({ toggleBackground }) {
         y: (pointerPos.y - stagePosition.y) / scale,
       };
 
-      let lastLine = lines[lines.length - 1];
+      const updatedLines = [...lines]; // Create a new array
+      let lastLine = updatedLines[updatedLines.length - 1];
       lastLine.points = lastLine.points.concat([
         transformedPos.x,
         transformedPos.y,
       ]);
       lines.splice(lines.length - 1, 1, lastLine);
+
       setLines(lines.concat());
     } else if (e.evt.touches.length === 2) {
       // Two fingers: panning or zooming
@@ -386,6 +394,32 @@ function Whiteboard({ toggleBackground }) {
     };
   }, [isCanvasUpdate, user, canvasId, lines]);
 
+  const onSaveChanges = (e) => {
+    if (lines.length > 0) {
+      saveChangesLinesRef.current = lines;
+      saveChangesRef.current();
+    }
+  };
+
+  useEffect(() => {
+    saveChangesRef.current = throttling(async () => {
+      try {
+        if (user) {
+          const result = await updateCanvasFunc(
+            canvasId,
+            saveChangesLinesRef.current
+          );
+          dispatch(setAlert({ text: "Changes uploaded to cloud" }));
+        }
+      } catch (error) {
+        console.error("Error updating canvas:", error);
+        dispatch(
+          setAlert({ type: "danger", text: error?.response?.data?.message })
+        );
+      }
+    }, 4000);
+  }, []);
+
   return (
     <>
       <div className="w-fit border float-end relative">
@@ -447,8 +481,10 @@ function Whiteboard({ toggleBackground }) {
             onRedo={onRedo}
             onReposition={onReposition}
             setLines={setLines}
+            lines={lines}
             toggleSlider={toggleSlider}
             toggleTools={toggleTools}
+            onSaveChanges={onSaveChanges}
           />
         </div>
         {isSliderVisible && (
@@ -460,6 +496,7 @@ function Whiteboard({ toggleBackground }) {
           />
         )}
         <UndoRedo
+          onSaveChanges={onSaveChanges}
           linesArr={lines}
           redoArr={redo}
           onUndo={onUndo}
@@ -476,7 +513,7 @@ function Whiteboard({ toggleBackground }) {
         <Users />
         {/* Loader */}
         {isLoading && (
-          <div className="absolute top-0 md:left-4 bg-[#3636367c] w-[-webkit-fill-available] h-full flex justify-center items-center z-[9]">
+          <div className="absolute top-0 left-4 bg-[#3636367c] w-[-webkit-fill-available] h-full flex justify-center items-center z-[9]">
             {/* <h1 className="text-3xl text-white font-bold flex justify-center items-center gap-2"> */}
             <span className="loader4"></span>
             {/* </h1> */}

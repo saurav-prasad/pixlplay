@@ -1,27 +1,26 @@
-import { createSlice } from "@reduxjs/toolkit"
+import { createSlice } from "@reduxjs/toolkit";
 
-const initialState = {}
+const initialState = {};
 
 const canvasesSlice = createSlice({
     initialState,
-    name: 'canvases',
+    name: "canvases",
     reducers: {
         addCanvas: (state, action) => {
-            const newCanvas = {
-                [action.payload.id]: [...action.payload.canvas],
-            }
-            return { ...state, ...newCanvas }
+            state[action.payload.id] = [...action.payload.canvas];
         },
         deleteCanvas: (state, action) => {
-            const { [action.payload]: _, ...rest } = state
-            return rest
+            const { [action.payload]: _, ...rest } = state;
+            return rest;
         },
         updateCanvas: (state, action) => {
-            return { ...state, [action.payload.id]: action.payload.canvas }
+            state[action.payload.id] = action.payload.canvas;
         },
+        removeCanvas: (state) => {
+            return {};
+        },
+    },
+});
 
-    }
-})
-
-export const { addCanvas, deleteCanvas, updateCanvas } = canvasesSlice.actions
-export default canvasesSlice.reducer
+export const { addCanvas, deleteCanvas, updateCanvas, removeCanvas } = canvasesSlice.actions;
+export default canvasesSlice.reducer;

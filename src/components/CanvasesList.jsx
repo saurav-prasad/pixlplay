@@ -81,7 +81,7 @@ function CanvasesList() {
       {isLoading.length > 0 && user && (
         <>
           {isLoading.map((_, index) => (
-            <div className="flex rounded-lg transition-colors bg-[#9e99bf85] space-x-2 text-lg shadow-[#3c3d591f] shadow-lg border-[#ffffff45] backdrop-blur-[100px] border-2">
+            <div key={index} className="flex rounded-lg transition-colors bg-[#9e99bf85] space-x-2 text-lg shadow-[#3c3d591f] shadow-lg border-[#ffffff45] backdrop-blur-[100px] border-2">
               <ItemSkeleton />
             </div>
           ))}
