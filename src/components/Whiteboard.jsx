@@ -8,7 +8,7 @@ import Toolbar from "./Toolbar";
 import UndoRedo from "./UndoRedo";
 import Slider from "./Slider";
 import Tools from "./Tools";
-import { Lock, Pen } from "lucide-react";
+import { FileLock2, Lock, Pen } from "lucide-react";
 import Users from "./Users";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
@@ -17,6 +17,7 @@ import { addCanvas, updateCanvas } from "../app/features/canvases";
 import throttling from "../utils/throttling";
 import updateCanvasFunc from "../utils/updateCanvas";
 import { setAlert } from "../app/features/alert";
+import OnlineUsers from "./OnlineUsers";
 
 function Whiteboard({ toggleBackground }) {
   // useState
@@ -62,7 +63,7 @@ function Whiteboard({ toggleBackground }) {
   const params = useParams();
   const canvasId = params.id;
 
-  // get canvas
+  // get canvas when mounted
   useEffect(() => {
     async function fetchData() {
       // if (user) {
@@ -104,6 +105,7 @@ function Whiteboard({ toggleBackground }) {
     fetchData();
   }, [canvasId, canvasesReducer]);
 
+  // check previous canvas position
   useEffect(() => {
     setPreviousPosition((prev) => ({
       ...prev,
@@ -111,9 +113,11 @@ function Whiteboard({ toggleBackground }) {
     }));
   }, [stagePosition, scale]);
 
+  // toggle pen size selection menu
   const toggleSlider = () => {
     setSliderVisible(!isSliderVisible); // Toggle slider visibility
   };
+  // toggle tools selection menu
   const toggleTools = () => {
     setToolsVisible(!isToolsVisible); // Toggle slider visibility
   };
@@ -188,7 +192,6 @@ function Whiteboard({ toggleBackground }) {
         transformedPos.y,
       ]);
       lines.splice(lines.length - 1, 1, lastLine);
-
       setLines(updatedLines); // Update the state
     }
   };
@@ -230,17 +233,27 @@ function Whiteboard({ toggleBackground }) {
   const onUndo = (e) => {
     e.preventDefault();
     if (lines.length > 0) {
-      console.log(lines.length);
+      // console.log(lines.length);
       setRedo([...redo, lines[lines.length - 1]]);
       setLines((e) => e.slice(0, e.length - 1));
+      dispatch(
+        updateCanvas({ id: canvasId, canvas: lines.slice(0, lines.length - 1) })
+      );
     }
   };
+
   // redo function
   const onRedo = (e) => {
     e.preventDefault();
     if (redo.length > 0) {
       setLines([...lines, redo[redo.length - 1]]);
       setRedo((e) => e.slice(0, e.length - 1));
+      dispatch(
+        updateCanvas({
+          id: canvasId,
+          canvas: [...lines, redo[redo.length - 1]],
+        })
+      );
     }
   };
 
@@ -394,13 +407,14 @@ function Whiteboard({ toggleBackground }) {
     };
   }, [isCanvasUpdate, user, canvasId, lines]);
 
+  // handle on save button click
   const onSaveChanges = (e) => {
     if (lines.length > 0) {
       saveChangesLinesRef.current = lines;
       saveChangesRef.current();
     }
   };
-
+  // handle on save button click => throttling
   useEffect(() => {
     saveChangesRef.current = throttling(async () => {
       try {
@@ -418,7 +432,7 @@ function Whiteboard({ toggleBackground }) {
         );
       }
     }, 4000);
-  }, []);
+  }, [canvasId]);
 
   return (
     <>
@@ -513,18 +527,20 @@ function Whiteboard({ toggleBackground }) {
         <Users />
         {/* Loader */}
         {isLoading && (
-          <div className="absolute top-0 left-4 bg-[#3636367c] w-[-webkit-fill-available] h-full flex justify-center items-center z-[9]">
+          <div className="absolute top-0 md:left-4 left-0 bg-[#3636367c] w-[-webkit-fill-available] h-full flex justify-center items-center z-[9]">
             {/* <h1 className="text-3xl text-white font-bold flex justify-center items-center gap-2"> */}
             <span className="loader4"></span>
             {/* </h1> */}
           </div>
         )}
         {isCanvasNotFound && (
-          <div className="absolute top-0 md:left-4 bg-[#3636367c] w-[-webkit-fill-available] h-full flex justify-center items-center z-[9]">
-            <h1 className="text-3xl text-white font-bold flex justify-center items-center gap-2">
-              <Lock className="w-8 h-8 text-red-600" />
-              Select a Canvas first!
-            </h1>
+          <div className="absolute top-0 md:left-3 bg-[#3636367c] w-[-webkit-fill-available] h-full flex justify-center items-center z-[9]">
+            <div className="shadow-2xl shadow-[#9e99bf00] bg-[#9e99bf00] backdrop-blur-[3px] px-2 py-3 rounded-full">
+              <h1 className="text-3xl text-white font-bold flex justify-center items-center gap-2">
+                <FileLock2 className="w-8 h-8 text-[#f5dddd]" />
+                Select a Canvas first!
+              </h1>
+            </div>
           </div>
         )}
       </div>

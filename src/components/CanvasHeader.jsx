@@ -199,7 +199,7 @@ function CanvasHeader() {
             )}
             {/* share */}
             <div title="save changes" className="cursor-pointer hover:bg-gray-200 p-2 rounded-md transition-all">
-              <CloudUpload className="" />
+              <Share2 className="" />
             </div>
           </div>
         </div>

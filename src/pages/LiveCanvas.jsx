@@ -1,15 +1,15 @@
 import React, { lazy, Suspense, useEffect, useRef, useState } from "react";
 import "../components/Whiteboard";
 import useDeviceType from "../hooks/useDeviceType";
-import useWindowDimensions from "../hooks/useWindowDimensions";
 import CanvasHeader from "../components/CanvasHeader";
 import Loader from "../components/Loader";
+import socket from "../socket/socket";
 
 // lazy loaders
 const Whiteboard = lazy(() => import("../components/Whiteboard"));
 const Sidebar = lazy(() => import("../components/Sidebar"));
 
-function Canvas() {
+function LiveCanvas() {
   const backgroundConstants = [
     "#ff000000",
     "#e5e7eb",
@@ -20,29 +20,24 @@ function Canvas() {
   const [bgIndex, setBgIndex] = useState(0);
   const backgroundRef = useRef(null);
   const isMobile = useDeviceType();
-  const { width, height } = useWindowDimensions();
 
   const toggleBackground = () => {
     if (bgIndex < backgroundConstants.length - 1) {
       backgroundRef.current.style.backgroundColor =
         backgroundConstants[bgIndex + 1];
+      localStorage.setItem("backdrop", backgroundConstants[bgIndex + 1]);
       setBgIndex((prev) => prev + 1);
-      localStorage.setItem(
-        "background-color",
-        backgroundConstants[bgIndex + 1]
-      );
     } else {
       backgroundRef.current.style.backgroundColor = backgroundConstants[0];
+      localStorage.setItem("backdrop", backgroundConstants[0]);
       setBgIndex(0);
-      localStorage.setItem("background-color", backgroundConstants[0]);
     }
   };
 
-  // check if there are background color preferences saved
   useEffect(() => {
-    const storedBgColor = localStorage.getItem("background-color");
-    if (storedBgColor) {
-      backgroundRef.current.style.backgroundColor = storedBgColor;
+    const storedBackdrop = localStorage.getItem("backdrop");
+    if (storedBackdrop) {
+      backgroundRef.current.style.backgroundColor = storedBackdrop;
     }
   }, []);
 
@@ -82,4 +77,4 @@ function Canvas() {
   );
 }
 
-export default Canvas;
+export default LiveCanvas;

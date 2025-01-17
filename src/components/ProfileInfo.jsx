@@ -7,13 +7,14 @@ import { setAlert } from "../app/features/alert";
 import { updateProfile } from "../app/features/auth";
 import throttling from "../utils/throttling";
 import { useNavigate } from "react-router-dom";
+import areObjectsEqual from "../utils/areObjectsEqual";
 
 function ProfileInfo() {
   const { user } = useSelector((state) => state.authReducer);
   const [profileInfo, setProfileInfo] = useState({
     name: user?.name,
     username: user?.username,
-    phone: user?.phone,
+    phone: user?.phone || "",
     email: user?.email,
   });
   const [updateStatus, setUpdateStatus] = useState(false);
@@ -27,7 +28,19 @@ function ProfileInfo() {
     if (!user) {
       dispatch(setAlert({ type: "danger", text: "Please Sign in first..." }));
     } else {
-      onSubmitRef.current();
+      // Compare the fields
+      const fieldsToCompare = ["username", "email", "phone", "name"];
+      if (areObjectsEqual(user, profileInfo, fieldsToCompare)) {
+        dispatch(
+          setAlert({
+            type: "danger",
+            text: "No changes detected - cannot update.",
+          })
+        );
+        setUpdateStatus(false);
+      } else {
+        onSubmitRef.current();
+      }
     }
   };
 
@@ -49,17 +62,18 @@ function ProfileInfo() {
         setUpdateStatus(false);
       }
     }, 2000);
-  }, []);
+  }, [profileInfo]);
 
   const onCancel = (e) => {
     setProfileInfo({
       name: user?.name,
       username: user.username,
-      phone: user?.phone,
+      phone: user?.phone || "",
       email: user.email,
     });
-    navigate(-1)
+    navigate(-1);
   };
+
   const onChange = (e) => {
     setProfileInfo({ ...profileInfo, [e.target.name]: e.target.value });
   };

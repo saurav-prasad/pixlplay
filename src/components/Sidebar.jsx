@@ -310,7 +310,7 @@ function Sidebar({ toggleSidebar }) {
                     alt={user?.username}
                     src={user?.profilePhoto}
                   />
-                  <span className="mx-4 text-md font-medium">Profile</span>
+                  <span className="mx-4 text-md font-medium truncate">{user?.username}</span>
                 </span>
               )}
               <span
