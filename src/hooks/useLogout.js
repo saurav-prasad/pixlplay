@@ -17,6 +17,7 @@ const useLogout = () => {
         removeAuthToken()
         socket.disconnect()
         navigate("/signin");
+        localStorage.removeItem("background-color");
     };
 
 

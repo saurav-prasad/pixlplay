@@ -26,19 +26,18 @@ function Canvas() {
     if (bgIndex < backgroundConstants.length - 1) {
       backgroundRef.current.style.backgroundColor =
         backgroundConstants[bgIndex + 1];
-      setBgIndex((prev) => prev + 1);
       localStorage.setItem(
         "background-color",
         backgroundConstants[bgIndex + 1]
       );
+      setBgIndex((prev) => prev + 1);
     } else {
       backgroundRef.current.style.backgroundColor = backgroundConstants[0];
-      setBgIndex(0);
       localStorage.setItem("background-color", backgroundConstants[0]);
+      setBgIndex(0);
     }
   };
 
-  // check if there are background color preferences saved
   useEffect(() => {
     const storedBgColor = localStorage.getItem("background-color");
     if (storedBgColor) {

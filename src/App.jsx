@@ -17,6 +17,8 @@ import Alert from "./components/Alert";
 import LiveCanvas from "./pages/LiveCanvas";
 import socket from "./socket/socket";
 import { removeOnlineUser, setOnlineUsers } from "./app/features/onlineUsers";
+import InviteNotification from "./components/InviteNotification";
+import { setInviteNoi } from "./app/features/inviteNoti";
 
 function App() {
   const dispatch = useDispatch();
@@ -79,6 +81,7 @@ function App() {
     },
   ]);
 
+  // socket listeners
   useEffect(() => {
     if (user) {
       try {
@@ -92,8 +95,10 @@ function App() {
           dispatch(setOnlineUsers(data));
         });
         socket.on("disconnected-user", (userId) => {
-          console.log(userId);
           dispatch(removeOnlineUser(userId));
+        });
+        socket.on("receive-invitation", (data) => {
+          dispatch(setInviteNoi(data));
         });
       } catch (error) {
         console.error(error);
@@ -110,6 +115,7 @@ function App() {
     <div className="App relative min-h-screen">
       <RouterProvider router={router} />
       <Alert />
+      <InviteNotification />
     </div>
   );
 }

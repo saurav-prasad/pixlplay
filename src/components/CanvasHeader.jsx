@@ -22,6 +22,7 @@ import { useDispatch, useSelector } from "react-redux";
 import PopupModal from "./PopupModal";
 import { deleteCanvas } from "../app/features/canvases";
 import { setAlert } from "../app/features/alert";
+import OnlineUsers from "./OnlineUsers";
 
 function CanvasHeader() {
   const [isToggle, setToggle] = useState(false);
@@ -35,6 +36,7 @@ function CanvasHeader() {
   const dispatch = useDispatch();
   const [isCanvasNotFound, setIsCanvasNotFound] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isOnlineUsersPopup, setIsOnlineUsersPopup] = useState(false);
 
   const toggle = () => {
     setToggle(!isToggle);
@@ -112,6 +114,10 @@ function CanvasHeader() {
   // function to handle value of input tag
   const handleOnChange = (e) => {
     setEditValue(e.target.value);
+  };
+  // online users handler
+  const toggleOnlineUsersPopup = () => {
+    setIsOnlineUsersPopup(!isOnlineUsersPopup);
   };
 
   useEffect(() => {
@@ -198,7 +204,11 @@ function CanvasHeader() {
               </>
             )}
             {/* share */}
-            <div title="save changes" className="cursor-pointer hover:bg-gray-200 p-2 rounded-md transition-all">
+            <div
+              onClick={toggleOnlineUsersPopup}
+              title="save changes"
+              className="cursor-pointer hover:bg-gray-200 p-2 rounded-md transition-all"
+            >
               <Share2 className="" />
             </div>
           </div>
@@ -220,6 +230,9 @@ function CanvasHeader() {
       </div>
       {isPopupModal && (
         <PopupModal getResult={getResult} togglePopupModal={togglePopupModal} />
+      )}
+      {isOnlineUsersPopup && (
+        <OnlineUsers toggleOnlineUsersPopup={toggleOnlineUsersPopup} />
       )}
     </>
   );
