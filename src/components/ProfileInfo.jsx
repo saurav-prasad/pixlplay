@@ -78,16 +78,6 @@ function ProfileInfo() {
     setProfileInfo({ ...profileInfo, [e.target.name]: e.target.value });
   };
 
-  useEffect(() => {
-    document.body.style.overflowY = "hidden";
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
-    return () => {
-      document.body.style.overflowY = "auto";
-    };
-  }, []);
 
   return (
     <form

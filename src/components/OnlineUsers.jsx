@@ -3,6 +3,7 @@ import { Zoom } from "react-awesome-reveal";
 import { useDispatch, useSelector } from "react-redux";
 import socket from "../socket/socket";
 import { useParams } from "react-router-dom";
+import isCanvasCollaboratorPresent from "../utils/isCollaboratorPresent";
 
 function OnlineUsers({ toggleOnlineUsersPopup, getResult }) {
   // use selectors
@@ -84,6 +85,10 @@ export default OnlineUsers;
 
 function List({ name, icon, userId }) {
   const { user } = useSelector((state) => state.authReducer);
+  const allCollaborators = useSelector(
+    (state) => state.allCollaboratorsReducer
+  );
+
   const params = useParams();
   const canvasId = params.id;
 
@@ -92,9 +97,9 @@ function List({ name, icon, userId }) {
 
   const dispatch = useDispatch();
 
-  // interval
   useEffect(() => {
     if (ifStartTimer) {
+      setTimer(10); // Reset timer to 10
       const intervalId = setInterval(() => {
         setTimer((prev) => {
           if (prev <= 1) {
@@ -106,14 +111,26 @@ function List({ name, icon, userId }) {
           return prev - 1;
         });
       }, 1000);
+
+      // Cleanup function to clear interval when component unmounts or dependency changes
+      return () => clearInterval(intervalId);
     }
   }, [ifStartTimer]);
 
-  const onClick = (e) => {
+  const onInvite = (e) => {
     e.preventDefault();
-    console.log(e);
     setIfStartTimer(true);
     socket.emit("invite-user", { toUserId: userId, canvasId });
+  };
+
+  const onRemove = (e) => {
+    e.preventDefault();
+    setIfStartTimer(false);
+    socket.emit("remove-user", {
+      adminUserId: user.id,
+      canvasId,
+      toUserId: userId,
+    });
   };
 
   return (
@@ -125,15 +142,25 @@ function List({ name, icon, userId }) {
         className="flex items-center space-x-2 cursor-pointer relative rounded-full w-8 h-8 border hover:bg-gray-200"
       />
       <div className="flex-1 font-medium dark:text-gray-900 flex justify-start items-center">
-        <div className="select-none">{name}</div>
+        <div className="select-none truncate">{name}</div>
       </div>
-      <button
-        onClick={onClick}
-        type="submit"
-        className="rounded-md bg-indigo-600 px-2 py-1 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 w-14"
-      >
-        {ifStartTimer ? timer : "Invite"}
-      </button>
+      {isCanvasCollaboratorPresent(allCollaborators, canvasId, userId) ? (
+        <button
+          onClick={onRemove}
+          type="submit"
+          className="text-center rounded-md bg-indigo-600 px-2 py-1 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 w-18"
+        >
+          Remove
+        </button>
+      ) : (
+        <button
+          onClick={onInvite}
+          type="submit"
+          className="text-center rounded-md bg-indigo-600 px-2 py-1 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 w-14"
+        >
+          {ifStartTimer ? timer : "Invite"}
+        </button>
+      )}
     </div>
   );
 }

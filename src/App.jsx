@@ -19,6 +19,8 @@ import socket from "./socket/socket";
 import { removeOnlineUser, setOnlineUsers } from "./app/features/onlineUsers";
 import InviteNotification from "./components/InviteNotification";
 import { setInviteNoi } from "./app/features/inviteNoti";
+import { setAlert } from "./app/features/alert";
+import { removeCollab, setAllCollab } from "./app/features/allCollaborators";
 
 function App() {
   const dispatch = useDispatch();
@@ -100,6 +102,20 @@ function App() {
         socket.on("receive-invitation", (data) => {
           dispatch(setInviteNoi(data));
         });
+        socket.on("error", ({ message }) => {
+          dispatch(setAlert({ type: "danger", text: message }));
+        });
+        socket.on("invitation-accepted", ({ message }) => {
+          dispatch(setAlert({ text: message }));
+        });
+        socket.on("collaborator-joined", (data) => {
+          console.log(data);
+          dispatch(setAllCollab(data));
+        });
+        socket.on("collaborator-leaved", (data) => {
+          console.log(data);
+          dispatch(removeCollab(data));
+        });
       } catch (error) {
         console.error(error);
       }
@@ -108,6 +124,11 @@ function App() {
       socket.off("online");
       socket.off("get-online-users");
       socket.off("disconnected-user");
+      socket.off("receive-invitation");
+      socket.off("error");
+      socket.off("invitation-accepted");
+      socket.off("collaborator-joined");
+      socket.off("collaborator-leaved");
     };
   }, [user]);
 

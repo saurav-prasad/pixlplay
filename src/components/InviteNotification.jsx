@@ -7,6 +7,7 @@ import sliceString from "../utils/sliceString";
 function InviteNotification() {
   const { show, username, canvasId, adminUserId, adminProfilePhoto } =
     useSelector((state) => state.inviteNotiReducer);
+  
   const [timer, setTimer] = useState(10);
   const dispatch = useDispatch();
 
