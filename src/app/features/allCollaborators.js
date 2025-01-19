@@ -18,9 +18,12 @@ const allCollaboratorsSlice = createSlice({
         },
         removeAllCollab: (state, action) => {
             delete state[action.payload]
+        },
+        clearAllCollab: (state, action) => {
+            return {}
         }
     }
 })
 
-export const { setAllCollab, removeCollab, removeAllCollab } = allCollaboratorsSlice.actions
+export const { setAllCollab, removeCollab, removeAllCollab, clearAllCollab } = allCollaboratorsSlice.actions
 export default allCollaboratorsSlice.reducer

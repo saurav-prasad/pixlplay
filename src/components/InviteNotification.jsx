@@ -3,16 +3,19 @@ import { useDispatch, useSelector } from "react-redux";
 import { unsetInviteNoi } from "../app/features/inviteNoti";
 import socket from "../socket/socket";
 import sliceString from "../utils/sliceString";
+import { useNavigate } from "react-router-dom";
 
 function InviteNotification() {
   const { show, username, canvasId, adminUserId, adminProfilePhoto } =
     useSelector((state) => state.inviteNotiReducer);
-  
+
   const [timer, setTimer] = useState(10);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   // interval
   useEffect(() => {
+    let intId;
     if (show) {
       setTimer(10);
       const intervalId = setInterval(() => {
@@ -25,7 +28,9 @@ function InviteNotification() {
           return prev - 1;
         });
       }, 1000);
+      intId = intervalId
     }
+    return () => clearInterval(intId);
   }, [show]);
 
   const onIgnore = (e) => {
@@ -34,8 +39,13 @@ function InviteNotification() {
   };
   const onAccept = (e) => {
     e.preventDefault();
-    dispatch(unsetInviteNoi());
-    socket.emit("accept-invitation", { canvasId, adminUserId });
+    try {
+      dispatch(unsetInviteNoi());
+      socket.emit("accept-invitation", { canvasId, adminUserId });
+      navigate(`/livecanvas/${canvasId}`);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (

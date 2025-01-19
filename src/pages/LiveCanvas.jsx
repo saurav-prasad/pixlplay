@@ -4,6 +4,7 @@ import useDeviceType from "../hooks/useDeviceType";
 import CanvasHeader from "../components/CanvasHeader";
 import Loader from "../components/Loader";
 import socket from "../socket/socket";
+import LiveWhiteboard from "../components/LiveWhiteboard";
 
 // lazy loaders
 const Whiteboard = lazy(() => import("../components/Whiteboard"));
@@ -70,7 +71,7 @@ function LiveCanvas() {
       {/* Whiteboard */}
       <div className={`flex-1`}>
         <Suspense fallback={<Loader />}>
-          <Whiteboard toggleBackground={toggleBackground} />
+          <LiveWhiteboard toggleBackground={toggleBackground} />
         </Suspense>
       </div>
     </div>

@@ -18,6 +18,7 @@ import throttling from "../utils/throttling";
 import updateCanvasFunc from "../utils/updateCanvas";
 import { setAlert } from "../app/features/alert";
 import OnlineUsers from "./OnlineUsers";
+import socket from "../socket/socket";
 
 function Whiteboard({ toggleBackground }) {
   // useState
@@ -57,6 +58,7 @@ function Whiteboard({ toggleBackground }) {
   // use selector
   const canvasesReducer = useSelector((state) => state.canvasesReducer);
   const { user } = useSelector((state) => state.authReducer);
+  const canvasAdmin = useSelector((state) => state.canvasAdminReducer);
   // dispatch
   const dispatch = useDispatch();
   // use params
@@ -236,6 +238,11 @@ function Whiteboard({ toggleBackground }) {
       // console.log(lines.length);
       setRedo([...redo, lines[lines.length - 1]]);
       setLines((e) => e.slice(0, e.length - 1));
+      // socket.emit("canvas-update", {
+      //   canvasId,
+      //   lines: lines.slice(0, lines.length - 1),
+      // });
+      setIsCanvasUpdate(true);
       dispatch(
         updateCanvas({ id: canvasId, canvas: lines.slice(0, lines.length - 1) })
       );
@@ -248,6 +255,7 @@ function Whiteboard({ toggleBackground }) {
     if (redo.length > 0) {
       setLines([...lines, redo[redo.length - 1]]);
       setRedo((e) => e.slice(0, e.length - 1));
+      setIsCanvasUpdate(true);
       dispatch(
         updateCanvas({
           id: canvasId,
@@ -389,6 +397,9 @@ function Whiteboard({ toggleBackground }) {
         try {
           if (user) {
             const result = await updateCanvasFunc(canvasId, lines);
+            if (canvasAdmin.includes(canvasId)) {
+              socket.emit("canvas-update", { canvasId, lines });
+            }
           }
         } catch (error) {
           console.error("Error updating canvas:", error);
@@ -404,6 +415,7 @@ function Whiteboard({ toggleBackground }) {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }
+      socket.off("canvas-update");
     };
   }, [isCanvasUpdate, user, canvasId, lines]);
 
@@ -414,6 +426,20 @@ function Whiteboard({ toggleBackground }) {
       saveChangesRef.current();
     }
   };
+
+  // listen to socket updated from other collaborators
+  useEffect(() => {
+    if (canvasAdmin.includes(canvasId)) {
+      socket.on("updated-canvas", ({ lines, canvasId }) => {
+        setLines(lines);
+        dispatch(updateCanvas({ id: canvasId, canvas: lines }));
+      });
+    }
+    return () => {
+      socket.off("updated-canvas");
+    };
+  }, [canvasId, canvasAdmin]);
+
   // handle on save button click => throttling
   useEffect(() => {
     saveChangesRef.current = throttling(async () => {

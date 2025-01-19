@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { lazy, Suspense, useEffect } from "react";
 import Canvas from "./pages/Canvas";
 import "./App.css";
 import Home from "./pages/Home";
@@ -13,19 +13,20 @@ import { login } from "./app/features/auth";
 import getAuthToken from "./utils/getAuthToken";
 import getAllCanvases from "./utils/getAllCanvases";
 import { setAllCanvases } from "./app/features/allCanvases";
-import Alert from "./components/Alert";
 import LiveCanvas from "./pages/LiveCanvas";
 import socket from "./socket/socket";
 import { removeOnlineUser, setOnlineUsers } from "./app/features/onlineUsers";
-import InviteNotification from "./components/InviteNotification";
 import { setInviteNoi } from "./app/features/inviteNoti";
 import { setAlert } from "./app/features/alert";
 import { removeCollab, setAllCollab } from "./app/features/allCollaborators";
+import Layout from "./pages/Layout";
+import { setCanvasAdmin } from "./app/features/canvasAdmin";
 
 function App() {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.authReducer);
 
+  // auth-token based login
   useEffect(() => {
     async function fetchData() {
       try {
@@ -49,37 +50,43 @@ function App() {
   const router = createBrowserRouter([
     {
       path: "/",
-      element: <Home />,
+      element: <Layout />,
       children: [
         {
-          path: "/canvases",
-          element: <AllCanvases />,
+          path: "/",
+          element: <Home />,
+          children: [
+            {
+              path: "/canvases",
+              element: <AllCanvases />,
+            },
+            {
+              path: "/profile",
+              element: <Profile />,
+            },
+            {
+              path: "/signin",
+              element: <Auth />,
+            },
+            {
+              path: "/signup",
+              element: <Auth />,
+            },
+          ],
         },
         {
-          path: "/profile",
-          element: <Profile />,
+          path: "/canvas/:id",
+          element: <Canvas />,
         },
         {
-          path: "/signin",
-          element: <Auth />,
+          path: "/livecanvas/:id",
+          element: <LiveCanvas />,
         },
         {
-          path: "/signup",
-          element: <Auth />,
+          path: "*",
+          element: <Error />,
         },
       ],
-    },
-    {
-      path: "/canvas/:id",
-      element: <Canvas />,
-    },
-    {
-      path: "/livecanvas/:id",
-      element: <LiveCanvas />,
-    },
-    {
-      path: "*",
-      element: <Error />,
     },
   ]);
 
@@ -109,12 +116,13 @@ function App() {
           dispatch(setAlert({ text: message }));
         });
         socket.on("collaborator-joined", (data) => {
-          console.log(data);
           dispatch(setAllCollab(data));
         });
         socket.on("collaborator-leaved", (data) => {
-          console.log(data);
           dispatch(removeCollab(data));
+        });
+        socket.on("get-admin-of-canvases", (data) => {
+          dispatch(setCanvasAdmin(data));
         });
       } catch (error) {
         console.error(error);
@@ -135,8 +143,6 @@ function App() {
   return (
     <div className="App relative min-h-screen">
       <RouterProvider router={router} />
-      <Alert />
-      <InviteNotification />
     </div>
   );
 }

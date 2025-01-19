@@ -6,6 +6,7 @@ import alertReducer from "./features/alert"
 import onlineUsersReducer from "./features/onlineUsers"
 import inviteNotiReducer from './features/inviteNoti'
 import allCollaboratorsReducer from "./features/allCollaborators"
+import canvasAdminReducer from "./features/canvasAdmin"
 
 const store = configureStore({
     reducer: {
@@ -15,7 +16,8 @@ const store = configureStore({
         alertReducer,
         onlineUsersReducer,
         inviteNotiReducer,
-        allCollaboratorsReducer
+        allCollaboratorsReducer,
+        canvasAdminReducer
     }
 })
 export default store

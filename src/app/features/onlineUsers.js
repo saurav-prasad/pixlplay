@@ -11,9 +11,12 @@ const onlineUsersSlice = createSlice({
         },
         removeOnlineUser: (state, action) => {
             delete state[action.payload]
+        },
+        removeAllOnlineUser: (state, action) => {
+            return {}
         }
     }
 })
 
-export const { setOnlineUsers, removeOnlineUser } = onlineUsersSlice.actions
+export const { setOnlineUsers, removeOnlineUser, removeAllOnlineUser } = onlineUsersSlice.actions
 export default onlineUsersSlice.reducer

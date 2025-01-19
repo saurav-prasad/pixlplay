@@ -17,6 +17,8 @@ import updateCanvasFunc from "../utils/updateCanvas";
 import { updateCanvas } from "../app/features/canvases";
 import { Zoom } from "react-awesome-reveal";
 import OnlineUsers from "./OnlineUsers";
+import socket from "../socket/socket";
+import { useLocation } from "react-router-dom";
 function Toolbar({
   color,
   setColor,
@@ -41,6 +43,8 @@ function Toolbar({
   const [isClearCanvasPopup, setIsClearCanvasPopup] = useState(false);
   const [isOnlineUsersPopup, setIsOnlineUsersPopup] = useState(false);
   const [isClearCanvas, setIsClearCanvas] = useState(false);
+  const canvasAdmin = useSelector((state) => state.canvasAdminReducer);
+  const location = useLocation();
 
   const handleMouseEnter = (id) => {
     setVisiblePopup(id);
@@ -61,8 +65,12 @@ function Toolbar({
     if (result) {
       try {
         setLines([]);
+        console.log(location);
         dispatch(updateCanvas({ id: canvasId, canvas: [] }));
         const result = await updateCanvasFunc(canvasId, []);
+        if (canvasAdmin.includes(canvasId)) {
+          socket.emit("canvas-update", { canvasId, lines: [] });
+        }
       } catch (error) {
         console.error(error);
       } finally {
@@ -154,16 +162,18 @@ function Toolbar({
         </div>
 
         {/* Clear canvas */}
-        <div
-          title="Clear Canvas"
-          onClick={toggleClearCanvasPopup}
-          onMouseEnter={() => handleMouseEnter("clear")}
-          onMouseLeave={handleMouseLeave}
-          className={`relative cursor-pointer p-2 rounded-full w-fit h-fit border hover:bg-gray-200`}
-        >
-          <OctagonX className="h-6 w-6 text-gray-900" />
-          <Popup isPopupVisible={visiblePopup === "clear"} text={"Clear"} />
-        </div>
+        {!location.pathname.startsWith("/livecanvas") && (
+          <div
+            title="Clear Canvas"
+            onClick={toggleClearCanvasPopup}
+            onMouseEnter={() => handleMouseEnter("clear")}
+            onMouseLeave={handleMouseLeave}
+            className={`relative cursor-pointer p-2 rounded-full w-fit h-fit border hover:bg-gray-200`}
+          >
+            <OctagonX className="h-6 w-6 text-gray-900" />
+            <Popup isPopupVisible={visiblePopup === "clear"} text={"Clear"} />
+          </div>
+        )}
         {/* Switch Background */}
         <div
           title="Change Background"
@@ -209,9 +219,7 @@ function Toolbar({
         />
       )}
       {isOnlineUsersPopup && (
-        <OnlineUsers
-          toggleOnlineUsersPopup={toggleOnlineUsersPopup}
-        />
+        <OnlineUsers toggleOnlineUsersPopup={toggleOnlineUsersPopup} />
       )}
     </>
   );

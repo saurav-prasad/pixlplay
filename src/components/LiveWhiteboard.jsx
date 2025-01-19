@@ -8,16 +8,14 @@ import Toolbar from "./Toolbar";
 import UndoRedo from "./UndoRedo";
 import Slider from "./Slider";
 import Tools from "./Tools";
-import { FileLock2, Lock, Pen } from "lucide-react";
+import { FileLock2, Pen } from "lucide-react";
 import Users from "./Users";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import getCanvas from "../utils/getCanvas";
-import { addCanvas, updateCanvas } from "../app/features/canvases";
 import throttling from "../utils/throttling";
-import updateCanvasFunc from "../utils/updateCanvas";
 import { setAlert } from "../app/features/alert";
 import OnlineUsers from "./OnlineUsers";
+import socket from "../socket/socket";
 
 function LiveWhiteboard({ toggleBackground }) {
   // useState
@@ -55,55 +53,54 @@ function LiveWhiteboard({ toggleBackground }) {
   const isMobile = useDeviceType();
 
   // use selector
-  const canvasesReducer = useSelector((state) => state.canvasesReducer);
   const { user } = useSelector((state) => state.authReducer);
+  const allCollaborators = useSelector(
+    (state) => state.allCollaboratorsReducer
+  );
   // dispatch
   const dispatch = useDispatch();
   // use params
   const params = useParams();
   const canvasId = params.id;
 
-  // get canvas when mounted
+  // check if canvas is accessable
   useEffect(() => {
-    async function fetchData() {
-      // if (user) {
-      setIsLoading(true);
-      try {
-        if (user) {
-          if (canvasesReducer[canvasId] && user) {
-            setLines(canvasesReducer[canvasId]);
-          } else {
-            const response = await getCanvas(canvasId);
-            if (response.canvas) {
-              dispatch(addCanvas(response));
-            } else {
-              dispatch(addCanvas({ ...response, canvas: [] }));
-            }
-          }
-        }
-        setIsCanvasNotFound(false);
-      } catch (error) {
-        if (error?.response?.status === 405) {
+    setIsLoading(true);
+    try {
+      socket.emit("if-canvas-accessable", { canvasId });
+      socket.on("canvas-accessable", ({ success, message, lines }) => {
+        if (success) {
+          setLines(lines);
+          setIsCanvasNotFound(false);
+        } else {
           setIsCanvasNotFound(true);
         }
-        console.error(error);
-      } finally {
-        if (previousPosition[canvasId]) {
-          setStagePosition(previousPosition[canvasId][0]);
-          setScale(previousPosition[canvasId][1]);
-        } else {
-          setStagePosition({
-            x: width / 2,
-            y: height / 2,
-          });
-          setScale(1);
-        }
-        setIsLoading(false);
+      });
+      socket.on("updated-canvas", ({ lines, canvasId }) => {
+        setLines(lines);
+      });
+    } catch (error) {
+      console.log(error);
+    } finally {
+      if (previousPosition[canvasId]) {
+        setStagePosition(previousPosition[canvasId][0]);
+        setScale(previousPosition[canvasId][1]);
+      } else {
+        setStagePosition({
+          x: width / 2,
+          y: height / 2,
+        });
+        setScale(1);
       }
-      // }
+      setIsLoading(false);
     }
-    fetchData();
-  }, [canvasId, canvasesReducer]);
+
+    return () => {
+      socket.off("if-canvas-accessable");
+      socket.off("canvas-accessable");
+      socket.off("updated-canvas");
+    };
+  }, [canvasId, allCollaborators]);
 
   // check previous canvas position
   useEffect(() => {
@@ -117,6 +114,7 @@ function LiveWhiteboard({ toggleBackground }) {
   const toggleSlider = () => {
     setSliderVisible(!isSliderVisible); // Toggle slider visibility
   };
+
   // toggle tools selection menu
   const toggleTools = () => {
     setToolsVisible(!isToolsVisible); // Toggle slider visibility
@@ -203,7 +201,6 @@ function LiveWhiteboard({ toggleBackground }) {
     } else if (isDrawing.current) {
       isDrawing.current = false; // End drawing
     }
-    dispatch(updateCanvas({ id: canvasId, canvas: lines }));
     setIsCanvasUpdate(true);
   };
 
@@ -236,9 +233,7 @@ function LiveWhiteboard({ toggleBackground }) {
       // console.log(lines.length);
       setRedo([...redo, lines[lines.length - 1]]);
       setLines((e) => e.slice(0, e.length - 1));
-      dispatch(
-        updateCanvas({ id: canvasId, canvas: lines.slice(0, lines.length - 1) })
-      );
+      setIsCanvasUpdate(true);
     }
   };
 
@@ -248,12 +243,7 @@ function LiveWhiteboard({ toggleBackground }) {
     if (redo.length > 0) {
       setLines([...lines, redo[redo.length - 1]]);
       setRedo((e) => e.slice(0, e.length - 1));
-      dispatch(
-        updateCanvas({
-          id: canvasId,
-          canvas: [...lines, redo[redo.length - 1]],
-        })
-      );
+      setIsCanvasUpdate(true);
     }
   };
 
@@ -372,7 +362,6 @@ function LiveWhiteboard({ toggleBackground }) {
     isDrawing.current = false;
     lastTouchDistance.current = null;
     touchPanStart.current = null;
-    dispatch(updateCanvas({ id: canvasId, canvas: lines }));
     setIsCanvasUpdate(true);
   };
 
@@ -388,7 +377,7 @@ function LiveWhiteboard({ toggleBackground }) {
       timeoutRef.current = setTimeout(async () => {
         try {
           if (user) {
-            const result = await updateCanvasFunc(canvasId, lines);
+            socket.emit("canvas-update", { canvasId, lines });
           }
         } catch (error) {
           console.error("Error updating canvas:", error);
@@ -404,6 +393,7 @@ function LiveWhiteboard({ toggleBackground }) {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }
+      socket.off("canvas-update");
     };
   }, [isCanvasUpdate, user, canvasId, lines]);
 
@@ -419,11 +409,8 @@ function LiveWhiteboard({ toggleBackground }) {
     saveChangesRef.current = throttling(async () => {
       try {
         if (user) {
-          const result = await updateCanvasFunc(
-            canvasId,
-            saveChangesLinesRef.current
-          );
-          dispatch(setAlert({ text: "Changes uploaded to cloud" }));
+          socket.emit("canvas-update", { canvasId, lines });
+          dispatch(setAlert({ text: "Changes notified to all." }));
         }
       } catch (error) {
         console.error("Error updating canvas:", error);
