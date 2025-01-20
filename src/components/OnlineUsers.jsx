@@ -131,6 +131,7 @@ function List({ name, icon, userId }) {
     });
   };
 
+  
   const onRemove = (e) => {
     e.preventDefault();
     setIfStartTimer(false);
