@@ -36,7 +36,7 @@ import { setAlert } from "../app/features/alert";
 import useLogout from "../hooks/useLogout";
 import socket from "../socket/socket";
 
-function Sidebar({ toggleSidebar }) {
+function LiveSidebar({ toggleSidebar }) {
   const [editIndex, setEditIndex] = useState(null);
   const [editValue, setEditValue] = useState("");
   const navigate = useNavigate();
@@ -52,7 +52,6 @@ function Sidebar({ toggleSidebar }) {
   const [isLoading, setIsLoading] = useState();
   const [isLoadingSkeleton, setIsLoadingSkeleton] = useState(genEmptyArr(5));
   const handleLogoutHook = useLogout();
-  const canvasAdmin = useSelector((state) => state.canvasAdminReducer);
 
   // toggle popup modal
   const togglePopupModal = () => {
@@ -78,20 +77,8 @@ function Sidebar({ toggleSidebar }) {
     }, 1500);
   }, [user]);
 
-  // function to start the name editing
-  const handleEditStart = (value, id) => {
-    setEditIndex(id);
-    setEditValue(value);
-  };
-
-  // function to cancel name editing
-  const handleEditCancel = () => {
-    setEditIndex(null);
-    setEditValue("");
-  };
-
   // function to delete the canvas
-  const handleDeleteCanvas = async (id) => {
+  const handleLeaveCanvas = async (id) => {
     setDeleteCanvasId(id);
     togglePopupModal();
   };
@@ -100,18 +87,12 @@ function Sidebar({ toggleSidebar }) {
     if (result) {
       setIsLoading(deleteCanvasId);
       try {
-        const deletedCanvas = await deleteCanvasFunc(deleteCanvasId);
-        // console.log(deletedCanvas);
-        dispatch(deleteInAllCanvases(deleteCanvasId));
-        dispatch(deleteCanvas(deleteCanvasId));
-        dispatch(setAlert({ text: "Canvas deleted Successfully" }));
-        if (canvasAdmin.includes(deleteCanvasId)) {
-          socket.emit("delete-canvas", deleteCanvasId);
-        }
+        socket.emit("leave-canvas", { canvasId: deleteCanvasId });
+        dispatch(setAlert({ text: "Canvas left Successfully" }));
       } catch (error) {
         console.error(error);
         dispatch(
-          setAlert({ type: "danger", text: error?.response?.data?.message })
+          setAlert({ type: "danger", text: error })
         );
       } finally {
         setIsLoading(null);
@@ -119,29 +100,6 @@ function Sidebar({ toggleSidebar }) {
     } else {
       console.log("Deletion canceled");
     }
-  };
-  // function to save edited name
-  const handleEditSave = async (id) => {
-    setIsLoading(id);
-    try {
-      const updatedName = await editCanvasName(id, editValue);
-      dispatch(updateNameInAllCanvases({ id, name: editValue }));
-      setEditIndex(null);
-      setEditValue(editValue);
-      dispatch(setAlert({ text: "Canvas name Updated Successfully" }));
-    } catch (error) {
-      console.error(error);
-      dispatch(
-        setAlert({ type: "danger", text: error?.response?.data?.message })
-      );
-    } finally {
-      setIsLoading(null);
-    }
-  };
-
-  // function to handle value of input tag
-  const handleOnChange = (e) => {
-    setEditValue(e.target.value);
   };
 
   // logout the user
@@ -156,32 +114,26 @@ function Sidebar({ toggleSidebar }) {
 
   const handleNavigateCanvas = (id) => {
     if (isMobile || window.innerWidth <= 768) {
-      navigate(!editIndex && `/canvas/${id}`);
+      navigate(!editIndex && `/livecanvas/${id}`);
       toggleSidebar();
     } else {
-      navigate(!editIndex && `/canvas/${id}`);
+      navigate(!editIndex && `/livecanvas/${id}`);
     }
   };
   // fetch canvases
   useEffect(() => {
-    async function fetchData() {
-      try {
-        if (allCanvases && user) {
-          const sortedArr = sortArray(allCanvases);
-          setCanvases(sortedArr);
-        } else {
-          const response = await getAllCanvases();
-          dispatch(setAllCanvases(response));
-          setCanvases(response);
-        }
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setIsLoadingSkeleton([]);
-      }
+    try {
+      socket.emit("get-all-collaborator-canvases");
+      socket.on("all-collaborator-canvases", (data) => {
+        console.log(data);
+        setCanvases(data);
+      });
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoadingSkeleton([]);
     }
-    fetchData();
-  }, [allCanvases]);
+  }, []);
 
   // Focus the input when editing starts
   useEffect(() => {
@@ -212,93 +164,45 @@ function Sidebar({ toggleSidebar }) {
               <Minimize2 />
             </div>
           </div>
-          {/* New Canvas */}
-          <div className="px-6 pb-5 flex md:block justify-between items-center">
-            <div
-              onClick={handleNewCanvasClick.current}
-              className="-mx-3 w-full md:w-auto"
-            >
-              <span className="select-none cursor-pointer flex transform items-center rounded-lg px-3 py-2 transition-colors duration-300 hover:bg-gray-100 hover:text-gray-900 group">
-                <BadgePlus
-                  className="h-6 w-6 transform group-hover:rotate-[360deg] group-hover:scale-125 duration-1000"
-                  aria-hidden="true"
-                />
-                <span className="mx-4 text-md font-medium">New Canvas</span>
-              </span>
-            </div>
-          </div>
           {/* All Canvases */}
           <div className="flex-1 overflow-y-auto px-6 hideScrollbar space-y-2">
             {isLoadingSkeleton.length > 0 &&
               isLoadingSkeleton.map((_, index) => (
                 <Skeleton key={index} />
               ))}{" "}
-            {isLoadingSkeleton.length < 3 &&
-              allCanvases &&
+            {isLoadingSkeleton.length < 3 && canvases.length > 0 ? (
               canvases.map((item, index) => (
                 <div
-                  title={item.name}
-                  key={item._id} // Use a stable key
+                  title={item.canvasName}
+                  key={index} // Use a stable key
                   className={`select-none cursor-pointer flex transform items-center rounded-lg transition-colors duration-300 hover:bg-gray-200 
                     ${
-                      item._id === canvasId && "!bg-[#9ca3af96]"
+                      item.canvasId === canvasId && "!bg-[#9ca3af96]"
                     } bg-gray-50 hover:text-gray-900 justify-between space-x-2`}
                 >
                   <div
-                    onClick={() => handleNavigateCanvas(item._id)}
+                    onClick={() => handleNavigateCanvas(item.canvasId)}
                     className="truncate h-[2.5rem] py-2 flex-1 flex justify-start items-center px-3 "
                   >
-                    {editIndex === index ? (
-                      <input
-                        ref={(el) => (inputRef.current[index] = el)}
-                        type="text"
-                        value={editValue}
-                        onChange={handleOnChange}
-                        className="w-full text-md font-medium pr-1 outline-none"
-                      />
-                    ) : (
-                      <p className="text-md font-medium w-full truncate">
-                        {item.name}
-                      </p>
-                    )}
+                    <p className="text-md font-medium w-full truncate">
+                      {item.canvasName}
+                    </p>
                   </div>
                   {/* edit / delete */}
                   <div className="flex space-x-4 py-2 px-3">
-                    {isLoading === item._id ? (
-                      <span className="loader5"></span>
-                    ) : (
-                      <>
-                        {editIndex === index ? (
-                          <CircleCheckBig
-                            onClick={() => handleEditSave(item._id)}
-                            className="h-6 w-6 transform hover:rotate-90 hover:scale-125 duration-700"
-                            aria-hidden="true"
-                          />
-                        ) : (
-                          <Pencil
-                            onClick={() => handleEditStart(item.name, index)}
-                            className="h-6 w-6 transform hover:rotate-90 hover:scale-125 duration-300"
-                            aria-hidden="true"
-                          />
-                        )}
-                        {editIndex === index ? (
-                          <X
-                            onClick={handleEditCancel}
-                            className="h-6 w-6 transform hover:scale-150 duration-700"
-                            aria-hidden="true"
-                          />
-                        ) : (
-                          <Trash2
-                            onClick={() => handleDeleteCanvas(item._id)}
-                            className="h-6 w-6 transform hover:scale-150 duration-700"
-                            aria-hidden="true"
-                          />
-                        )}
-                      </>
-                    )}
+                    <LogOut
+                      onClick={() => handleLeaveCanvas(item.canvasId, index)}
+                      className="h-6 w-6 transform hover:translate-x-1 duration-300"
+                      aria-hidden="true"
+                    />
                   </div>
                 </div>
-              ))}
+              ))
+            ) : (
+              <h1 className="text-center text-lg font-bold">
+                No canvases available!
+              </h1>
+            )}
           </div>
 
           {/* Profile and Sign-out */}
@@ -342,7 +246,7 @@ function Sidebar({ toggleSidebar }) {
   );
 }
 
-export default Sidebar;
+export default LiveSidebar;
 
 function Skeleton() {
   return (

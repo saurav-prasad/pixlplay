@@ -89,7 +89,7 @@ function List({ name, icon, userId }) {
     (state) => state.allCollaboratorsReducer
   );
   const canvasesReducer = useSelector((state) => state.canvasesReducer);
-
+  const { allCanvases } = useSelector((state) => state.allCanvasesReducer);
   const params = useParams();
   const canvasId = params.id;
 
@@ -121,10 +121,13 @@ function List({ name, icon, userId }) {
   const onInvite = (e) => {
     e.preventDefault();
     setIfStartTimer(true);
+    const canvasName = allCanvases.filter((data) => data._id === canvasId)[0]
+      ?.name;
     socket.emit("invite-user", {
       toUserId: userId,
       canvasId,
       lines: canvasesReducer[canvasId],
+      canvasName,
     });
   };
 

@@ -77,7 +77,9 @@ function LiveWhiteboard({ toggleBackground }) {
         }
       });
       socket.on("updated-canvas", ({ lines, canvasId }) => {
-        setLines(lines);
+        if (canvasId === params.id) {
+          setLines(lines);
+        }
       });
     } catch (error) {
       console.log(error);
@@ -397,30 +399,6 @@ function LiveWhiteboard({ toggleBackground }) {
     };
   }, [isCanvasUpdate, user, canvasId, lines]);
 
-  // handle on save button click
-  const onSaveChanges = (e) => {
-    if (lines.length > 0) {
-      saveChangesLinesRef.current = lines;
-      saveChangesRef.current();
-    }
-  };
-  // handle on save button click => throttling
-  useEffect(() => {
-    saveChangesRef.current = throttling(async () => {
-      try {
-        if (user) {
-          socket.emit("canvas-update", { canvasId, lines });
-          dispatch(setAlert({ text: "Changes notified to all." }));
-        }
-      } catch (error) {
-        console.error("Error updating canvas:", error);
-        dispatch(
-          setAlert({ type: "danger", text: error?.response?.data?.message })
-        );
-      }
-    }, 4000);
-  }, [canvasId]);
-
   return (
     <>
       <div className="w-fit border float-end relative">
@@ -485,7 +463,7 @@ function LiveWhiteboard({ toggleBackground }) {
             lines={lines}
             toggleSlider={toggleSlider}
             toggleTools={toggleTools}
-            onSaveChanges={onSaveChanges}
+            onSaveChanges={() => {}}
           />
         </div>
         {isSliderVisible && (
@@ -497,7 +475,7 @@ function LiveWhiteboard({ toggleBackground }) {
           />
         )}
         <UndoRedo
-          onSaveChanges={onSaveChanges}
+          onSaveChanges={() => {}}
           linesArr={lines}
           redoArr={redo}
           onUndo={onUndo}
@@ -525,7 +503,7 @@ function LiveWhiteboard({ toggleBackground }) {
             <div className="shadow-2xl shadow-[#9e99bf00] bg-[#9e99bf00] backdrop-blur-[3px] px-2 py-3 rounded-full">
               <h1 className="text-3xl text-white font-bold flex justify-center items-center gap-2">
                 <FileLock2 className="w-8 h-8 text-[#f5dddd]" />
-                Select a Canvas first!
+                Canvas not accessable!
               </h1>
             </div>
           </div>

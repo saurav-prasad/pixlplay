@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit"
 
-const initialState = { show: false, username: null, canvasId: null, adminUserId: null, adminProfilePhoto: null }
+const initialState = { show: false, username: null, canvasId: null, adminUserId: null, adminProfilePhoto: null,canvasName:null }
 
 const inviteNotiSlice = createSlice({
     initialState,
@@ -12,11 +12,12 @@ const inviteNotiSlice = createSlice({
                 username: action.payload.username,
                 canvasId: action.payload.canvasId,
                 adminUserId: action.payload.adminUserId,
-                adminProfilePhoto: action.payload.adminProfilePhoto
+                adminProfilePhoto: action.payload.adminProfilePhoto,
+                canvasName:action.payload.canvasName
             }
         },
         unsetInviteNoi: (state, action) => {
-            return { show: false, username: null, canvasId: null, adminUserId: null, adminProfilePhoto: null }
+            return { show: false, username: null, canvasId: null, adminUserId: null, adminProfilePhoto: null,canvasName:null }
         },
     }
 })

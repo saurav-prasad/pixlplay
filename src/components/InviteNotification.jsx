@@ -6,8 +6,14 @@ import sliceString from "../utils/sliceString";
 import { useNavigate } from "react-router-dom";
 
 function InviteNotification() {
-  const { show, username, canvasId, adminUserId, adminProfilePhoto } =
-    useSelector((state) => state.inviteNotiReducer);
+  const {
+    show,
+    username,
+    canvasId,
+    adminUserId,
+    adminProfilePhoto,
+    canvasName,
+  } = useSelector((state) => state.inviteNotiReducer);
 
   const [timer, setTimer] = useState(10);
   const dispatch = useDispatch();
@@ -28,7 +34,7 @@ function InviteNotification() {
           return prev - 1;
         });
       }, 1000);
-      intId = intervalId
+      intId = intervalId;
     }
     return () => clearInterval(intId);
   }, [show]);
@@ -41,7 +47,7 @@ function InviteNotification() {
     e.preventDefault();
     try {
       dispatch(unsetInviteNoi());
-      socket.emit("accept-invitation", { canvasId, adminUserId });
+      socket.emit("accept-invitation", { canvasId, adminUserId, canvasName });
       navigate(`/livecanvas/${canvasId}`);
     } catch (error) {
       console.error(error);

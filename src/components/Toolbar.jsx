@@ -190,27 +190,31 @@ function Toolbar({
         </div>
 
         {/* Share */}
-        <div
-          title="Share Canvas"
-          onClick={toggleOnlineUsersPopup}
-          onMouseEnter={() => handleMouseEnter("share")}
-          onMouseLeave={handleMouseLeave}
-          className={`relative cursor-pointer p-2 rounded-full w-fit h-fit border hover:bg-gray-200 hidden md:block`}
-        >
-          <Share2 className="h-6 w-6 text-gray-900" />
-          <Popup isPopupVisible={visiblePopup === "share"} text={"Share"} />
-        </div>
+        {!location.pathname.startsWith("/livecanvas") && (
+          <div
+            title="Share Canvas"
+            onClick={toggleOnlineUsersPopup}
+            onMouseEnter={() => handleMouseEnter("share")}
+            onMouseLeave={handleMouseLeave}
+            className={`relative cursor-pointer p-2 rounded-full w-fit h-fit border hover:bg-gray-200 hidden md:block`}
+          >
+            <Share2 className="h-6 w-6 text-gray-900" />
+            <Popup isPopupVisible={visiblePopup === "share"} text={"Share"} />
+          </div>
+        )}
         {/* Save */}
-        <div
-          onClick={onSaveChanges}
-          title="Save changes"
-          onMouseEnter={() => handleMouseEnter("save")}
-          onMouseLeave={handleMouseLeave}
-          className={`relative cursor-pointer p-2 rounded-full w-fit h-fit border hover:bg-gray-200 hidden md:block`}
-        >
-          <CloudUpload className="h-6 w-6 text-gray-900" />
-          <Popup isPopupVisible={visiblePopup === "save"} text={"Save"} />
-        </div>
+        {!location.pathname.startsWith("/livecanvas") && (
+          <div
+            onClick={onSaveChanges}
+            title="Save changes"
+            onMouseEnter={() => handleMouseEnter("save")}
+            onMouseLeave={handleMouseLeave}
+            className={`relative cursor-pointer p-2 rounded-full w-fit h-fit border hover:bg-gray-200 hidden md:block`}
+          >
+            <CloudUpload className="h-6 w-6 text-gray-900" />
+            <Popup isPopupVisible={visiblePopup === "save"} text={"Save"} />
+          </div>
+        )}
       </div>
       {isClearCanvasPopup && (
         <ClearCanvasPopupModal

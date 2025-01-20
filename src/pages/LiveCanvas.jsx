@@ -3,12 +3,10 @@ import "../components/Whiteboard";
 import useDeviceType from "../hooks/useDeviceType";
 import CanvasHeader from "../components/CanvasHeader";
 import Loader from "../components/Loader";
-import socket from "../socket/socket";
-import LiveWhiteboard from "../components/LiveWhiteboard";
 
 // lazy loaders
-const Whiteboard = lazy(() => import("../components/Whiteboard"));
-const Sidebar = lazy(() => import("../components/Sidebar"));
+const LiveWhiteboard = lazy(() => import("../components/LiveWhiteboard"));
+const LiveSidebar = lazy(() => import("../components/LiveSidebar"));
 
 function LiveCanvas() {
   const backgroundConstants = [
@@ -63,7 +61,7 @@ function LiveCanvas() {
       {!isMobile && (
         <div className="w-60 hidden md:block shadow-md shadow-red-400">
           <Suspense fallback={<Loader />}>
-            <Sidebar />
+            <LiveSidebar />
           </Suspense>
         </div>
       )}

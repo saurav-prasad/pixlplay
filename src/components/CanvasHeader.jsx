@@ -8,10 +8,8 @@ import {
   Trash2,
   X,
 } from "lucide-react";
-import React, { useEffect, useRef, useState } from "react";
-import Sidebar from "./Sidebar";
-import { Slide } from "react-awesome-reveal";
-import { useParams } from "react-router-dom";
+import React, { lazy, Suspense, useEffect, useRef, useState } from "react";
+import { useLocation, useParams } from "react-router-dom";
 import deleteCanvasFunc from "../utils/deleteCanvas";
 import {
   deleteInAllCanvases,
@@ -23,6 +21,10 @@ import PopupModal from "./PopupModal";
 import { deleteCanvas } from "../app/features/canvases";
 import { setAlert } from "../app/features/alert";
 import OnlineUsers from "./OnlineUsers";
+import socket from "../socket/socket";
+
+const Sidebar = lazy(() => import("./Sidebar"));
+const LiveSidebar = lazy(() => import("./LiveSidebar"));
 
 function CanvasHeader() {
   const [isToggle, setToggle] = useState(false);
@@ -37,6 +39,9 @@ function CanvasHeader() {
   const [isCanvasNotFound, setIsCanvasNotFound] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isOnlineUsersPopup, setIsOnlineUsersPopup] = useState(false);
+  const location = useLocation();
+  const canvasAdmin = useSelector((state) => state.canvasAdminReducer);
+  const { user } = useSelector((state) => state.authReducer);
 
   const toggle = () => {
     setToggle(!isToggle);
@@ -98,6 +103,10 @@ function CanvasHeader() {
         dispatch(deleteInAllCanvases(canvasId));
         dispatch(deleteCanvas(canvasId));
         dispatch(setAlert({ text: "Canvas deleted Successfully" }));
+        if (canvasAdmin.includes(canvasId)) {
+          console.log("object")
+          socket.emit("delete-canvas", canvasId);
+        }
       } catch (error) {
         console.error(error);
         dispatch(
@@ -219,7 +228,16 @@ function CanvasHeader() {
             isToggle ? "translate-x-0:" : "-translate-x-full w-screen"
           } duration-200 ease-in-out`}
         >
-          <Sidebar toggleSidebar={toggle} />
+          {location.pathname.startsWith("/livecanvas") && (
+            <Suspense>
+              <LiveSidebar toggleSidebar={toggle} />
+            </Suspense>
+          )}{" "}
+          {!location.pathname.startsWith("/livecanvas") && (
+            <Suspense>
+              <Sidebar toggleSidebar={toggle} />
+            </Suspense>
+          )}
         </div>
         {isToggle && (
           <div
