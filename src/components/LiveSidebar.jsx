@@ -79,8 +79,15 @@ function LiveSidebar({ toggleSidebar }) {
 
   // function to delete the canvas
   const handleLeaveCanvas = async (id) => {
-    setDeleteCanvasId(id);
-    togglePopupModal();
+    socket.emit("can-leave-canvas", id);
+    socket.on("if-leave-canvas", ({ success }) => {
+      if (success) {
+        setDeleteCanvasId(id);
+        togglePopupModal();
+      } else {
+        dispatch(setAlert({ type: "danger", text: "Not allowed" }));
+      }
+    });
   };
 
   const getResult = async (result) => {
@@ -91,9 +98,7 @@ function LiveSidebar({ toggleSidebar }) {
         dispatch(setAlert({ text: "Canvas left Successfully" }));
       } catch (error) {
         console.error(error);
-        dispatch(
-          setAlert({ type: "danger", text: error })
-        );
+        dispatch(setAlert({ type: "danger", text: error }));
       } finally {
         setIsLoading(null);
       }
@@ -125,7 +130,6 @@ function LiveSidebar({ toggleSidebar }) {
     try {
       socket.emit("get-all-collaborator-canvases");
       socket.on("all-collaborator-canvases", (data) => {
-        console.log(data);
         setCanvases(data);
       });
     } catch (error) {

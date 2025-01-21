@@ -168,33 +168,37 @@ function Whiteboard({ toggleBackground }) {
   };
 
   const handleMouseMove = (e) => {
-    if (isPanning.current) {
-      // Pan the stage
-      const stage = stageRef.current;
-      const pointer = stage.getPointerPosition();
-      setStagePosition({
-        x: pointer.x - panStart.current.x,
-        y: pointer.y - panStart.current.y,
-      });
-    } else if (isDrawing.current) {
-      const stage = stageRef.current;
+    try {
+      if (isPanning.current) {
+        // Pan the stage
+        const stage = stageRef.current;
+        const pointer = stage.getPointerPosition();
+        setStagePosition({
+          x: pointer.x - panStart.current.x,
+          y: pointer.y - panStart.current.y,
+        });
+      } else if (isDrawing.current) {
+        const stage = stageRef.current;
 
-      // Get the transformed pointer position
-      const pos = stage.getPointerPosition();
-      const transformedPos = {
-        x: (pos.x - stagePosition.x) / scale,
-        y: (pos.y - stagePosition.y) / scale,
-      };
+        // Get the transformed pointer position
+        const pos = stage.getPointerPosition();
+        const transformedPos = {
+          x: (pos.x - stagePosition.x) / scale,
+          y: (pos.y - stagePosition.y) / scale,
+        };
 
-      // Safely update the last line
-      const updatedLines = [...lines];
-      let lastLine = updatedLines[updatedLines.length - 1];
-      lastLine.points = lastLine.points.concat([
-        transformedPos.x,
-        transformedPos.y,
-      ]);
-      lines.splice(lines.length - 1, 1, lastLine);
-      setLines(updatedLines); // Update the state
+        // Safely update the last line
+        const updatedLines = [...lines];
+        let lastLine = updatedLines[updatedLines.length - 1];
+        lastLine.points = lastLine.points.concat([
+          transformedPos.x,
+          transformedPos.y,
+        ]);
+        lines.splice(lines.length - 1, 1, lastLine);
+        setLines(updatedLines); // Update the state
+      }
+    } catch (error) {
+      console.error(error)
     }
   };
 
@@ -435,7 +439,7 @@ function Whiteboard({ toggleBackground }) {
         setLines(lines);
         dispatch(updateCanvas({ id: canvasId, canvas: lines }));
       });
-    } 
+    }
     return () => {
       socket.off("updated-canvas");
     };

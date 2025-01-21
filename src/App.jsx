@@ -21,6 +21,7 @@ import { setAlert } from "./app/features/alert";
 import { removeCollab, setAllCollab } from "./app/features/allCollaborators";
 import Layout from "./pages/Layout";
 import { setCanvasAdmin } from "./app/features/canvasAdmin";
+import AllLiveCanvases from "./pages/AllLiveCanvases";
 
 function App() {
   const dispatch = useDispatch();
@@ -59,6 +60,10 @@ function App() {
             {
               path: "/canvases",
               element: <AllCanvases />,
+            },
+            {
+              path: "/livecanvases",
+              element: <AllLiveCanvases />,
             },
             {
               path: "/profile",

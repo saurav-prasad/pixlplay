@@ -1,10 +1,10 @@
 import {
-  BadgePlus,
   GalleryHorizontalEnd,
   House,
   LogIn,
   LogOut,
   Logs,
+  RadioTower,
   X,
 } from "lucide-react";
 import React, { useState } from "react";
@@ -12,8 +12,6 @@ import { Zoom } from "react-awesome-reveal";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import keyGenerator from "../utils/keyGenerator";
 import { useDispatch, useSelector } from "react-redux";
-import { logout } from "../app/features/auth";
-import removeAuthToken from "../utils/removeAuthToken";
 import useLogout from "../hooks/useLogout";
 
 function HomeHeader() {
@@ -23,14 +21,14 @@ function HomeHeader() {
   const { user } = useSelector((state) => state.authReducer);
   const dispatch = useDispatch();
   const handleLogout = useLogout();
-  
+
   const toggleMenuOpen = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
   const handleAuthClick = () => {
     if (user) {
-      handleLogout()
+      handleLogout();
     } else {
       navigate("/signin");
     }
@@ -48,6 +46,11 @@ function HomeHeader() {
         <GalleryHorizontalEnd className="mr-2 h-5 w-5" aria-hidden="true" />
       ),
       name: "Canvases",
+    },
+    {
+      endPoint: "/livecanvases",
+      icon: <RadioTower className="mr-2 h-5 w-5" aria-hidden="true" />,
+      name: "Live canvases",
     },
   ];
 
@@ -168,6 +171,17 @@ function PopupMenu({ toggleMenuOpen, user, handleAuthClick }) {
               className="pl-3 w-full flex transition cursor-pointer hover:bg-[#d995952b] hover:shadow-lg p-2 rounded-lg select-none items-center"
             >
               <GalleryHorizontalEnd
+                className="mr-2 h-5 w-5"
+                aria-hidden="true"
+              />
+              <span className="truncate">Canvases</span>
+            </Link>
+            {/* LiveCanvases Canvases */}
+            <Link
+              to="/livecanvases"
+              className="pl-3 w-full flex transition cursor-pointer hover:bg-[#d995952b] hover:shadow-lg p-2 rounded-lg select-none items-center"
+            >
+              <RadioTower
                 className="mr-2 h-5 w-5"
                 aria-hidden="true"
               />
