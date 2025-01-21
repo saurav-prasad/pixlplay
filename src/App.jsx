@@ -135,7 +135,6 @@ function App() {
       }
     }
     return () => {
-      socket.off("online");
       socket.off("get-online-users");
       socket.off("disconnected-user");
       socket.off("receive-invitation");
