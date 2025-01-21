@@ -1,17 +1,13 @@
-import React from "react";
+import Hero from "../components/Hero";
 import HomeHeader from "../components/HomeHeader";
-import CanvasesList from "../components/CanvasesList";
-import SigninSignup from "../components/SigninSignup";
-import { Outlet } from "react-router-dom";
-import { Zoom } from "react-awesome-reveal";
+import { Outlet, useLocation } from "react-router-dom";
 
 function Home() {
+  const location = useLocation();
   return (
     <div className="">
       <HomeHeader />
-      {/* <CanvasesList /> */}
-      <Outlet />
-      {/* <SigninSignup/> */}
+      {location.pathname === "/" ? <Hero /> : <Outlet />}
     </div>
   );
 }

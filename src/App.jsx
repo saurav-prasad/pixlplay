@@ -22,6 +22,7 @@ import { removeCollab, setAllCollab } from "./app/features/allCollaborators";
 import Layout from "./pages/Layout";
 import { setCanvasAdmin } from "./app/features/canvasAdmin";
 import AllLiveCanvases from "./pages/AllLiveCanvases";
+import Hero from "./components/Hero";
 
 function App() {
   const dispatch = useDispatch();
