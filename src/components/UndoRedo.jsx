@@ -21,7 +21,7 @@ function UndoRedo({ onUndo, onRedo, redoArr, linesArr, onSaveChanges }) {
         <div
           onClick={onUndo}
           className={`transition rounded-full p-2 cursor-pointer ${
-            linesArr.length === 0
+            linesArr?.length === 0
               ? "bg-black text-white ring-2 ring-gray-600 shadow-md"
               : "bg-gray-50 hover:bg-gray-300 text-black hover:ring-2 hover:ring-gray-900 shadow-xl ring-1 ring-gray-300"
           }`}
@@ -31,7 +31,7 @@ function UndoRedo({ onUndo, onRedo, redoArr, linesArr, onSaveChanges }) {
         <div
           onClick={onRedo}
           className={`transition rounded-full p-2 cursor-pointer ${
-            redoArr.length === 0
+            redoArr?.length === 0
               ? "bg-black text-white ring-2 ring-gray-600 shadow-md"
               : "bg-gray-50 hover:bg-gray-300 text-black hover:ring-2 hover:ring-gray-900 shadow-xl ring-1 ring-gray-300"
           }`}

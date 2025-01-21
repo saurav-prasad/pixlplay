@@ -18,7 +18,7 @@ const useLogout = () => {
         dispatch(removeAllCanvases())
         dispatch(removeCanvas())
         removeAuthToken()
-        socket.disconnect()
+        // socket.disconnect()
         navigate("/signin");
         localStorage.removeItem("background-color");
         dispatch(removeAllOnlineUser())

@@ -10,11 +10,8 @@ import Slider from "./Slider";
 import Tools from "./Tools";
 import { FileLock2, Pen } from "lucide-react";
 import Users from "./Users";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import throttling from "../utils/throttling";
-import { setAlert } from "../app/features/alert";
-import OnlineUsers from "./OnlineUsers";
 import socket from "../socket/socket";
 
 function LiveWhiteboard({ toggleBackground }) {
@@ -46,8 +43,6 @@ function LiveWhiteboard({ toggleBackground }) {
   const lastTouchDistance = useRef(null); // For pinch zoom
   const touchPanStart = useRef(null); // For panning
   const timeoutRef = useRef(null); // Ref to store the setTimeout ID
-  const saveChangesRef = useRef(null);
-  const saveChangesLinesRef = useRef(null);
   // custom hooks
   const { width, height } = useWindowDimensions();
   const isMobile = useDeviceType();
@@ -57,8 +52,6 @@ function LiveWhiteboard({ toggleBackground }) {
   const allCollaborators = useSelector(
     (state) => state.allCollaboratorsReducer
   );
-  // dispatch
-  const dispatch = useDispatch();
   // use params
   const params = useParams();
   const canvasId = params.id;
@@ -70,9 +63,11 @@ function LiveWhiteboard({ toggleBackground }) {
       socket.emit("if-canvas-accessable", { canvasId });
       socket.on("canvas-accessable", ({ success, message, lines }) => {
         if (success) {
+          console.log("object1")
           setLines(lines);
           setIsCanvasNotFound(false);
         } else {
+          console.log("object2")
           setIsCanvasNotFound(true);
         }
       });
@@ -231,9 +226,9 @@ function LiveWhiteboard({ toggleBackground }) {
   // undo function
   const onUndo = (e) => {
     e.preventDefault();
-    if (lines.length > 0) {
+    if (lines?.length > 0) {
       // console.log(lines.length);
-      setRedo([...redo, lines[lines.length - 1]]);
+      setRedo([...redo, lines[lines?.length - 1]]);
       setLines((e) => e.slice(0, e.length - 1));
       setIsCanvasUpdate(true);
     }
@@ -243,7 +238,7 @@ function LiveWhiteboard({ toggleBackground }) {
   const onRedo = (e) => {
     e.preventDefault();
     if (redo.length > 0) {
-      setLines([...lines, redo[redo.length - 1]]);
+      setLines([...lines, redo[redo?.length - 1]]);
       setRedo((e) => e.slice(0, e.length - 1));
       setIsCanvasUpdate(true);
     }
@@ -423,7 +418,7 @@ function LiveWhiteboard({ toggleBackground }) {
           onTouchEnd={handleTouchEnd}
         >
           <Layer>
-            {!isLoading && lines.length === 0 && !isCanvasNotFound && (
+            {!isLoading && lines?.length === 0 && !isCanvasNotFound && (
               <Text
                 fontSize={isMobile ? 33 : 50}
                 text="Just start drawing"
@@ -431,7 +426,7 @@ function LiveWhiteboard({ toggleBackground }) {
                 y={0}
               />
             )}
-            {lines.map((line, i) => (
+            {lines?.map((line, i) => (
               <Line
                 key={i}
                 points={line.points}

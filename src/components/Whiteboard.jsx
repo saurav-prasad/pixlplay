@@ -105,7 +105,7 @@ function Whiteboard({ toggleBackground }) {
       // }
     }
     fetchData();
-  }, [canvasId, canvasesReducer]);
+  }, [canvasId, canvasesReducer,user]);
 
   // check previous canvas position
   useEffect(() => {

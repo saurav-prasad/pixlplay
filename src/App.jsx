@@ -99,7 +99,7 @@ function App() {
   useEffect(() => {
     if (user) {
       try {
-        socket.connect();
+        // socket.connect();
         socket.emit("online", {
           userId: user.id,
           username: user.username,
