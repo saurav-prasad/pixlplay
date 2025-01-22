@@ -438,9 +438,16 @@ function Whiteboard({ toggleBackground }) {
   useEffect(() => {
     if (canvasAdmin.includes(canvasId)) {
       socket.on("updated-canvas", async ({ lines, canvasId }) => {
-        const result = await updateCanvasFunc(canvasId, lines);
-        setLines(lines);
-        dispatch(updateCanvas({ id: canvasId, canvas: lines }));
+        try {
+          setIsSaveLoading(true);
+          const result = await updateCanvasFunc(canvasId, lines);
+          setLines(lines);
+          dispatch(updateCanvas({ id: canvasId, canvas: lines }));
+        } catch (error) {
+          console.error(error);
+        } finally {
+          setIsSaveLoading(false);
+        }
       });
     }
     return () => {
