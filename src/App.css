@@ -4,7 +4,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Lavishly+Yours&display=swap");
 
 .App {
-  background-image: url("./assets/bg-images/mountains-1412683_1920.png");
+  background-image: url("./assets/bg-images/ai-generated-9159939_1920.png");
   background-position: center;
   background-size: cover;
   object-fit: contain;
@@ -235,6 +235,7 @@ input[type="range"]:hover {
 }
 
 @keyframes right2 {
+
   0%,
   100% {
     transform: translateY(-10px);
@@ -246,6 +247,7 @@ input[type="range"]:hover {
 }
 
 @keyframes left2 {
+
   0%,
   100% {
     transform: translateY(10px);
@@ -281,6 +283,7 @@ input[type="range"]:hover {
 }
 
 @keyframes move3 {
+
   0%,
   5% {
     left: -32px;
@@ -334,13 +337,11 @@ input[type="range"]:hover {
   border-radius: 50% 50% 0 0;
   border-bottom: 10px solid #ff3d00;
   background-color: #fff;
-  background-image: radial-gradient(
-      ellipse at center,
+  background-image: radial-gradient(ellipse at center,
       #fff 34%,
       #ff3d00 35%,
       #ff3d00 54%,
-      #fff 55%
-    ),
+      #fff 55%),
     linear-gradient(#ff3d00 10px, transparent 0);
   background-size: 28px 28px;
   background-position: center 20px, center 2px;
@@ -370,12 +371,10 @@ input[type="range"]:hover {
   width: 34px;
   height: 34px;
   top: 112%;
-  background: radial-gradient(
-    ellipse at center,
-    #ffdf00 8%,
-    rgba(249, 62, 0, 0.6) 24%,
-    rgba(0, 0, 0, 0) 100%
-  );
+  background: radial-gradient(ellipse at center,
+      #ffdf00 8%,
+      rgba(249, 62, 0, 0.6) 24%,
+      rgba(0, 0, 0, 0) 100%);
   border-radius: 50% 50% 0;
   background-repeat: no-repeat;
   background-position: -44px -44px;
@@ -386,6 +385,7 @@ input[type="range"]:hover {
 }
 
 @keyframes animloaderBack4 {
+
   0%,
   30%,
   70% {
@@ -421,13 +421,10 @@ input[type="range"]:hover {
 .loader5 {
   width: 44px;
   height: 11px;
-  -webkit-mask: radial-gradient(circle closest-side, #fff 94%, #0000) 0 0/25%
-      100%,
-    linear-gradient(#fff 0 0) center/calc(100% - 12px) calc(100% - 12px)
-      no-repeat;
+  -webkit-mask: radial-gradient(circle closest-side, #fff 94%, #0000) 0 0/25% 100%,
+    linear-gradient(#fff 0 0) center/calc(100% - 12px) calc(100% - 12px) no-repeat;
   mask: radial-gradient(circle closest-side, #fff 94%, #0000) 0 0/25% 100%,
-    linear-gradient(#fff 0 0) center/calc(100% - 12px) calc(100% - 12px)
-      no-repeat;
+    linear-gradient(#fff 0 0) center/calc(100% - 12px) calc(100% - 12px) no-repeat;
   background: linear-gradient(#ff3d00 0 0) left/0% 100% no-repeat #fff;
   animation: bblprg5 2s infinite linear;
 }
@@ -440,8 +437,8 @@ input[type="range"]:hover {
 
 /* loader 6 */
 .loader6 {
-  width: 22px;
-  height: 22px;
+  /* width: 28px;
+  height: 28px; */
   border: 3px solid;
   border-color: #FF3D00 transparent;
   border-radius: 50%;
@@ -454,7 +451,66 @@ input[type="range"]:hover {
   0% {
     transform: rotate(0deg);
   }
+
   100% {
     transform: rotate(360deg);
   }
-} 
+}
+
+
+/* loader 7 */
+.loader7 {
+  border-radius: 50%;
+  display: inline-block;
+  border-top: 4px solid #413c3c;
+  border-right: 4px solid transparent;
+  box-sizing: border-box;
+  animation: rotation7 1s linear infinite;
+}
+
+.loader7::after {
+  content: '';
+  box-sizing: border-box;
+  position: absolute;
+  left: 0;
+  top: 0;
+  border-radius: 50%;
+  border-left: 4px solid #FF3D00;
+  border-bottom: 4px solid transparent;
+  animation: rotation7 0.5s linear infinite reverse;
+}
+
+@keyframes rotation7 {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* loader 8 */
+.loader8 {
+  border: 12px solid #FFF;
+  border-color: #FF3D00 #FF3D00 #fff #fff;
+  border-radius: 50%;
+  position: relative;
+  animation: rotate8 1s linear infinite
+}
+
+.loader8:before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -125%);
+  left: 80%;
+  background: #fff;
+  border-radius: 50%;
+}
+
+@keyframes rotate8 {
+  100% {
+    transform: rotate(360deg)
+  }
+}

@@ -41,6 +41,7 @@ function Whiteboard({ toggleBackground }) {
   const [isCanvasUpdate, setIsCanvasUpdate] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [previousPosition, setPreviousPosition] = useState({});
+  const [isSaveLoading, setIsSaveLoading] = useState(false);
   // useRef
   const isDrawing = useRef(false);
   const stageRef = useRef(null);
@@ -105,7 +106,7 @@ function Whiteboard({ toggleBackground }) {
       // }
     }
     fetchData();
-  }, [canvasId, canvasesReducer,user]);
+  }, [canvasId, canvasesReducer, user]);
 
   // check previous canvas position
   useEffect(() => {
@@ -198,7 +199,7 @@ function Whiteboard({ toggleBackground }) {
         setLines(updatedLines); // Update the state
       }
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
   };
 
@@ -398,6 +399,7 @@ function Whiteboard({ toggleBackground }) {
 
       // Set a new timeout and store its ID in the ref
       timeoutRef.current = setTimeout(async () => {
+        setIsSaveLoading(true);
         try {
           if (user) {
             const result = await updateCanvasFunc(canvasId, lines);
@@ -410,6 +412,7 @@ function Whiteboard({ toggleBackground }) {
         } finally {
           setIsCanvasUpdate(false); // Reset the state after the update
           timeoutRef.current = null; // Clear the ref
+          setIsSaveLoading(false);
         }
       }, 500);
     }
@@ -449,6 +452,7 @@ function Whiteboard({ toggleBackground }) {
   useEffect(() => {
     saveChangesRef.current = throttling(async () => {
       try {
+        setIsSaveLoading(true);
         if (user) {
           const result = await updateCanvasFunc(
             canvasId,
@@ -457,10 +461,16 @@ function Whiteboard({ toggleBackground }) {
           dispatch(setAlert({ text: "Changes uploaded to cloud" }));
         }
       } catch (error) {
+        console.log(error);
         console.error("Error updating canvas:", error);
         dispatch(
-          setAlert({ type: "danger", text: error?.response?.data?.message })
+          setAlert({
+            type: "danger",
+            text: error.response.data.message || "Something went wrong!",
+          })
         );
+      } finally {
+        setIsSaveLoading(false);
       }
     }, 4000);
   }, [canvasId]);
@@ -514,6 +524,7 @@ function Whiteboard({ toggleBackground }) {
         {/* Toobar */}
         <div className="shadow-[2px_5px_13px_0px_rgb(181,181,181)]">
           <Toolbar
+            isSaveLoading={isSaveLoading}
             canvasId={canvasId}
             toggleBackground={toggleBackground}
             color={color}
@@ -541,6 +552,7 @@ function Whiteboard({ toggleBackground }) {
           />
         )}
         <UndoRedo
+          isSaveLoading={isSaveLoading}
           onSaveChanges={onSaveChanges}
           linesArr={lines}
           redoArr={redo}

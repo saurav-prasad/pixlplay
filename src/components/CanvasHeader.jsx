@@ -2,7 +2,6 @@ import {
   CircleCheckBig,
   CloudUpload,
   Info,
-  LogOut,
   Logs,
   Pencil,
   Share2,
@@ -99,19 +98,14 @@ function CanvasHeader() {
     if (result) {
       setIsLoading(true);
       try {
-        if (!location.pathname.startsWith("/livecanvas")) {
-          const deletedCanvas = await deleteCanvasFunc(canvasId);
-          // console.log(deletedCanvas);
-          dispatch(deleteInAllCanvases(canvasId));
-          dispatch(deleteCanvas(canvasId));
-          dispatch(setAlert({ text: "Canvas deleted Successfully" }));
-          if (canvasAdmin.includes(canvasId)) {
-            console.log("object");
-            socket.emit("delete-canvas", canvasId);
-          }
-        } else {
-          socket.emit("leave-canvas", { canvasId });
-          dispatch(setAlert({ text: "Canvas left Successfully" }));
+        const deletedCanvas = await deleteCanvasFunc(canvasId);
+        // console.log(deletedCanvas);
+        dispatch(deleteInAllCanvases(canvasId));
+        dispatch(deleteCanvas(canvasId));
+        dispatch(setAlert({ text: "Canvas deleted Successfully" }));
+        if (canvasAdmin.includes(canvasId)) {
+          console.log("object")
+          socket.emit("delete-canvas", canvasId);
         }
       } catch (error) {
         console.error(error);
@@ -133,18 +127,6 @@ function CanvasHeader() {
   // online users handler
   const toggleOnlineUsersPopup = () => {
     setIsOnlineUsersPopup(!isOnlineUsersPopup);
-  };
-
-  // function to delete the canvas
-  const handleLeaveCanvas = async () => {
-    socket.emit("can-leave-canvas", canvasId);
-    socket.on("if-leave-canvas", ({ success }) => {
-      if (success) {
-        togglePopupModal();
-      } else {
-        dispatch(setAlert({ type: "danger", text: "Not allowed" }));
-      }
-    });
   };
 
   useEffect(() => {
@@ -194,62 +176,50 @@ function CanvasHeader() {
           </div>
           {/* icons */}
           <div className="flex space-x-4 items-center">
-            {location.pathname.startsWith("/livecanvas") ? (
-              <div className="flex space-x-4 py-2 px-3">
-                <LogOut
-                  onClick={handleLeaveCanvas}
-                  className="h-6 w-6 transform hover:translate-x-1 duration-300"
-                  aria-hidden="true"
-                />
-              </div>
+            {isLoading ? (
+              <span className="loader5"></span>
             ) : (
               <>
-                {isLoading ? (
-                  <span className="loader5"></span>
-                ) : (
-                  <>
-                    {/* edit - save */}
-                    <div
-                      className="cursor-pointer hover:bg-gray-200 p-2 rounded-md transition-all"
-                      title={onEdit ? "Save Changes" : "Edit name"}
-                    >
-                      {onEdit ? (
-                        <CircleCheckBig
-                          onClick={handleEditSave}
-                          aria-hidden="true"
-                        />
-                      ) : (
-                        <Pencil onClick={handleEditStart} aria-hidden="true" />
-                      )}
-                    </div>
-                    {/* cancel - delete */}
-                    <div
-                      // onClick={onEdit ? handleEditEnd() : null}
-                      className="cursor-pointer hover:bg-gray-200 p-2 rounded-md transition-all"
-                      title={onEdit ? "Cancel" : "Delete"}
-                    >
-                      {onEdit ? (
-                        <X onClick={handleEditCancel} aria-hidden="true" />
-                      ) : (
-                        <Trash2
-                          onClick={handleDeleteCanvas}
-                          aria-hidden="true"
-                          className="transition-all hover:scale-125 duration-200"
-                        />
-                      )}
-                    </div>
-                  </>
-                )}
-                {/* share */}
+                {/* edit - save */}
                 <div
-                  onClick={toggleOnlineUsersPopup}
-                  title="save changes"
                   className="cursor-pointer hover:bg-gray-200 p-2 rounded-md transition-all"
+                  title={onEdit ? "Save Changes" : "Edit name"}
                 >
-                  <Share2 className="" />
+                  {onEdit ? (
+                    <CircleCheckBig
+                      onClick={handleEditSave}
+                      aria-hidden="true"
+                    />
+                  ) : (
+                    <Pencil onClick={handleEditStart} aria-hidden="true" />
+                  )}
+                </div>
+                {/* cancel - delete */}
+                <div
+                  // onClick={onEdit ? handleEditEnd() : null}
+                  className="cursor-pointer hover:bg-gray-200 p-2 rounded-md transition-all"
+                  title={onEdit ? "Cancel" : "Delete"}
+                >
+                  {onEdit ? (
+                    <X onClick={handleEditCancel} aria-hidden="true" />
+                  ) : (
+                    <Trash2
+                      onClick={handleDeleteCanvas}
+                      aria-hidden="true"
+                      className="transition-all hover:scale-125 duration-200"
+                    />
+                  )}
                 </div>
               </>
             )}
+            {/* share */}
+            <div
+              onClick={toggleOnlineUsersPopup}
+              title="save changes"
+              className="cursor-pointer hover:bg-gray-200 p-2 rounded-md transition-all"
+            >
+              <Share2 className="" />
+            </div>
           </div>
         </div>
         {/* sidebar */}

@@ -2,6 +2,7 @@ import { ArrowBigRightDash, ArrowRight } from "lucide-react";
 import React from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import Portfolio from "../assets/icons/coder.png";
 
 function Hero() {
   const { user } = useSelector((state) => state.authReducer);
@@ -49,8 +50,20 @@ function Hero() {
           </Link>
         </div>
         {/* footer */}
-        <footer className="absolute bottom-0 left-0 right-0 flex flex-col items-center border-t border-slate-400/10 py-4 sm:flex-row-reverse sm:justify-between bg-[#00000078] backdrop-blur-[100px] shadow-lg">
+        <footer className="absolute bottom-0 px-2 left-0 right-0 flex flex-col items-center border-t border-slate-400/10 py-4 sm:flex-row-reverse sm:justify-between bg-[#00000078] backdrop-blur-[100px] shadow-lg">
           <div className="flex gap-x-6">
+            <Link
+              target="__blank"
+              to="https://sauravprasad.vercel.app/"
+              className="group"
+              aria-label="TaxPal on X"
+            >
+              <img
+                className="h-6 w-6 object-contain contrast-[0.1] group-hover:contrast-[0.5] transition-all"
+                src={Portfolio}
+                alt=""
+              />
+            </Link>
             <Link
               target="__blank"
               to="https://www.linkedin.com/in/saurav-prasadd/"
@@ -58,7 +71,7 @@ function Hero() {
               aria-label="TaxPal on X"
             >
               <svg
-                className="h-6 w-6 fill-slate-500 group-hover:fill-slate-700"
+                className="h-6 w-6 fill-slate-500 group-hover:fill-slate-700 transition-all"
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 50 50"
                 width="50px"
@@ -74,7 +87,7 @@ function Hero() {
               aria-label="TaxPal on GitHub"
             >
               <svg
-                className="h-6 w-6 fill-slate-500 group-hover:fill-slate-700"
+                className="h-6 w-6 fill-slate-500 group-hover:fill-slate-700 transition-all"
                 aria-hidden="true"
                 viewBox="0 0 24 24"
               >

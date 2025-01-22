@@ -115,7 +115,6 @@ function Item({ name, id }) {
       navigate(`/livecanvas/${id}`);
     } else {
       !onEdit && navigate(`/canvas/${id}`);
-      console.log("object");
     }
   };
 

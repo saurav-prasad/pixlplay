@@ -35,6 +35,7 @@ function Toolbar({
   toggleBackground,
   canvasId,
   onSaveChanges,
+  isSaveLoading,
 }) {
   const colorRef = useRef(null);
   const isDark = isDarkColor(color);
@@ -205,13 +206,19 @@ function Toolbar({
         {/* Save */}
         {!location.pathname.startsWith("/livecanvas") && (
           <div
-            onClick={onSaveChanges}
+            onClick={isSaveLoading ? () => {} : onSaveChanges}
             title="Save changes"
             onMouseEnter={() => handleMouseEnter("save")}
             onMouseLeave={handleMouseLeave}
-            className={`relative cursor-pointer p-2 rounded-full w-fit h-fit border hover:bg-gray-200 hidden md:block`}
+            className={`justify-center items-center relative cursor-pointer p-2 rounded-full w-fit h-fit border hover:bg-gray-200 hidden ${
+              isSaveLoading ? "bg-gray-300" : "bg-gray-50"
+            }  md:${isSaveLoading ? "flex" : "block"}`}
           >
-            <CloudUpload className="h-6 w-6 text-gray-900" />
+            {isSaveLoading ? (
+              <span className="loader8 before:w-[12px] before:h-[12px] w-[24px] h-[24px] "></span>
+            ) : (
+              <CloudUpload className="h-6 w-6 text-gray-900" />
+            )}
             <Popup isPopupVisible={visiblePopup === "save"} text={"Save"} />
           </div>
         )}
