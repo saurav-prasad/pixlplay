@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { authRoute } from "../axios/axios";
 import { login } from "../app/features/auth";
 import { setAlert } from "../app/features/alert";
+import socket from "../socket/socket";
 
 function SigninSignup() {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
@@ -16,6 +17,7 @@ function SigninSignup() {
   const [isCatWaving, setIsCatWaving] = useState(true);
   const [error, setError] = useState();
   const [isLoading, setIsLoading] = useState(false);
+  const [isTestLoading, setIsTestLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -68,13 +70,23 @@ function SigninSignup() {
           password: formData.password,
         });
         const { token: _, ...rest } = result.data.data;
-        // console.log(result.data);
-        // console.log(rest);
-        dispatch(login(rest));
-        localStorage.setItem("token", result.data.data.token);
+        socket.emit("check-if-logged-in", rest.id);
+        socket.on("if-logged-in", ({ success, message }) => {
+          if (success) {
+            dispatch(
+              setAlert({
+                type: "danger",
+                text: "Logout from other device first!",
+              })
+            );
+          } else {
+            dispatch(login(rest));
+            localStorage.setItem("token", result.data.data.token);
+            navigate("/");
+          }
+        });
+        setIsLoading(false);
       }
-      setIsLoading(false);
-      navigate("/");
     } catch (error) {
       console.log(error);
       setError(error.response.data.message);
@@ -88,14 +100,28 @@ function SigninSignup() {
 
   // handle test user sign in
   const handleOnTestClick = async () => {
+    setIsTestLoading(true);
     try {
       const result = await authRoute.post("/loginuser", {
         email: "test@pixlplay.com",
         password: "test123",
       });
       const { token: _, ...rest } = result.data.data;
-      dispatch(login(rest));
-      localStorage.setItem("token", result.data.data.token);
+      socket.emit("check-if-logged-in", rest.id);
+      socket.on("if-logged-in", ({ success, message }) => {
+        if (success) {
+          dispatch(
+            setAlert({
+              type: "danger",
+              text: "Logout from other device first!",
+            })
+          );
+        } else {
+          dispatch(login(rest));
+          localStorage.setItem("token", result.data.data.token);
+          navigate("/");
+        }
+      });
     } catch (error) {
       console.log(error);
       setError(error.response.data.message);
@@ -105,7 +131,8 @@ function SigninSignup() {
       setTimeout(() => {
         setError();
       }, 5000);
-      setIsLoading(false);
+    }finally{
+      setIsTestLoading(false)
     }
   };
 
@@ -309,7 +336,7 @@ function SigninSignup() {
                 <div className={`${error ? "!mt-[1.7rem]" : "!mt-[1.2rem]"}`}>
                   <button
                     type="submit"
-                    className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-sm hover:bg-indigo-700/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 transition-all duration-300"
+                    className="flex w-full justify-center items-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-sm hover:bg-indigo-700/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 transition-all duration-300"
                   >
                     {isLoading ? (
                       <span className="loader"></span>
@@ -323,9 +350,13 @@ function SigninSignup() {
                   <button
                     type="button"
                     onClick={handleOnTestClick}
-                    className="mt-4 flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-sm hover:bg-indigo-700/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 transition-all duration-300"
+                    className="mt-4 flex w-full justify-center items-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-sm hover:bg-indigo-700/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 transition-all duration-300"
                   >
-                    Sign in as Test User
+                    {isTestLoading ? (
+                      <span className="loader"></span>
+                    ) : (
+                      " Sign in as Test User"
+                    )}
                   </button>
                 </div>
               </form>

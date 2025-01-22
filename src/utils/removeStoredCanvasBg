@@ -1,0 +1,2 @@
+const removeStoredCanvasBg = () => localStorage.removeItem('background-color')
+export default removeStoredCanvasBg

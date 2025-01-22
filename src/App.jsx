@@ -22,6 +22,8 @@ import { removeCollab, setAllCollab } from "./app/features/allCollaborators";
 import Layout from "./pages/Layout";
 import { setCanvasAdmin } from "./app/features/canvasAdmin";
 import AllLiveCanvases from "./pages/AllLiveCanvases";
+import removeAuthToken from "./utils/removeAuthToken";
+import removeStoredCanvasBg from "./utils/removeStoredCanvasBg";
 
 function App() {
   const dispatch = useDispatch();
@@ -37,9 +39,19 @@ function App() {
           const result = await authRoute.get("/fetchuser", {
             headers: { "auth-token": token },
           });
-          dispatch(login(result.data.data));
-          const canvasData = await getAllCanvases();
-          dispatch(setAllCanvases(canvasData));
+          const authData = result.data.data;
+
+          socket.emit("check-if-logged-in", authData.id);
+          socket.on("if-logged-in", async ({ success, message }) => {
+            if (success) {
+              removeAuthToken();
+              removeStoredCanvasBg();
+            } else {
+              dispatch(login(authData));
+              const canvasData = await getAllCanvases();
+              dispatch(setAllCanvases(canvasData));
+            }
+          });
         }
       } catch (error) {
         console.error(error);

@@ -4,6 +4,7 @@ import useDeviceType from "../hooks/useDeviceType";
 import useWindowDimensions from "../hooks/useWindowDimensions";
 import CanvasHeader from "../components/CanvasHeader";
 import Loader from "../components/Loader";
+import getStoredCanvasBg from "../utils/getStoredCanvasBg"
 
 // lazy loaders
 const Whiteboard = lazy(() => import("../components/Whiteboard"));
@@ -39,7 +40,7 @@ function Canvas() {
   };
 
   useEffect(() => {
-    const storedBgColor = localStorage.getItem("background-color");
+    const storedBgColor = getStoredCanvasBg()
     if (storedBgColor) {
       backgroundRef.current.style.backgroundColor = storedBgColor;
     }
