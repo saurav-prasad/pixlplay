@@ -104,7 +104,7 @@ function CanvasHeader() {
         dispatch(deleteCanvas(canvasId));
         dispatch(setAlert({ text: "Canvas deleted Successfully" }));
         if (canvasAdmin.includes(canvasId)) {
-          console.log("object")
+          console.log("object");
           socket.emit("delete-canvas", canvasId);
         }
       } catch (error) {
@@ -126,7 +126,9 @@ function CanvasHeader() {
   };
   // online users handler
   const toggleOnlineUsersPopup = () => {
-    setIsOnlineUsersPopup(!isOnlineUsersPopup);
+    !isCanvasNotFound
+      ? setIsOnlineUsersPopup(!isOnlineUsersPopup)
+      : dispatch(setAlert({ type: "danger", text: "Not allowed!" }));
   };
 
   useEffect(() => {
