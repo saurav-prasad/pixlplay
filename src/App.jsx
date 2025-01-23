@@ -159,7 +159,7 @@ function App() {
     };
   }, [user]);
 
-  const bgImages = [Bg3,Bg1, Bg2];
+  const bgImages = [Bg1, Bg2, Bg3];
   const [bgImageIndex, setBgImageIndex] = useState(0);
 
   useEffect(() => {
