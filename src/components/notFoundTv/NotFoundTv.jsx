@@ -1,5 +1,5 @@
 import React from "react";
-import "./NotfoundTv.css";
+import "./NotFoundTv.css";
 
 function NotFoundTv() {
   return (
