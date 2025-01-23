@@ -1,19 +1,9 @@
 import React, { memo, useEffect, useRef, useState } from "react";
 import Item from "./Item";
-import { BadgePlusIcon } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-import { addInAllCanvases, setAllCanvases } from "../app/features/allCanvases";
-import sortArray from "../utils/sortArray";
-import createNewCanvas from "../utils/createNewCanvas";
-import getAllCanvases from "../utils/getAllCanvases";
-import throttling from "../utils/throttling";
 import ItemSkeleton from "./ItemSkeleton";
 import genEmptyArr from "../utils/genEmptyArr";
-import Alert from "./Alert";
-import { setAlert } from "../app/features/alert";
 import socket from "../socket/socket";
-import ByeDog from "../assets/images/bye_dog.svg";
-import ChillDog from "../assets/images/chill_dog.png";
 import NotFoundTv from "./notFoundTv/NotFoundTv";
 
 function LiveCanvasesList() {
