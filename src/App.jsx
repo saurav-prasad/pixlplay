@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, useEffect } from "react";
+import React, { lazy, Suspense, useEffect, useState } from "react";
 import Canvas from "./pages/Canvas";
 import "./App.css";
 import Home from "./pages/Home";
@@ -24,6 +24,9 @@ import { setCanvasAdmin } from "./app/features/canvasAdmin";
 import AllLiveCanvases from "./pages/AllLiveCanvases";
 import removeAuthToken from "./utils/removeAuthToken";
 import removeStoredCanvasBg from "./utils/removeStoredCanvasBg";
+import Bg1 from "./assets/bg-images/ai-generated-9159939_1920.png";
+import Bg2 from "./assets/bg-images/mountains-1412683_1920.png";
+import Bg3 from "./assets/bg-images/mountain-4823516_1920.png";
 
 function App() {
   const dispatch = useDispatch();
@@ -156,8 +159,24 @@ function App() {
     };
   }, [user]);
 
+  const bgImages = [Bg3,Bg1, Bg2];
+  const [bgImageIndex, setBgImageIndex] = useState(0);
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      console.log(bgImageIndex % bgImages.length);
+      setBgImageIndex((prevIndex) => (prevIndex + 1) % bgImages.length);
+    }, 3 * 10000);
+    return () => clearInterval(intervalId);
+  }, []);
+
   return (
-    <div className="App relative min-h-screen">
+    <div
+      style={{
+        backgroundImage: `url(${bgImages[bgImageIndex]})`,
+      }}
+      className="App relative min-h-screen"
+    >
       <RouterProvider router={router} />
     </div>
   );

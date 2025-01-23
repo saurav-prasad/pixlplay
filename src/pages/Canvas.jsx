@@ -4,7 +4,9 @@ import useDeviceType from "../hooks/useDeviceType";
 import useWindowDimensions from "../hooks/useWindowDimensions";
 import CanvasHeader from "../components/CanvasHeader";
 import Loader from "../components/Loader";
-import getStoredCanvasBg from "../utils/getStoredCanvasBg"
+import getStoredCanvasBg from "../utils/getStoredCanvasBg";
+import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 // lazy loaders
 const Whiteboard = lazy(() => import("../components/Whiteboard"));
@@ -22,6 +24,8 @@ function Canvas() {
   const backgroundRef = useRef(null);
   const isMobile = useDeviceType();
   const { width, height } = useWindowDimensions();
+  const { user } = useSelector((state) => state.authReducer);
+  const navigate = useNavigate();
 
   const toggleBackground = () => {
     if (bgIndex < backgroundConstants.length - 1) {
@@ -40,7 +44,7 @@ function Canvas() {
   };
 
   useEffect(() => {
-    const storedBgColor = getStoredCanvasBg()
+    const storedBgColor = getStoredCanvasBg();
     if (storedBgColor) {
       backgroundRef.current.style.backgroundColor = storedBgColor;
     }
@@ -57,6 +61,11 @@ function Canvas() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!user) {
+      navigate(-1);
+    }
+  }, []);
   return (
     <div ref={backgroundRef} className={`md:flex h-screen transition-all`}>
       {/* Canvas Header */}

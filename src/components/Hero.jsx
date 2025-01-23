@@ -40,7 +40,7 @@ function Hero() {
         </p>
         <div className="mt-10 flex justify-center items-center gap-x-6">
           <Link
-            className="group inline-flex items-center justify-center rounded-full py-3 px-5 font-medium focus:outline-none focus-visible:outline-2 shadow-2xl focus-visible:outline-offset-2 bg-[#0f172ad5] text-white backdrop-blur-[100px] hover:bg-slate-800 hover:text-slate-100 active:bg-slate-800 active:text-slate-300 focus-visible:outline-slate-900 group"
+            className="group inline-flex items-center justify-center heroButton"
             variant="solid"
             color="slate"
             to={user ? "/canvases" : "/signin"}

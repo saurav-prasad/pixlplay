@@ -230,10 +230,10 @@ function LiveSidebar({ toggleSidebar }) {
               )}
               <span
                 onClick={handleLogout}
-                className="-mx-3 mb-4 select-none cursor-pointer flex transform items-center rounded-lg px-3 py-2 transition-colors duration-300 hover:bg-gray-100 hover:text-gray-900"
+                className="-mx-3 group mb-4 select-none cursor-pointer flex transform items-center rounded-lg px-3 py-2 transition-colors duration-300 hover:bg-gray-100 hover:text-gray-900"
               >
                 {user ? (
-                  <LogOut className="h-6 w-6" aria-hidden="true" />
+                  <LogOut className="h-6 w-6 group-hover:translate-x-1 transition-all" aria-hidden="true" />
                 ) : (
                   <LogIn className="h-6 w-6" aria-hidden="true" />
                 )}

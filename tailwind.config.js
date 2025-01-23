@@ -10,7 +10,9 @@ export default {
         whisper: "Whisper, serif",
         rubik: "Rubik Vinyl, serif",
         mea: "Mea Culpa, serif",
-        lavishly: "Lavishly Yours, serif"
+        lavishly: "Lavishly Yours, serif",
+        barrio: "Barrio, serif",
+        delius: "Delius Swash Caps",
 
       }
     },

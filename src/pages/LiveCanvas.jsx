@@ -3,6 +3,8 @@ import "../components/Whiteboard";
 import useDeviceType from "../hooks/useDeviceType";
 import CanvasHeader from "../components/CanvasHeader";
 import Loader from "../components/Loader";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 // lazy loaders
 const LiveWhiteboard = lazy(() => import("../components/LiveWhiteboard"));
@@ -19,6 +21,8 @@ function LiveCanvas() {
   const [bgIndex, setBgIndex] = useState(0);
   const backgroundRef = useRef(null);
   const isMobile = useDeviceType();
+  const { user } = useSelector((state) => state.authReducer);
+  const navigate = useNavigate();
 
   const toggleBackground = () => {
     if (bgIndex < backgroundConstants.length - 1) {
@@ -49,6 +53,12 @@ function LiveCanvas() {
     return () => {
       document.body.style.overflowY = "auto";
     };
+  }, []);
+
+  useEffect(() => {
+    if (!user) {
+      navigate(-1);
+    }
   }, []);
 
   return (

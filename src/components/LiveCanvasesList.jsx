@@ -12,6 +12,9 @@ import genEmptyArr from "../utils/genEmptyArr";
 import Alert from "./Alert";
 import { setAlert } from "../app/features/alert";
 import socket from "../socket/socket";
+import ByeDog from "../assets/images/bye_dog.svg";
+import ChillDog from "../assets/images/chill_dog.png";
+import NotFoundTv from "./notFoundTv/NotFoundTv";
 
 function LiveCanvasesList() {
   const [canvases, setCanvases] = useState([]);
@@ -60,7 +63,18 @@ function LiveCanvasesList() {
           />
         ))
       ) : (
-        <h1 className="text-center text-3xl text-gray-800 font-bold">No live Canvases Available.</h1>
+        <div className="flex justify-center items-center flex-col gap-5">
+          {/* <h1 className="text-center text-3xl text-gray-800 font-bold">
+            Ooho!
+          </h1> */}
+          <h1 className="text-center text-3xl text-gray-800 font-bold font-rubik">
+            No live Canvases Available!
+          </h1>
+          {/* <div className="border-b-2 shadow-2xl">
+            <img className="w-80 object-contain" src={ChillDog} alt="" />
+          </div> */}
+          <NotFoundTv/>
+        </div>
       )}
     </>
   );
