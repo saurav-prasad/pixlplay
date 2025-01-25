@@ -1,7 +1,7 @@
 import { Contact, Eye, EyeOff, Mail, User } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import useDeviceType from "../hooks/useDeviceType";
-import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Zoom } from "react-awesome-reveal";
 import CatWaving from "../assets/images/cat-waving.jpg";
 import CatSeeing from "../assets/images/cat-seeing.jpg";
@@ -10,14 +10,17 @@ import { authRoute } from "../axios/axios";
 import { login } from "../app/features/auth";
 import { setAlert } from "../app/features/alert";
 import socket from "../socket/socket";
+import useWindowDimensions from "../hooks/useWindowDimensions";
 
 function SigninSignup() {
+  const { currHeight } = useWindowDimensions();
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isCatVisible, setIsCatVisible] = useState(true);
   const [isCatWaving, setIsCatWaving] = useState(true);
   const [error, setError] = useState();
   const [isLoading, setIsLoading] = useState(false);
-  const [isTestLoading, setIsTestLoading] = useState(false);
+  const [isTest1Loading, setIsTest1Loading] = useState(false);
+  const [isTest2Loading, setIsTest2Loading] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -99,11 +102,16 @@ function SigninSignup() {
   };
 
   // handle test user sign in
-  const handleOnTestClick = async () => {
-    setIsTestLoading(true);
+  const handleOnTestClick = async (e) => {
+    e.target.name === "test1"
+      ? setIsTest1Loading(true)
+      : setIsTest2Loading(true);
     try {
       const result = await authRoute.post("/loginuser", {
-        email: "test@pixlplay.com",
+        email:
+          e.target.name === "test1"
+            ? "test1@pixlplay.com"
+            : "test2@pixlplay.com",
         password: "test123",
       });
       const { token: _, ...rest } = result.data.data;
@@ -131,8 +139,9 @@ function SigninSignup() {
       setTimeout(() => {
         setError();
       }, 5000);
-    }finally{
-      setIsTestLoading(false)
+    } finally {
+      setIsTest1Loading(false);
+      setIsTest2Loading(false);
     }
   };
 
@@ -188,13 +197,15 @@ function SigninSignup() {
   return (
     <>
       <div className="relative flex min-h-screen items-center justify-center px-4 sm:px-2 ">
-        {!isMobile && !isSignup && (
+        {!isSignup && (
           <img
             onClick={() => setIsCatVisible(false)}
             alt="cat"
             src={`${isCatWaving ? CatWaving : CatSeeing}`}
             className={`absolute w-80 object-contain -top-[2.1rem] transition-all duration-500 ${
-              isCatVisible ? "translate-y-0" : "translate-y-full blur-[60px]"
+              isCatVisible
+                ? "translate-y-0 z-[1]"
+                : "translate-y-full blur-[60px] -z-10"
             }`}
           />
         )}
@@ -213,7 +224,7 @@ function SigninSignup() {
               >
                 Pixl Play
               </h1>
-              <h2 className="mt-6 text-center text-2xl/9 font-extrabold tracking-tight text-gray-800">
+              <h2 className="mt-6 select-none text-center text-2xl/9 font-extrabold tracking-tight text-gray-800">
                 {location.pathname === "/signup"
                   ? "Sign up to your account"
                   : "Sign in to your account"}
@@ -346,18 +357,32 @@ function SigninSignup() {
                       "Sign in"
                     )}
                   </button>
-
-                  <button
-                    type="button"
-                    onClick={handleOnTestClick}
-                    className="mt-4 flex w-full justify-center items-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-sm hover:bg-indigo-700/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 transition-all duration-300"
-                  >
-                    {isTestLoading ? (
-                      <span className="loader"></span>
-                    ) : (
-                      " Sign in as Test User"
-                    )}
-                  </button>
+                  <div className="flex flex-row space-x-2">
+                    <button
+                      type="button"
+                      name="test1"
+                      onClick={handleOnTestClick}
+                      className="mt-4 flex w-full justify-center items-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-sm hover:bg-indigo-700/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 transition-all duration-300"
+                    >
+                      {isTest1Loading ? (
+                        <span className="loader"></span>
+                      ) : (
+                        " Sign in Test User1"
+                      )}
+                    </button>
+                    <button
+                      type="button"
+                      name="test2"
+                      onClick={handleOnTestClick}
+                      className="mt-4 flex w-full justify-center items-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-sm hover:bg-indigo-700/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 transition-all duration-300"
+                    >
+                      {isTest2Loading ? (
+                        <span className="loader"></span>
+                      ) : (
+                        " Sign in Test User2"
+                      )}
+                    </button>
+                  </div>
                 </div>
               </form>
 

@@ -220,7 +220,7 @@
     color: #252525;
     letter-spacing: 0.15em;
     text-align: center;
-    /* background: #000; */
+    will-change: transform;
 
 }
 
@@ -234,12 +234,6 @@
     }
 }
 
-/* Fallback for older devices */
-@supports not ((background: repeating-radial-gradient(#000 0 0.0001%, #ffffff 0 0.0002%)) and (background: repeating-conic-gradient(#000 0 0.0001%, #ffffff 0 0.0002%))) {
-    .screen {
-        background-color: red;
-    }
-}
 
 .screenM {
     width: 13em;

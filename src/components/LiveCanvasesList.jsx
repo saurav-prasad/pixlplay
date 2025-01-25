@@ -18,9 +18,7 @@ function LiveCanvasesList() {
         try {
           socket.emit("get-all-collaborator-canvases");
           socket.on("all-collaborator-canvases", (data) => {
-            console.log(data)
             setCanvases(data);
-            setIsLoading([]);
           });
         } catch (error) {
           console.error(error);
@@ -30,7 +28,8 @@ function LiveCanvasesList() {
       }
     }
     fetchData();
-  }, []);
+  }, [user]);
+
 
   return (
     <>
@@ -46,7 +45,7 @@ function LiveCanvasesList() {
           ))}
         </>
       )}{" "}
-      {isLoading.length < 3 && canvases.length > 0 ? (
+      {isLoading.length < 3 && canvases.length > 0 && user ? (
         canvases.map((item, index) => (
           <Item
             key={item.canvasId}
