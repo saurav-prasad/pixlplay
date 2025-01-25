@@ -18,6 +18,10 @@ function Blob() {
   const handleMouseMove = (e) => {
     api.start({ xy: [e.clientX - left, e.clientY - top] });
   };
+  const handleTouchMove = (e) => {
+    const touch = e.touches[0]; // Get the first touch point
+    api.start({ xy: [touch.clientX - left, touch.clientY - top] });
+  };
   return (
     <div
       className={`absolute h-screen w-screen ${
@@ -42,6 +46,7 @@ function Blob() {
           ref={ref}
           className={styles.hooksMain}
           onMouseMove={handleMouseMove}
+          onTouchMove={handleTouchMove}
         >
           {trail.map((props, index) => (
             <animated.div
