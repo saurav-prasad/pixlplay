@@ -18,7 +18,9 @@ function LiveCanvasesList() {
         try {
           socket.emit("get-all-collaborator-canvases");
           socket.on("all-collaborator-canvases", (data) => {
+            console.log(data)
             setCanvases(data);
+            setIsLoading([]);
           });
         } catch (error) {
           console.error(error);
@@ -63,7 +65,7 @@ function LiveCanvasesList() {
           {/* <div className="border-b-2 shadow-2xl">
             <img className="w-80 object-contain" src={ChillDog} alt="" />
           </div> */}
-          <NotFoundTv/>
+          <NotFoundTv />
         </div>
       )}
     </>
