@@ -10,7 +10,7 @@ function Hero() {
   return (
     <>
       <div
-        className={`relative h-screen flex justify-center flex-col md:text-center bg-[#ffffff00] backdrop-blur-[2px]`}
+        className={`h-[90vh] flex justify-center flex-col md:text-center bg-[#ffffff00] backdrop-blur-[2px]`}
       >
         <h1 className="mx-auto max-w-4xl font-display text-5xl font-medium tracking-tight text-slate-900 sm:text-7xl">
           Start{" "}
@@ -38,7 +38,7 @@ function Hero() {
           working solo or collaborating with others, Pixl Play meets all your
           expectations with ease and efficiency.
         </p>
-        <div className="mt-10 flex justify-center items-center gap-x-6">
+        {/* <div className="mt-10 flex justify-center items-center gap-x-6">
           <Link
             className="group inline-flex items-center justify-center heroButton"
             variant="solid"
@@ -48,9 +48,9 @@ function Hero() {
             {user ? "Unleash Your Creativity" : "Get Started for Free!"}
             <ArrowBigRightDash className="ml-1 group-hover:translate-x-[3px] transition-all" />
           </Link>
-        </div>
+        </div> */}
         {/* footer */}
-        <footer className="absolute bottom-0 px-2 left-0 right-0 flex flex-col items-center border-t border-slate-400/10 py-4 sm:flex-row-reverse sm:justify-between bg-[#00000078] backdrop-blur-[100px] shadow-lg">
+        {/* <footer className="absolute bottom-0 px-2 left-0 right-0 flex flex-col items-center border-t border-slate-400/10 py-4 sm:flex-row-reverse sm:justify-between bg-[#00000078] backdrop-blur-[100px] shadow-lg">
           <div className="flex gap-x-6">
             <Link
               target="__blank"
@@ -98,7 +98,7 @@ function Hero() {
           <p className="mt-2 text-sm text-slate-500 sm:mt-0">
             Copyright © 2025 Saurav Prasad. All rights reserved.
           </p>
-        </footer>
+        </footer> */}
       </div>
     </>
   );
