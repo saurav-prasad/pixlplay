@@ -301,6 +301,11 @@ function Sidebar({ toggleSidebar }) {
                   </div>
                 </div>
               ))}
+            {!user && (
+              <h1 className="test-gray-800 font-bold">
+                Your work won't be saved.
+              </h1>
+            )}
           </div>
 
           {/* Profile and Sign-out */}

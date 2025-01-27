@@ -199,74 +199,88 @@ function CanvasHeader() {
                 className="w-full text-xl font-bold outline-none"
               />
             ) : (
-              <span className="text-xl flex-1 font-bold truncate">
-                {location.pathname.startsWith("/livecanvas")
-                  ? canvasInfo?.canvasName
-                  : canvasInfo?.name}
-              </span>
+              <>
+                {user && (
+                  <span className="text-xl flex-1 font-bold truncate">
+                    {location.pathname.startsWith("/livecanvas")
+                      ? canvasInfo?.canvasName
+                      : canvasInfo?.name}
+                  </span>
+                )}
+                {!user && (
+                  <span className="text-xl flex-1 font-bold truncate">
+                    Your work won't be saved.{" "}
+                  </span>
+                )}
+              </>
             )}
           </div>
           {/* icons */}
-          <div className="flex space-x-4 items-center">
-            {location.pathname.startsWith("/livecanvas") ? (
-              <>
-                <div
-                  onClick={handleLeaveCanvas}
-                  title="save changes"
-                  className="cursor-pointer hover:bg-gray-200 p-2 rounded-md transition-all"
-                >
-                  <LogOut className="h-6 w-6 transform hover:translate-x-1 duration-300" />
-                </div>
-              </>
-            ) : (
-              <>
-                {isLoading ? (
-                  <span className="loader5"></span>
-                ) : (
-                  <>
-                    {/* edit - save */}
-                    <div
-                      className="cursor-pointer hover:bg-gray-200 p-2 rounded-md transition-all"
-                      title={onEdit ? "Save Changes" : "Edit name"}
-                    >
-                      {onEdit ? (
-                        <CircleCheckBig
-                          onClick={handleEditSave}
-                          aria-hidden="true"
-                        />
-                      ) : (
-                        <Pencil onClick={handleEditStart} aria-hidden="true" />
-                      )}
-                    </div>
-                    {/* cancel - delete */}
-                    <div
-                      // onClick={onEdit ? handleEditEnd() : null}
-                      className="cursor-pointer hover:bg-gray-200 p-2 rounded-md transition-all"
-                      title={onEdit ? "Cancel" : "Delete"}
-                    >
-                      {onEdit ? (
-                        <X onClick={handleEditCancel} aria-hidden="true" />
-                      ) : (
-                        <Trash2
-                          onClick={handleDeleteCanvas}
-                          aria-hidden="true"
-                          className="transition-all hover:scale-125 duration-200"
-                        />
-                      )}
-                    </div>
-                  </>
-                )}
-                {/* share */}
-                <div
-                  onClick={toggleOnlineUsersPopup}
-                  title="save changes"
-                  className="cursor-pointer hover:bg-gray-200 p-2 rounded-md transition-all"
-                >
-                  <Share2 className="" />
-                </div>
-              </>
-            )}
-          </div>
+          {user && (
+            <div className="flex space-x-4 items-center">
+              {location.pathname.startsWith("/livecanvas") ? (
+                <>
+                  <div
+                    onClick={handleLeaveCanvas}
+                    title="save changes"
+                    className="cursor-pointer hover:bg-gray-200 p-2 rounded-md transition-all"
+                  >
+                    <LogOut className="h-6 w-6 transform hover:translate-x-1 duration-300" />
+                  </div>
+                </>
+              ) : (
+                <>
+                  {isLoading ? (
+                    <span className="loader5"></span>
+                  ) : (
+                    <>
+                      {/* edit - save */}
+                      <div
+                        className="cursor-pointer hover:bg-gray-200 p-2 rounded-md transition-all"
+                        title={onEdit ? "Save Changes" : "Edit name"}
+                      >
+                        {onEdit ? (
+                          <CircleCheckBig
+                            onClick={handleEditSave}
+                            aria-hidden="true"
+                          />
+                        ) : (
+                          <Pencil
+                            onClick={handleEditStart}
+                            aria-hidden="true"
+                          />
+                        )}
+                      </div>
+                      {/* cancel - delete */}
+                      <div
+                        // onClick={onEdit ? handleEditEnd() : null}
+                        className="cursor-pointer hover:bg-gray-200 p-2 rounded-md transition-all"
+                        title={onEdit ? "Cancel" : "Delete"}
+                      >
+                        {onEdit ? (
+                          <X onClick={handleEditCancel} aria-hidden="true" />
+                        ) : (
+                          <Trash2
+                            onClick={handleDeleteCanvas}
+                            aria-hidden="true"
+                            className="transition-all hover:scale-125 duration-200"
+                          />
+                        )}
+                      </div>
+                    </>
+                  )}
+                  {/* share */}
+                  <div
+                    onClick={toggleOnlineUsersPopup}
+                    title="save changes"
+                    className="cursor-pointer hover:bg-gray-200 p-2 rounded-md transition-all"
+                  >
+                    <Share2 className="" />
+                  </div>
+                </>
+              )}
+            </div>
+          )}
         </div>
         {/* sidebar */}
         <div
@@ -274,7 +288,7 @@ function CanvasHeader() {
             isToggleSidebar ? "translate-x-0:" : "-translate-x-full w-screen"
           } duration-200 ease-in-out`}
         >
-            {location.pathname.startsWith("/livecanvas") && (
+          {location.pathname.startsWith("/livecanvas") && (
             <Suspense>
               <LiveSidebar toggleSidebar={handelToggleSidebar} />
             </Suspense>
