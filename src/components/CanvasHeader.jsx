@@ -2,6 +2,7 @@ import {
   CircleCheckBig,
   CloudUpload,
   Info,
+  LogOut,
   Logs,
   Pencil,
   Share2,
@@ -27,7 +28,7 @@ const Sidebar = lazy(() => import("./Sidebar"));
 const LiveSidebar = lazy(() => import("./LiveSidebar"));
 
 function CanvasHeader() {
-  const [isToggle, setToggle] = useState(false);
+  const [isToggleSidebar, setIsToggleSidebar] = useState(false);
   const [onEdit, setOnEdit] = useState(false);
   const [editValue, setEditValue] = useState("");
   const { allCanvases } = useSelector((state) => state.allCanvasesReducer);
@@ -42,9 +43,12 @@ function CanvasHeader() {
   const location = useLocation();
   const canvasAdmin = useSelector((state) => state.canvasAdminReducer);
   const { user } = useSelector((state) => state.authReducer);
+  const { allLiveCanvases } = useSelector(
+    (state) => state.allLiveCanvasesReducer
+  );
 
-  const toggle = () => {
-    setToggle(!isToggle);
+  const handelToggleSidebar = () => {
+    setIsToggleSidebar(!isToggleSidebar);
   };
 
   // function to start the name editing
@@ -98,14 +102,19 @@ function CanvasHeader() {
     if (result) {
       setIsLoading(true);
       try {
-        const deletedCanvas = await deleteCanvasFunc(canvasId);
-        // console.log(deletedCanvas);
-        dispatch(deleteInAllCanvases(canvasId));
-        dispatch(deleteCanvas(canvasId));
-        dispatch(setAlert({ text: "Canvas deleted Successfully" }));
-        if (canvasAdmin.includes(canvasId)) {
-          console.log("object")
-          socket.emit("delete-canvas", canvasId);
+        if (!location.pathname.startsWith("/livecanvas")) {
+          const deletedCanvas = await deleteCanvasFunc(canvasId);
+          // console.log(deletedCanvas);
+          dispatch(deleteInAllCanvases(canvasId));
+          dispatch(deleteCanvas(canvasId));
+          dispatch(setAlert({ text: "Canvas deleted Successfully" }));
+          if (canvasAdmin.includes(canvasId)) {
+            // console.log("object");
+            socket.emit("delete-canvas", canvasId);
+          }
+        } else {
+          socket.emit("leave-canvas", { canvasId });
+          dispatch(setAlert({ text: "Canvas left Successfully" }));
         }
       } catch (error) {
         console.error(error);
@@ -129,11 +138,32 @@ function CanvasHeader() {
     setIsOnlineUsersPopup(!isOnlineUsersPopup);
   };
 
+  // handle leave live canvas
+
+  // function to delete the canvas
+  const handleLeaveCanvas = () => {
+    socket.emit("can-leave-canvas", canvasId);
+    socket.on("if-leave-canvas", ({ success }) => {
+      if (success) {
+        togglePopupModal();
+      } else {
+        dispatch(setAlert({ type: "danger", text: "Canvas not accessable." }));
+      }
+    });
+  };
+
   useEffect(() => {
     setIsCanvasNotFound(false);
-    const data = allCanvases?.filter((item) => item._id === canvasId)[0];
-    setCanvasInfo(data);
-  }, [canvasId, allCanvases]);
+    if (location.pathname.startsWith("/livecanvas")) {
+      const data = allLiveCanvases?.filter(
+        (item) => item.canvasId === canvasId
+      )[0];
+      setCanvasInfo(data);
+    } else {
+      const data = allCanvases?.filter((item) => item._id === canvasId)[0];
+      setCanvasInfo(data);
+    }
+  }, [canvasId]);
 
   // Focus the input when editing starts
   useEffect(() => {
@@ -155,7 +185,7 @@ function CanvasHeader() {
         <div className="flex justify-between items-center px-2 py-1 bg-white shadow-md w-full overflow-hidden">
           <div className="flex items-center space-x-4 flex-1 overflow-hidden">
             <div
-              onClick={toggle}
+              onClick={handelToggleSidebar}
               className="cursor-pointer hover:bg-gray-200 p-2 rounded-md transition-all"
             >
               <Logs className="cursor-pointer" />
@@ -170,78 +200,94 @@ function CanvasHeader() {
               />
             ) : (
               <span className="text-xl flex-1 font-bold truncate">
-                {canvasInfo?.name}
+                {location.pathname.startsWith("/livecanvas")
+                  ? canvasInfo?.canvasName
+                  : canvasInfo?.name}
               </span>
             )}
           </div>
           {/* icons */}
           <div className="flex space-x-4 items-center">
-            {isLoading ? (
-              <span className="loader5"></span>
+            {location.pathname.startsWith("/livecanvas") ? (
+              <>
+                <div
+                  onClick={handleLeaveCanvas}
+                  title="save changes"
+                  className="cursor-pointer hover:bg-gray-200 p-2 rounded-md transition-all"
+                >
+                  <LogOut className="h-6 w-6 transform hover:translate-x-1 duration-300" />
+                </div>
+              </>
             ) : (
               <>
-                {/* edit - save */}
+                {isLoading ? (
+                  <span className="loader5"></span>
+                ) : (
+                  <>
+                    {/* edit - save */}
+                    <div
+                      className="cursor-pointer hover:bg-gray-200 p-2 rounded-md transition-all"
+                      title={onEdit ? "Save Changes" : "Edit name"}
+                    >
+                      {onEdit ? (
+                        <CircleCheckBig
+                          onClick={handleEditSave}
+                          aria-hidden="true"
+                        />
+                      ) : (
+                        <Pencil onClick={handleEditStart} aria-hidden="true" />
+                      )}
+                    </div>
+                    {/* cancel - delete */}
+                    <div
+                      // onClick={onEdit ? handleEditEnd() : null}
+                      className="cursor-pointer hover:bg-gray-200 p-2 rounded-md transition-all"
+                      title={onEdit ? "Cancel" : "Delete"}
+                    >
+                      {onEdit ? (
+                        <X onClick={handleEditCancel} aria-hidden="true" />
+                      ) : (
+                        <Trash2
+                          onClick={handleDeleteCanvas}
+                          aria-hidden="true"
+                          className="transition-all hover:scale-125 duration-200"
+                        />
+                      )}
+                    </div>
+                  </>
+                )}
+                {/* share */}
                 <div
+                  onClick={toggleOnlineUsersPopup}
+                  title="save changes"
                   className="cursor-pointer hover:bg-gray-200 p-2 rounded-md transition-all"
-                  title={onEdit ? "Save Changes" : "Edit name"}
                 >
-                  {onEdit ? (
-                    <CircleCheckBig
-                      onClick={handleEditSave}
-                      aria-hidden="true"
-                    />
-                  ) : (
-                    <Pencil onClick={handleEditStart} aria-hidden="true" />
-                  )}
-                </div>
-                {/* cancel - delete */}
-                <div
-                  // onClick={onEdit ? handleEditEnd() : null}
-                  className="cursor-pointer hover:bg-gray-200 p-2 rounded-md transition-all"
-                  title={onEdit ? "Cancel" : "Delete"}
-                >
-                  {onEdit ? (
-                    <X onClick={handleEditCancel} aria-hidden="true" />
-                  ) : (
-                    <Trash2
-                      onClick={handleDeleteCanvas}
-                      aria-hidden="true"
-                      className="transition-all hover:scale-125 duration-200"
-                    />
-                  )}
+                  <Share2 className="" />
                 </div>
               </>
             )}
-            {/* share */}
-            <div
-              onClick={toggleOnlineUsersPopup}
-              title="save changes"
-              className="cursor-pointer hover:bg-gray-200 p-2 rounded-md transition-all"
-            >
-              <Share2 className="" />
-            </div>
           </div>
         </div>
         {/* sidebar */}
         <div
           className={`absolute top-0 left-0 w-full transition-transform ${
-            isToggle ? "translate-x-0:" : "-translate-x-full w-screen"
+            isToggleSidebar ? "translate-x-0:" : "-translate-x-full w-screen"
           } duration-200 ease-in-out`}
         >
-          {location.pathname.startsWith("/livecanvas") && (
+            {location.pathname.startsWith("/livecanvas") && (
             <Suspense>
-              <LiveSidebar toggleSidebar={toggle} />
+              <LiveSidebar toggleSidebar={handelToggleSidebar} />
             </Suspense>
           )}{" "}
           {!location.pathname.startsWith("/livecanvas") && (
             <Suspense>
-              <Sidebar toggleSidebar={toggle} />
+              <Sidebar toggleSidebar={handelToggleSidebar} />
             </Suspense>
           )}
         </div>
-        {isToggle && (
+        {isToggleSidebar && (
           <div
-            onClick={toggle}
+            onClick={handelToggleSidebar}
             className="absolute top-0 left-0 z-[5] h-screen w-screen bg-[#5f5f5f91]"
           ></div>
         )}

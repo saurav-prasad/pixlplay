@@ -428,9 +428,14 @@ function Whiteboard({ toggleBackground }) {
 
   // handle on save button click
   const onSaveChanges = (e) => {
-    if (lines.length > 0) {
-      saveChangesLinesRef.current = lines;
-      saveChangesRef.current();
+    if(user){
+
+      if (lines.length > 0) {
+        saveChangesLinesRef.current = lines;
+        saveChangesRef.current();
+      }
+    }else{
+      dispatch(setAlert({type:"danger",text:"You need to sign in for this functionality!"}))
     }
   };
 

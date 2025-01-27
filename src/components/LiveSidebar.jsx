@@ -52,6 +52,9 @@ function LiveSidebar({ toggleSidebar }) {
   const [isLoading, setIsLoading] = useState();
   const [isLoadingSkeleton, setIsLoadingSkeleton] = useState(genEmptyArr(5));
   const handleLogoutHook = useLogout();
+  const { allLiveCanvases } = useSelector(
+    (state) => state.allLiveCanvasesReducer
+  );
 
   // toggle popup modal
   const togglePopupModal = () => {
@@ -128,16 +131,13 @@ function LiveSidebar({ toggleSidebar }) {
   // fetch canvases
   useEffect(() => {
     try {
-      socket.emit("get-all-collaborator-canvases");
-      socket.on("all-collaborator-canvases", (data) => {
-        setCanvases(data);
-      });
+      setCanvases(allLiveCanvases);
     } catch (error) {
       console.error(error);
     } finally {
       setIsLoadingSkeleton([]);
     }
-  }, []);
+  }, [allLiveCanvases]);
 
   // Focus the input when editing starts
   useEffect(() => {
@@ -233,7 +233,10 @@ function LiveSidebar({ toggleSidebar }) {
                 className="-mx-3 group mb-4 select-none cursor-pointer flex transform items-center rounded-lg px-3 py-2 transition-colors duration-300 hover:bg-gray-100 hover:text-gray-900"
               >
                 {user ? (
-                  <LogOut className="h-6 w-6 group-hover:translate-x-1 transition-all" aria-hidden="true" />
+                  <LogOut
+                    className="h-6 w-6 group-hover:translate-x-1 transition-all"
+                    aria-hidden="true"
+                  />
                 ) : (
                   <LogIn className="h-6 w-6" aria-hidden="true" />
                 )}

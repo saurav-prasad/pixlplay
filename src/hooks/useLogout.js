@@ -9,6 +9,7 @@ import { removeAllOnlineUser } from '../app/features/onlineUsers';
 import { clearCanvasAdmin } from '../app/features/canvasAdmin';
 import { clearAllCollab } from '../app/features/allCollaborators';
 import removeStoredCanvasBg from "../utils/removeStoredCanvasBg";
+import { removeAllLiveCanvases } from '../app/features/allLiveCanvases';
 
 const useLogout = () => {
     const dispatch = useDispatch();
@@ -26,6 +27,7 @@ const useLogout = () => {
         dispatch(removeAllOnlineUser())
         dispatch(clearCanvasAdmin())
         dispatch(clearAllCollab())
+        dispatch(removeAllLiveCanvases())
     };
 
 

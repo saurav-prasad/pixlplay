@@ -27,6 +27,7 @@ import removeStoredCanvasBg from "./utils/removeStoredCanvasBg";
 import Bg1 from "./assets/bg-images/ai-generated-9159939_1920.png";
 import Bg2 from "./assets/bg-images/mountains-1412683_1920.png";
 import Bg3 from "./assets/bg-images/mountain-4823516_1920.png";
+import { setAllLiveCanvases } from "./app/features/allLiveCanvases";
 
 function App() {
   const dispatch = useDispatch();
@@ -110,16 +111,18 @@ function App() {
     },
   ]);
 
-  // socket listeners
+  // socket listeners/emitters
   useEffect(() => {
     if (user) {
       try {
-        // socket.connect();
+        // emitters
         socket.emit("online", {
           userId: user.id,
           username: user.username,
           profilePhoto: user.profilePhoto,
         });
+        socket.emit("get-all-collaborator-canvases");
+        // listeners
         socket.on("get-online-users", (data) => {
           dispatch(setOnlineUsers(data));
         });
@@ -144,6 +147,9 @@ function App() {
         socket.on("get-admin-of-canvases", (data) => {
           dispatch(setCanvasAdmin(data));
         });
+        socket.on("all-collaborator-canvases", (data) => {
+          dispatch(setAllLiveCanvases(data));
+        });
       } catch (error) {
         console.error(error);
       }
@@ -159,6 +165,7 @@ function App() {
     };
   }, [user]);
 
+  // background image change
   const bgImages = [Bg1, Bg2, Bg3];
   const [bgImageIndex, setBgImageIndex] = useState(0);
 

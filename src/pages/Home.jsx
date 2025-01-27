@@ -1,7 +1,7 @@
 import Hero from "../components/Hero";
 import HomeHeader from "../components/HomeHeader";
 import { Link, Outlet, useLocation } from "react-router-dom";
-import Blob from "../components/Blob";
+import Blob from "../components/blob/Blob";
 import { useSelector } from "react-redux";
 import { ArrowBigRightDash } from "lucide-react";
 import Portfolio from "../assets/icons/coder.png";

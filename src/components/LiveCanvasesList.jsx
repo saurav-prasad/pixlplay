@@ -1,25 +1,23 @@
 import React, { memo, useEffect, useRef, useState } from "react";
 import Item from "./Item";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import ItemSkeleton from "./ItemSkeleton";
 import genEmptyArr from "../utils/genEmptyArr";
-import socket from "../socket/socket";
 import NotFoundTv from "./notFoundTv/NotFoundTv";
 
 function LiveCanvasesList() {
   const [canvases, setCanvases] = useState([]);
-  const dispatch = useDispatch();
   const { user } = useSelector((state) => state.authReducer);
   const [isLoading, setIsLoading] = useState(genEmptyArr(5));
+  const { allLiveCanvases } = useSelector(
+    (state) => state.allLiveCanvasesReducer
+  );
 
   useEffect(() => {
     async function fetchData() {
       if (user) {
         try {
-          socket.emit("get-all-collaborator-canvases");
-          socket.on("all-collaborator-canvases", (data) => {
-            setCanvases(data);
-          });
+          setCanvases(allLiveCanvases);
         } catch (error) {
           console.error(error);
         } finally {
@@ -29,7 +27,6 @@ function LiveCanvasesList() {
     }
     fetchData();
   }, [user]);
-
 
   return (
     <>

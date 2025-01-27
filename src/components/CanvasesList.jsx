@@ -1,6 +1,6 @@
 import React, { memo, useEffect, useRef, useState } from "react";
 import Item from "./Item";
-import { BadgePlusIcon } from "lucide-react";
+import { BadgePlusIcon, UserRoundX } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { addInAllCanvases, setAllCanvases } from "../app/features/allCanvases";
 import sortArray from "../utils/sortArray";
@@ -13,6 +13,7 @@ import Alert from "./Alert";
 import { setAlert } from "../app/features/alert";
 import Notfound from "../assets/images/falling_para.svg";
 import AuthImg from "../assets/images/auth2.svg";
+import { Link } from "react-router-dom";
 
 function CanvasesList() {
   const [canvases, setCanvases] = useState([]);
@@ -80,6 +81,20 @@ function CanvasesList() {
         />
         <p className="text-md font-medium w-full truncate">New Canvas</p>
       </div>
+      {!user && (
+        <Link
+          to={"/canvas/guest"}
+          className="select-none cursor-pointer flex transform items-center rounded-lg px-3 py-3 transition-colors duration-300 text-gray-900 bg-[#9e99bf85] hover:text-gray-950 justify-start space-x-2 text-lg shadow-[#3c3d591f] shadow-lg border-[#ffffff45] hover:bg-[#6872a6af] backdrop-blur-[100px] border-2 group"
+        >
+          <UserRoundX
+            className="transform group-hover:translate-x-1 group-hover:scale-125 duration-500"
+            aria-hidden="true"
+          />
+          <p className="text-md font-medium w-full truncate">
+            Start creating as guest
+          </p>
+        </Link>
+      )}
       {isLoading.length > 0 && user && (
         <>
           {isLoading.map((_, index) => (
@@ -108,7 +123,7 @@ function CanvasesList() {
           <h1 className="text-center !mt-4 text-5xl text-gray-800 font-extrabold font-delius">
             Sign in first!
           </h1>
-          <img src={AuthImg} className="object-contain max-h-[63vh]" alt="" />
+          <img src={AuthImg} className="object-contain max-h-[60vh]" alt="" />
         </div>
       )}
     </>

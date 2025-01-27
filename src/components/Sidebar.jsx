@@ -69,6 +69,8 @@ function Sidebar({ toggleSidebar }) {
         if (user) {
           const result = await createNewCanvas(user?.id);
           dispatch(addInAllCanvases(result));
+        } else {
+          dispatch(setAlert({ type: "danger", text: "Please Sign in first!" }));
         }
       } catch (error) {
         console.error(error);
@@ -325,11 +327,19 @@ function Sidebar({ toggleSidebar }) {
                 className="-mx-3 mb-4 select-none cursor-pointer flex transform items-center rounded-lg px-3 py-2 transition-colors duration-300 hover:bg-gray-100 hover:text-gray-900 group"
               >
                 {user ? (
-                  <LogOut className="h-6 w-6 group-hover:translate-x-1 transition-all" aria-hidden="true" />
+                  <>
+                    <LogOut
+                      className="h-6 w-6 group-hover:translate-x-1 transition-all"
+                      aria-hidden="true"
+                    />
+                    <span className="mx-4 text-md font-medium">Sign-out</span>
+                  </>
                 ) : (
-                  <LogIn className="h-6 w-6" aria-hidden="true" />
+                  <>
+                    <LogIn className="h-6 w-6" aria-hidden="true" />
+                    <span className="mx-4 text-md font-medium">Sign-in</span>
+                  </>
                 )}
-                <span className="mx-4 text-md font-medium">Sign-out</span>
               </span>
             </div>
           </div>
