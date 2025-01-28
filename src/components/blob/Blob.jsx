@@ -10,7 +10,7 @@ const trans = (x, y) => `translate3d(${x}px,${y}px,0) translate3d(-50%,-50%,0)`;
 function Blob() {
   const location = useLocation().pathname;
   const [trail, api] = useTrail(3, (i) => ({
-    xy: [0, 200],
+    xy: [0, 150],
     config: i === 0 ? fast : slow,
   }));
   const [ref, { left, top }] = useMeasure();
